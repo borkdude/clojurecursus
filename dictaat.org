@@ -33,6 +33,8 @@
 #+HTML: <p class="title">Auteur: Michiel Borkent</p>
 #+HTML: <p class="title">Cursusjaar: 2012-2013</p>
 
+Terug naar de [[file:index.org][index-pagina]]
+
 * Introductie
 
 ** Waarom een nieuwe programmeertaal leren?
@@ -4291,7 +4293,7 @@ hieronder:
 
 #+begin_src clojure 
 user=> (defn fib-step [[a b]]
-  #_=>   [b (+ a b)])
+  #_=>   [b (+' a b)])
 #'user/fib-step
 user=> (fib-step [0 0])
 [0 0]

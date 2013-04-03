@@ -58,6 +58,8 @@
 # dan naar per e-mail. Hou daarbij zoveel mogelijk
 # het Org-formaat aan.
 
+Terug naar de [[file:index.org][index-pagina]]
+
 * Tips en hulpmiddelen
 - Hou je aan de Clojure
   [[https://github.com/bbatsov/clojure-style-guide][style guide]]
@@ -78,8 +80,10 @@ Bronnen die je kan gebruiken bij het practicum:
    tot eind. Wat is de uitkomst van de laatste expressie die je hebt
    moeten schrijven in deze tutorial?
 2. Installeer [[http://leiningen.org/][Leiningen]], Eclipse en de CounterClockWise Plugin via de
-   Eclipse Marketplace. Maak in Eclipse een nieuw Leiningen-project
-   aan, waarin je je practicumuitwerkingen kan bewaren en runnen.
+   Eclipse Marketplace. Zie ook het gedeelte over Leiningen in het
+   laatste hoofdstuk van het dictaat. Maak in Eclipse een nieuw
+   Leiningen-project aan, waarin je je practicumuitwerkingen kan
+   bewaren en runnen.
 3. De expressie =(/ 3 4)=  geeft als uitkomst: =3/4=. Dit
    is een =Rational=, een datatype in Clojure welke een breuk voorstelt.
    Schrijf een expressie die =0.75= geeft als uitkomst van =3= gedeeld
