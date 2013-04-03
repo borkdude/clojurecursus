@@ -1,0 +1,5638 @@
+#+TITLE: Inleiding Functioneel Programmeren met Clojure
+#+AUTHOR: Michiel Borkent
+#+DATE: Cursusjaar 2012-2013
+# HTML-taal:
+#+LANGUAGE: nl
+
+#+LaTeX_HEADER: \usepackage[dutch]{babel}
+
+# CSS styling:
+#+STYLE: <link rel="stylesheet" type="text/css" href="css/main.css" />
+#+MATHJAX: align:"left" mathml:t path:"http://cdn.mathjax.org/mathjax/latest/MathJax.js"
+# Javascript menu (+ toevoegen om de enablen)
+# INFOJS_OPT: view:info 
+
+# zelfgedefinieerde counters:
+
+#+BEGIN: define-counter :id "exercise" :text "Oefening" 
+
+#+END
+
+#+BEGIN: define-counter :id "tip" :text "Tip" 
+
+#+END
+
+#+BEGIN: define-counter :id "advanced" :text "Verdieping"
+
+#+END
+
+# Github Ribbon:
+#+begin_html
+<a href="https://github.com/borkdude/clojurecursus"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+#+end_html
+#+HTML: <p class="title">Auteur: Michiel Borkent</p>
+#+HTML: <p class="title">Cursusjaar: 2012-2013</p>
+
+* Introductie
+
+** Waarom een nieuwe programmeertaal leren?
+Een veel gehoord advies in actieve programmeercommunities is om van
+tijd tot tijd een nieuwe programmeertaal te leren. Zo bijvoorbeeld ook
+in het boek /The Pragmatic Programmer/ \cite{pragprog99}, een populair
+boek over beter en productiever leren programmeren:
+
+#+BEGIN_QUOTE
+*Learn at least one new language every year.* Different languages
+solve the same problems in different ways. By learning several
+different approaches, you can help broaden your thinking and avoid
+getting stuck in a rut. Additionally, learning many languages is far
+easier now, thanks to the wealth of freely available software on the
+Internet." (pag. 14) 
+#+END_QUOTE
+
+Het leren van een nieuwe, onbekende programmeertaal kan inspirerend
+werken, ook als je daarna gaat programmeren in reeds bekende talen.
+Ideeën die je tegenkomt in een bepaalde programmeertaal kan je soms
+toepassen in andere omgevingen. Het vergroten van kennis van en
+bedrevenheid in diverse soorten programmeertalen heeft een alom
+versterkend effect. De beroemde hacker Eric S. Raymond drukt het zo
+uit aan de hand van de programmeertaal Lisp:
+
+#+BEGIN_QUOTE
+"Lisp is worth learning for the profound enlightenment experience you
+will have when you finally get it; that experience will make you a
+better programmer for the rest of your days, even if you never
+actually use Lisp itself a lot." \cite{raymond}
+#+END_QUOTE
+
+Ook vergroot het leren van meerdere soorten programmeertalen
+natuurlijk de arbeidskansen van een programmeur. Deze motivatie mag de
+keuze echter niet beperken tot de top 20 van de [[http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html][Tiobe-index]]. De
+populariteit van een programmeertaal bepaalt lang niet altijd de
+leerzaamheidsfactor. Java begon ook ooit als niet-populaire taal. Men
+zou zelfs kunnen zeggen dat object-oriëntatie pas doorbrak als
+mainstream paradigma in de jaren 1990, terwijl het zijn oorsprong
+heeft in de jaren 1960.
+
+** Imperatief programmeren
+Er zijn verschillende programmeerparadigma's, zoals procedureel,
+imperatief, object geörienteerd, functioneel en logisch. Het
+programmeerparadigma waar een programmeertaal hoofdzakelijk vanuit
+gaat, bepaalt hoe je een bepaald probleem moet gaan oplossen en
+programmeren in die taal. Vaak hanteren programmeertalen een mix van
+bepaalde paradigma's. Zo gaat vaak object geörienteerd hand in hand
+met imperatief programmeren. Imperatief programmeren komt neer op het
+één voor één laten uitvoeren van opdrachten die bepaalde waarden in
+het geheugen manipuleren, totdat de juiste toestand in het geheugen
+bereikt is. Het woord 'imperatief' betekent in het Nederlands
+'gebiedend', dus het geven van een opdracht. Imperatief programmeren
+gaat terug op de architectuur van een moderne computer, het zogenaamde
+Von Neumann-model, zie figuur [[vonneumann]] en [[cyclus]].
+
+#+LABEL: cyclus
+#+CAPTION: Von Neumann-cyclus
+#+ATTR_HTML: alt="The Pragmatic Programmer" width="300px"
+#+ATTR_LaTeX: width=0.5\textwidth
+[[./pictures/neumann-cyclus.png]]
+
+#+LABEL: vonneumann
+#+CAPTION: Von Neumann-model
+#+ATTR_HTML: alt="The Pragmatic Programmer" width="300px"
+#+ATTR_LaTeX: width=0.5\textwidth
+[[./pictures/vonneumann.png]]
+
+Een processor leest bepaalde instructies uit het geheugen en voert
+stap voor stap instructies uit die registers beïnvloeden en
+uiteindelijk wordt er weer iets teruggeschreven in het geheugen. Die instructies in
+leesbare vorm worden assembly-instructies genoemd en zien er ongeveer
+zo uit.
+
+#+begin_src asm
+; zet het getal 4 in register ax
+mov ax,4  
+; zet het getal 6 in register bx
+mov bx,6  
+; tel de getalling in registers ax en bx op 
+add ax,bx 
+#+end_src
+
+De manier hoe we dit in Java zouden doen verschilt niet wezenlijk van
+de assembly-manier:
+
+#+begin_src java
+int a = 4;
+int b = 6;
+a = a + b;
+#+end_src
+
+Hoewel er in Java iets anders op de achtergrond gebeurt dan bij
+assembly (de variabelen =a= en =b= zijn geen processorregisters maar
+plaatsen in het geheugen, beheerd door een virtuele machine) vertoont
+het imperatieve programmeermodel duidelijke overeenkomsten en is in
+grote lijnen gebaseerd op het Von Neumann-model.
+
+Nog een voorbeeld.
+
+Een loop in assembly:
+
+#+begin_src asm
+mov cx,3
+
+loopstart:
+  do stuff
+  dec cx
+  jnz loopstart
+#+end_src 
+
+Een loop in Java:
+#+begin_src java
+for (int i = 3; i == 0; i--) {
+  do stuff;
+}
+#+end_src
+
+Nu zien we dat Java een iets abstractere vorm voor een loop heeft dan
+assembly. Daarom noemen we Java ook een derde generatie-taal: het
+abstractieniveau is hoger dan assembly, wat we een tweede
+generatie-taal noemen (de eerste generatie zijn de nullen en enen van
+machineinstructies). Maar nog zullen we in Java de
+machine precies moeten vertellen /hoe/ deze bepaalde berekingen
+moet gaan doen en we zien
+dat deze manier beïnvloed is door het Von Neumann-model. Wel zijn er
+in Java belangrijke zaken toegevoegd, zoals Garbage Collection en
+Object Oriëntatie, die je niet in assembly terug kunt zien en niet
+direct te herleiden zijn tot het Von Neumann-model. Je zou dus kunnen
+zeggen dat Java deels gebaseerd is op het idee van een Von
+Neumann-machine en deels op andere concepten, zoals Object Oriëntatie.
+
+Wanneer je in Java een bepaald probleem wil oplossen, doe je dit aan de hand van het object
+geörienteerde model. Objecten bevatten data (attributen) en gedrag (methoden),
+kunnen met elkaar communiceren (methode-aanroepen) en kunnen in
+verbinding met elkaar staan (associaties). Wanneer je echter
+hetzelfde probleem op gaat lossen in een taal met een ander
+achterliggend programmeermodel kan het tot een heel andere oplossing
+leiden. Soms is de oplossing natuurlijker, eleganter, leesbaarder,
+en/of korter in één bepaalde programmeertaal bij één bepaald soort probleem.
+Maar het kan ook zijn dat bepaalde oplossingen in bepaalde talen
+geheel onnatuurlijk aanvoelen. 
+
+*** Clojure
+Om dit te illustreren, een klein voorbeeld uit het boek Programming
+Clojure\cite{halloway}. Clojure (spreek uit: cloozjer) is een
+functionele programmeertaal, in tegenstelling tot Java. In Java zouden
+we een methode kunnen schrijven welke checkt of een String uitsluitend
+uit whitespace-karakters bestaat, als volgt:
+
+#+begin_src java
+public class StringUtils {
+  public static boolean isBlank(String str) {
+    int strLen;
+    if (str == null || (strLen = str.length()) == 0) {
+      return true; 
+    }
+    for (int i = 0; i < strLen; i++) {
+      if ((Character.isWhitespace(str.charAt(i)) == false)) {
+        return false; 
+      }
+    }
+    return true; 
+  }
+}
+#+end_src
+
+In Clojure zou je bovenstaande methode kunnen programmeren als volgt:
+
+#+begin_src clojure
+(defn blank? [s] (every? (fn [c] (Character/isWhitespace c)) s))
+#+end_src
+
+Waarom is de Clojure-versie zoveel korter? Omdat we hier gebruiken
+maken van een hogere orde-functie, =every?=, welke een (anonieme)
+functie en een sequence als argument verwacht. De functie =every?=
+past de anonieme functie toe op elke element uit de sequence. Als de
+anonieme functie voor alle elementen =true= oplevert, dan levert
+=every?= ook =true= op, anders =false=. In Clojure kan een
+String gezien worden als een sequence van karakters. Java kent een 
+dergelijke constructie met hogere orde functies en anonieme functies
+niet. De oplossing in Clojure is in dit geval korter en eleganter. We
+zien hier trouwens dat Clojure gebruikt maakt van een static
+Java-methode =Character.isWhitespace=. Dit is een van de mooie
+eigenschappen van Clojure: je krijgt de kracht van functioneel
+programmeren maar kunt daarbij wel gebruik maken van Java-libraries.
+
+We gaan ons in deze deelmodule verder verdiepen in Clojure. Deze taal wijkt erg
+af van een traditionele OO-taal zoals Java. We kiezen bewust voor deze
+andere taal om gevoel te krijgen voor de verschillen tussen programmeertalen als
+tools. Clojure is een functionele Lisp-variant voor de Java virtual
+machine. Clojure heeft een aantal concepten geleend uit andere
+programmeertalen en vormt zo een taal met een unieke combinatie van
+eigenschappen. Het bestuderen van Clojure verrijkt ook het begrip van
+andere programmeertalen dan alleen Clojure.
+
+Hier volgt een kort overzicht van de eigenschappen die Clojure heeft,
+gerelateerd aan andere programmeertalen
+([[http://stackoverflow.com/questions/3025061/overview-of-features-in-clojure-coming-from-other-languages-than-cl][bron]]):
+
+-  Lazy evaluation / lazy lists: Haskell
+
+-  Persistente datastructuren: Haskell en andere puur functionele talen
+
+-  Dynamic typing: Javascript, PHP, Python, etc
+
+-  Type hinting (voor performance): diverse dynamisch getypeerde talen
+
+-  Code-is-data en metaprogrammeren met macro's: Lisp
+
+-  Interoperabiliteit met Java/JVM: Groovy, Scala
+
+-  Protocols (soort van interfaces, maar krachtiger): Objective-C
+
+Clojure is in 2007 ontworpen door auteur Rich Hickey omdat hij behoefte zag aan een
+praktische Lisp-variant die ingezet kan worden als laag bovenop bestaande
+platformen, zoals de JVM, maar ook op de Common Language Runtime van
+.NET en op Javascript. Een Lisp is een programmeertaal waarbij de programma's zelf
+lijsten in de programmeertaal zijn. Programma's zijn
+dus data (maar data is niet altijd een programma) en die data kan je
+zelf gebruiken om weer andere programma's te genereren. Je kan
+in een Lisp een macro schrijven die een stukje programma (een lijst) als input
+heeft en die op basis daarvan een ander stukje programma oplevert. Een
+voorbeeld daarvan volgt nu, ontleend aan [[http://stuartsierra.com/download/hadoopworld-2009-clojure-slides.pdf][bron]].
+
+In Java is het volgende patroon veelvoorkomend. Men opent een bepaalde
+stream, doet er iets mee in een try-block en sluit de stream handmatig
+in het finally-block. Het finally-block wordt altijd uitgevoerd,
+ongeacht of er een exceptie optreedt. Oftewel: een stream moet altijd
+worden afgesloten.
+
+#+begin_src java 
+// open a stream 
+...
+try {  
+  //do stuff with the stream
+  ...
+} finally {
+  stream.close();
+}
+#+end_src
+
+Dit veelvoorkomende patroon is in Java niet te abstraheren. In
+Clojure gebruikt men macro's om dit soort patronen te abstraheren. Dat
+wil zeggen dat je eenmalig een beschrijving van het patroon moet geven
+in de vorm van een soort template. Daarna hoef je dit patroon nooit
+meer zelf uit te schrijven, maar kun je volstaan met een macro-aanroep.
+
+De volgende macro, genaamd  =with-open=, beschrijft dit patroon in Clojure:
+#+begin_src clojure
+(defmacro with-open [args & body]
+  `(let ~args
+    (try ~@body
+     (finally (.close ~(first args))))))
+#+end_src
+
+De aanroep van de macro ziet er dan in algemene vorm zo uit:
+#+begin_src clojure
+(with-open [stream (...open a stream...)]
+  ...do stuff with stream...) 
+#+end_src
+
+Een concreet voorbeeld van een aanroep:
+#+begin_src clojure
+(use 'clojure.java.io)
+(with-open [rdr (reader "/tmp/test.txt")]
+  (doseq [line (line-seq rdr)]
+    (println line)))
+#+end_src
+
+In het concrete voorbeeld geven we aan =with-open= een
+=BufferedReader= mee, onder de naam =rdr= (de functie =reader= maakt
+die =BufferedReader= aan). Daar lezen we dan tekst per regel uit en
+drukken die af op het scherm. Daarna wordt de =BufferedReader=
+automatisch gesloten. Maak je nog geen zorgen als je bovenstaande
+Clojure-code niet begrijpt. Macro's komen pas in hoofdstuk [[Macro's]] aan
+bod. Macro's schrijven, of metaprogrammeren zoals het ook wordt
+genoemd, is een kunst apart, maar het geeft je als programmeur erg
+veel kracht.
+
+Clojure is dus een Lisp die draait op de Java Virtual Machine, maar
+toch is Clojure heel wat anders dan Java. Een ander verschil tussen
+Clojure en bijvoorbeeld Java is het type-systeem. Java maakt gebruikt
+van statische typering. Daarbij moet je bij elke variabele aangeven
+van welk type die variabele is. In Clojure hoeft dat niet en zijn
+functies vaak geschikt voor meerdere soorten types, wanneer dat voor
+de hand ligt. Verder moeten in Java lijsten vaak één bepaald type
+element bevatten, bijvoorbeeld =ArrayList<String>=. Men noemt een
+collectie welke elementen van steeds hetzelfde type moet bevatten
+homogeen. In Clojure kan een lijst willekeurige type elementen
+bevatten, bijvoorbeeld
+
+#+begin_src clojure
+[1 2 "a" "b"]
+#+end_src
+
+Dit is een vector met vier elementen, waarvan twee
+integers en twee strings. Men noemt een collectie welke elementen van
+verschillende typen kan bevatten ook wel heterogeen.
+
+In Clojure is het de bedoeling dat je je
+kan concentreren op het probleem dat je wil oplossen. Daarom is er
+gekozen voor de flexibiliteit die dynamische typering met zich mee
+brengt. Dat heeft als nadeel dat er meer fouten in de code kunnen
+zitten dan bij een statisch getypeerde taal. De manier van ontwikkelen
+in Clojure is echter veel interactiever dan bij een taal als Java of
+C#, doordat er gebruikt wordt gemaakt van een REPL - een console
+waarin je je programma gaandeweg kan vorm geven. 
+Het is makkelijker mogelijk om functies geïsoleerd te testen en
+op die manier al vroegtijdig fouten uit de code te halen. Ook kan Test
+Driven Development helpen om fouten op te sporen. Het type-systeem kan
+alleen maar een bepaalde categorie fouten opsporen (namelijk
+typeringsfouten), voor de rest zullen we toch unit tests moeten
+schrijven als we de kwaliteit van onze code hoog willen houden. Er
+wordt vaak gezegd dat dynamische typering een flexibiliteit en
+ontwikkelsnelheid biedt die hoger ligt dan bij statische typering.
+Dit kunnen we niet goed wetenschappelijk onderbouwen, dus je zult het
+voor jezelf moeten uitvinden. Het kan echter nooit kwaad om zowel met
+statisch getypeerde talen als met dynamisch getypeerde talen te leren werken. 
+
+** Waarom functioneel programmeren?
+Clojure is een functionele programmeertaal. Er zijn tegenwoordig een
+aantal functionele programmeertalen bekend en populair, waaronder de
+volgende:
+
+-  Haskell - vooral populair in de academische wereld, statisch
+   getypeerd, nadruk op pure functies en lazyness
+
+-  F# - onderdeel van het .NET-framework, statisch getypeerd, gebaseerd
+   op ML
+
+-  Scala - mix object geörienteerd en functioneel, statisch getypeerd,
+   draait op de JVM
+   
+-  Clojure - Lisp-gebaseerd, dynamisch getypeerd, draait op de JVM,
+   CLR en Javascript (JVM wordt het beste ondersteund)
+
+*** Wat is een functionele programmeertaal?
+Niet iedereen is het daarover eens, maar veel voorkomende eigenschappen
+van functionele programmeertalen zijn:
+
+-  Een functie is een eersteklas object (zoals elk ander datatype, zoals
+   int, string, map etc)
+
+-  Data is immutable. Eenmaal geïnitialiseerd kan je data niet meer
+   aanpassen. De assignment bestaat niet. In plaats van aanpassen maak
+   je een nieuwe versie. Dit kan efficiënt op basis van structural
+   sharing.
+
+-  Complexe functies kunnen worden opgebouwd door simpele functies te
+   combineren (functiecompositie) of een simpele functie als argument te
+   hebben en toe te passen (hogere orde functies)
+
+-  Een programma is opgebouwd uit een keten functie-aanroepen
+
+-  De functie is dus de belangrijkste bouwsteen van de programmeertaal
+
+#+LABEL: imperativeflow
+#+CAPTION: Verloop van een programma in een imperatieve programmeertaal. 
+# ATTR_HTML: alt="(bron: Practical Clojure -  Luke VanderHart, Stuart Sierra)" 
+# ATTR_LaTeX: width=0.75\textwidth
+[[./pictures/imperative-flow.png]]
+ 
+
+#+LABEL: functionalflow
+#+CAPTION: Verloop van een programma in een functionele programmeertaal 
+# ATTR_HTML: alt="(bron: Practical Clojure -  Luke VanderHart, Stuart Sierra)" 
+# ATTR_LaTeX: width=0.75\textwidth
+[[./pictures/functional-flow.png]]
+
+In figuur [[imperativeflow]] zien we dat het imperatieve programma bestaat
+uit een serie bewerkingen op het geheugen. Het programma beïnvloedt
+dus constant de toestand van het geheugen. Elke bewerking is daarmee
+een side effect: iets wat de wereld verandert. In figuur
+[[functionalflow]] zien we dat het functionele programma bestaat uit een
+ketting van functie-aanroepen. Geen van de functies beïnvloeden de
+wereld om hun heen, maar leveren simpelweg output op basis van input.
+Beide figuren zijn geïnspireerd door het boek /Practical Clojure/
+\cite{vanderhart} (pag. 3-4).
+  
+# TODO: uit welke taal komen welke concepten in Clojure?
+   
+*** Ontwikkeling hardware
+Het is belangrijk om iets van functioneel programmeren af te weten, omdat het vermoedelijk
+steeds belangrijker gaat worden in de informatica. Een reden daarvoor
+hebben we hierboven al beschreven: soms past een bepaald
+programmeermodel beter bij bepaalde problemen dan andere modellen.
+Maar er is nog een andere belangrijke reden waarom je iets van
+functioneel programmeren zou moeten weten. Dat heeft te maken met
+Moore's Law.
+
+#+LABEL: mooreslaw
+#+CAPTION:  Moore's law: de snelheid van een computersysteem verdubbelt elke twee jaar (door hogere concentratie transistors op 1 chip)
+#+ATTR_HTML: alt="Moore's law" 
+#+ATTR_LaTeX: width=0.75\textwidth
+[[./pictures/moore.png]]
+
+Moore's Law, zoals geïllustreerd in figuur [[mooreslaw]] zegt: de
+snelheid van computersystemen (processoren) verdubbelt elke twee jaar.
+Dit komt doordat de dichtheid van transistoren elke twee jaar
+verdubbelt. Anno 2006 lijkt de groei van de kloksnelheid van de chips te
+stagneren en komt niet meer boven de 3,8 GHz. Als oplossing daarvoor
+plaatsen de chipfabrikanten meerdere processoren (ook wel cores genoemd)
+op een chip (bron:
+[[http://nl.wikipedia.org/wiki/Wet_van_Moore][wikipedia]]).
+
+Wil je dus profiteren van snellere hardware, zul je je software steeds
+meer moeten paralleliseren. Het paralleliseren van software blijkt in
+een functioneel programmeermodel simpeler te zijn dan bij een
+imperatieve taal. De reden hiervoor is dat programma's in functionele
+talen zoveel mogelijk zijn opgebouwd uit functies die referentieel
+transparant zijn.
+
+*** Referentiële transparantie 
+Een functie is referentieel transparant als geldt: een functie-aanroep
+mag in een programma altijd vervangen worden door het resultaat van
+die functie aanroep. Het resultaat moet voor elke functie-aanroep met
+dezelfde argumenten steeds hetzelfde zijn. Een gevolg van die eis is
+dat functies:
+
+-  geen side-effects mogen bevatten (IO zoals printen, beelscherm,
+   veranderingen op het filesysteem, etc)
+
+-  hun resultaat alleen maar aan de hand van binnenkomende argumenten
+   berekenen en niet met behulp van (variabele) waarden buiten de scope
+   van de functie
+
+Een referentieel transparante functie levert, ongeacht welke toestand
+dan ook, altijd dezelfde return-waarde op op basis van dezelfde
+argumenten.
+
+Een voorbeeld van een referentieel transparante functie is
+bijvoorbeeld =+=, want we mogen een aanroep van =+= altijd
+vervangen door het resultaat van die aanroep, zonder dat het programma
+anders gaat werken:
+
+#+begin_src clojure
+(/ (+ 1 2 3) 2) ;;=> 3
+
+;; of
+
+(/ 6 2) ;;=> 3
+#+end_src
+
+Een voorbeeld van een niet-referentieel transparante functie is:
+
+#+begin_src clojure
+(def global-value 10)
+(defn my-fun [a b] 
+  (+ a b global-value))
+(my-fun 1 2) ;;=> 13
+(def global-value 11)
+(my-fun 1 2) ;;=> 14
+#+end_src
+
+De functie =my-fun= levert de ene keer de waarde =13= op met de
+argumenten =1= en =2=, maar de andere keer de waarde =14=. Dit komt
+omdat de uitkomst van de functie afhankelijk is van een globale
+variabele =global-value=. 
+
+Een serie aanroepen van referentieel transparante functies zou je
+kunnen verdelen over verschillende cores, omdat ze onafhankelijk van
+elkaar berekend kunnen worden. 
+Bij een object geörienteerd/imperatief programmeermodel
+ligt dit vaak lastiger. De imperatieve talen zijn vooral gebaseerd op het Von Neumann-model
+waarin je maar één centrale processor hebt. Methoden in een
+OO-taal zijn vaak juist niet referentieel transparant, omdat de
+methoden gebruik maken van de toestand van een object (de attributen).
+Dit zijn twee redenen waarom het vaak lastiger is om OO-software te
+paralleliseren en dus sneller maken. Functionele talen lenen zich hier
+beter voor. In een functionele programmeertaal is de koppeling tussen
+taal en machine minder sterk.
+
+Een klein voorbeeld van parallelisatie in Clojure:
+
+#+begin_src clojure
+user=> (time (doall (map (fn [a] (Thread/sleep 1000) (inc a)) (range 10))))
+"Elapsed time: 10010.207 msecs"
+(1 2 3 4 5 6 7 8 9 10)
+user=> (time (doall (pmap (fn [a] (Thread/sleep 1000) (inc a)) (range 10))))
+"Elapsed time: 1050.0 msecs"
+(1 2 3 4 5 6 7 8 9 10)
+#+end_src
+
+In de eerste expressie wordt er een functie toegepast op een lijst van
+10 getallen. Dit gebeurt met de hogere orde functie =map=. De functie
+wacht eerst 1 seconde en levert dan 1 + zijn input op. In een
+single-threaded wereld zal dit 10 seconden duren. Omdat de functie
+puur is, kunnen we het werk makkelijk paralleliseren. De functie
+=pmap= doet hetzelfde als =map=, maar verdeelt het werk over meerdere
+cores. Nu duurt het opeens nog maar 1 seconde. Dit lijkt vreemd, maar
+heeft te maken met het feit dat een core meerdere threads kan opstarten.
+
+*** Andere voordelen
+Andere voordelen van functioneel programmeren zijn:
+- hogere expressiviteit, programma's zijn vaak compacter dan in
+  traditionele imperatieve (OO)-talen
+- minder code betekent minder bugs
+- pure functies zijn makkelijker te testen, want hebben alleen lokaal
+  impact
+
+* Clojure Basics
+
+** REPL
+
+We zullen nu wat verder ingaan op Clojure. Het is handig om de
+voorbeelden die voorbijkomen ook zelf uit te proberen. Voor de
+installatie van Clojure zie de practicumbundel. Clojure kun je
+installeren voor verschillende omgevingen zoals Eclipse, IntelliJ, Emacs
+of gewoon simpelweg vanaf de command prompt aanroepen. In al die
+omgevingen heb de beschikking over de zogenaamde REPL. REPL betekent:
+'Read Eval Print Loop'. Je kunt Clojure-expressies invoeren (read) die
+ge-compileerd en evalueerd worden. Het resultaat ervan wordt vervolgens
+geprint. Zie ook figuur [[repl]] ([[http://codingndesign.com/blog/?p=239][bron]]). Daarna wordt er geloopt, dat wil
+zeggen, van voren af aan weer begonnen met het lezen van de volgende
+expressie. Op deze manier kan je incrementeel en bottom up je software
+opbouwen.
+
+#+LABEL: repl
+#+CAPTION: REPL. 
+#+ATTR_LaTeX: width=0.75\textwidth
+[[./pictures/clojure-repl.png]] 
+
+** Expressies en notatie
+
+Wij noteren meestal Clojure code en de uitkomst na lezen,
+compileren/evalueren en printen als volgt:
+
+#+BEGIN_SRC clojure
+    expressie ;;=> uitkomst
+#+END_SRC
+
+Het voordeel van deze manier van noteren is dat je deze code, inclusief
+uitkomst kan kopiëren en plakken in een REPL. Alles wat na ;; volgt is
+namelijk commentaar in Clojure. Met ~=>~ bedoelen we: "gaat naar", of:
+"heeft als resultaat". Dit had ook een ander symbool kunnen zijn en is
+niet iets van Clojure zelf. Een voorbeeldje:
+
+#+BEGIN_SRC clojure 
+(+ 1 2 3) ;;=> 6
+#+END_SRC
+
+Het voordeel van deze manier van noteren is dat je deze code, inclusief
+uitkomst kan kopiëren en plakken in een REPL. Alles wat na =;;= volgt is
+namelijk commentaar in Clojure. Met ~=>~ bedoelen we: "gaat naar", of:
+"heeft als resultaat". Dit had ook een ander symbool kunnen zijn en is
+niet iets van Clojure zelf. Een voorbeeldje:
+
+#+BEGIN_SRC clojure
+    (+ 1 2 3) ;;=> 6
+#+END_SRC
+
+Bovenstaande betekent dat de Clojure-expressie =(+ 1 2 3)= de waarde =6=
+oplevert.
+
+Verder valt op dat deze Clojure-expressie begint
+met een openingshaakje, =(=, en eindigt met een sluithaakje, =)= . 
+Dit is in Clojure de notatie voor een
+lijst. Deze Clojure-expressie is dus een lijst, maar tegelijkertijd een
+programma. Op zich is één expressie al een programma, maar een programma
+kan uiteraard ook uit een hele verzameling van expressies bestaan. De
+lijst in het voorbeeld bestaat uit 4 elementen. Het eerste
+element is =Symbol=, oftewel de naam van iets, in dit geval de functie
+=+.= 
+Deze functie kan een variabel aantal getallen optellen. Het tweede,
+derde en vierde element van de lijst zijn integers. Een andere naam
+voor een Clojure-expressie is form of S-expressie, of kortweg sexpr
+(zie [[http://en.wikipedia.org/wiki/S-expression]]). 
+
+De algemene vorm voor een functie-aanroep in Clojure is als volgt:
+
+#+BEGIN_SRC clojure
+      (f a1 a2 a3 a4 ...)
+#+END_SRC
+
+Op de plaats van f staat de naam van een functie en daarna volgen de
+argumenten. Dit kunnen er nul of meer zijn, afhankelijk van de
+functie. De expressie levert na
+compilatie/evaluatie een waarde op die door de REPL wordt geprint.
+Hier nog wat voorbeelden van functie-aanroepen:
+
+#+BEGIN_SRC clojure
+    (- 3 2) ;;=> 1
+    (min 1 3 -1 4) ;;=> -1
+    (max 1 3 -1 4) ;;=> 4
+    (str "foo" "bar" 1 2 3) ;;=> "foobar123"
+#+END_SRC
+
+De functies =-=, =min= (minimum) en =max= (maximum) spreken voor zich. De
+functie =str= behoeft enige uitleg. Deze functie plakt alle
+string-representaties van argumenten aan elkaar. Een
+string-representatie wordt verkregen door =toString()= aan te roepen
+op het argument. 
+
+Een sexpr hoeft niet per se uit een functie-aanroep te bestaan. Ook
+simpele waarden zijn geldige expressies. Simpele waarden (in figuur
+[[forms]] literals genoemd) evalueren naar zichzelf:
+
+#+BEGIN_SRC clojure 
+    1 ;;=> 1 - Integer
+    "hallo" ;;=> hallo - String
+    2.0 ;;=> 2.0 - Double
+    3/4 ;;=> 3/4  - Ratio
+    true ;;=> true - Boolean
+    :foo ;;> :foo - Keyword
+#+END_SRC
+
+In het commentaar volgt na de =-= van welk type de uitkomst is. Dat is
+niet iets wat de REPL heeft geprint, maar dat hebben we er zelf ter info
+bij gezet.
+
+** Special forms
+Clojure is een simpele taal met een aantal ingebouwde /special
+forms/. De rest van de programmeertaal bouwt voort op deze /special
+forms/. Dit betekent dat veel van de code waar Clojure in geschreven
+is, in Clojure zelf geschreven is en te herleiden valt naar deze
+/special forms/. De special forms zijn:
+- def
+- if
+- do
+- let
+- quote
+- var
+- fn
+- loop / recur
+- try / throw
+- enkele Java-interop primitieven
+
+Enkele van deze special forms zullen we in dit hoofdstuk verder
+behandelen. 
+
+** Doc(umentatie)
+Zojuist hebben we de functie =str= in actie gezien. Om te achterhalen
+hoeveel en welk soort argumenten een functie accepteert en wat de
+functie ermee doet, bestaat de 'functie' =doc= (die je vanaf de REPL kunt
+aanroepen. Om precies te zijn is =doc= geen functie, maar een macro.
+Dit onderscheid is echter nu nog niet van belang.
+
+#+begin_src clojure
+user=> (doc str)
+-------------------------
+clojure.core/str
+([] [x] [x & ys])
+  With no args, returns the empty string. With one arg x, returns
+  x.toString().  (str nil) returns the empty string. With more than
+  one arg, returns the concatenation of the str values of the args.
+nil
+#+end_src
+
+Nog een voorbeeld, maar dan met de functie =+= welke we ook al
+gebruikt hebben:
+
+#+begin_src clojure
+user=> (doc +)
+-------------------------
+clojure.core/+
+([] [x] [x y] [x y & more])
+  Returns the sum of nums. (+) returns 0. Does not auto-promote
+  longs, will throw on overflow. See also: +'
+nil
+#+end_src
+
+Allereerst geeft de documentatie aan dat =+= een functie is,
+gedefinieerd in de namespace =clojure.core=. In deze namespace
+bevinden zich alle basisfuncties die standaard geladen worden.
+Vervolgens wordt er aangegeven dat =+= één, twee
+of een variabel aantal argumenten accepteert. Dit wordt
+achtereenvolgens aangegeven door ~[]~ voor nul argumenten, ~[x]~ voor één
+argument, ~[x y]~ voor twee argumenten en  ~[x y & more]~ voor twee of
+meer argumenten. Zoals verwacht geeft de documentatie aan dat =+= de
+som van zijn argumenten teruggeeft. 
+
+Een onmisbare website bij het ontwikkelen in Clojure is
+[[http://clojuredocs.org]]. Deze website biedt niet alleen
+zoekmogelijkheden, maar ook voorbeelden van het gebruik van functies.
+
+** Verschillen met Java
+
+De meeste functies in Clojure accepteren een variabel aantal argumenten.
+Hetzelfde geldt bijvoorbeeld voor de functie =max=. Eerst volgt een
+aanroep van de vergelijkbare functie in Java en daarna in Clojure.
+
+Java:
+
+#+BEGIN_src java
+int x = Math.max(1,2); // x == 2;      
+#+END_src
+
+Clojure:
+
+#+BEGIN_SRC clojure
+(def x (max 1 2 -1 -3 5)) ;;=> 5
+#+END_SRC
+
+
+
+Enkele verschillen die we tussen Java en Clojure zien in bovenstaande fragmenten:
+
+-  Geen verplichte komma's tussen argumenten. Wel toegestaan, maar
+   worden genegeerd. We hadden dus ook mogen schrijven: 
+   #+begin_src clojure
+   (def x (max 1, 2, -1, -3, 5))
+   #+end_src 
+
+-  Haakjes staan om de hele functie-aanroep in plaats van om de
+   argumenten. In plaats van 
+   #+begin_src java
+   f(a1,a2)
+   #+end_src 
+   schrijven we dus 
+   #+begin_src clojure
+   (f a1 a2) 
+   ;; of
+   (f a1, a2)
+   #+end_src
+
+-  Een Clojure-functie accepteert wanneer zinvol een variabel aantal
+   argumenten
+
+** Def
+-  Met =def= kun je een zogenaamde =Var= definiëren
+
+-  Een =Var= is een mutable storage location, heeft een naam, is onderdeel
+   van een namespace en verwijst naar een waarde
+
+-  Een waarde kan van alles zijn: een getal, een string, een hashmap,
+   een functie of macro, etc
+
+-  Programma's/expressies worden genoteerd met de lijst-notatie
+
+-  Vandaar: =(def naam waarde)= ipv bijvoorbeeld =naam = waarde=
+
+** Fn
+Met de special form =fn= kun je een functie aanmaken:
+#+begin_src clojure
+(fn [x] (+ 1 x))
+#+end_src
+
+Bovenstaande functie accepteert één argument =x= en levert =x + 1=
+als resultaat op. Als we deze functie willen aanroepen, zullen we
+deze op functiepositie moeten zetten en een argument mee moeten geven:
+
+#+begin_src clojure
+((fn [x] (+ 1 x)) 1) ;;=> 2
+#+end_src
+
+In bovenstaande expressie wordt er een (anonieme, want zonder naam)
+functie gedefinieerd, welke meteen wordt aangeroepen met =1=. De
+functie geeft het antwoord =2= terug. Natuurlijk willen we ook
+functies kunnen opslaan onder een naam. Hiervoor gebruiken we weer
+=def=:
+
+#+begin_src clojure
+(def my-increment (fn [x] (+ 1 x)))
+(my-increment 1) ;;=> 2
+#+end_src
+
+Als afkorting voor het pattern =(def <naam> (fn ...))= kun je =defn=
+(define function) gebruiken. Dit is geen /special form/, maar is
+gebaseerd op /def/. Onder water wordt er dus gewoon hetzelfde gedaan
+als in bovenstaand voorbeeld.
+
+#+begin_src clojure
+(defn my-increment [x] (+ 1 x))
+(my-increment 1) ;;=> 2
+#+end_src
+
+De functie die een getal incrementeert bestaat in Clojure trouwens al en heet =inc=.
+
+** Rekenkundige expressies
+
+#+BEGIN_EXAMPLE
+int x = 1 + 2 - 3 * 2 / 6;
+#+END_EXAMPLE
+
+Bedenk wat de uitkomst is van bovenstaande rekenkundige expressie in
+Java. Het antwoord is 2. Waarom? Je moet bij deze notatie iets weten
+over operator precedence (zie [[http://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html][deze link]]). Deze notatie heet
+infix-notatie, omdat de operatoren (de bewerkingen zoals + en - tussen
+de operanden (de getallen) in staan. In Clojure wordt alles genoteerd
+in Poolse of prefix-notatie. Dezelfde rekenkundige expressie als
+hierboven zou je als volgt moeten noteren:
+
+#+BEGIN_SRC clojure
+(def x (- (+ 1 2) (/ (* 3 2) 6)))
+#+END_SRC
+
+Omdat =-= een functie is worden de argumenten eerst ge-evalueerd, voordat
+de functie-aanroep wordt ge-evalueerd. Stap voor stap zal de evaluatie
+als volgt verlopen:
+
+#+BEGIN_SRC clojure
+(def x (- 3 (/ (* 3 2) 6))) ;; (+ 1 2) vervangen door 3
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(def x (- 3 (/ 6 6))) ;; (* 3 2) vervangen door 6
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(def x (- 3 1)) ;; (/ 6 6) vervangen door 1
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(def x 2) ;; (-3 1) vervangen door 2, x krijgt nu de waarde 2 toegewezen
+#+END_SRC
+
+Rekenkundige functies in Clojure kunnen omgaan met een variabel
+aantal argumenten. Enkele voorbeelden:
+
+#+begin_src clojure
+user=> (+ 1 2 3)
+6
+user=> (+ 1 2 3 4)
+10
+user=> (- 10 2)
+8
+user=> (- 10 2 1)
+7
+user=> (* 10 3)
+30
+user=> (* 10 2 3)
+60
+user=> (/ 64 2)
+32
+user=> (/ 64 2 2)
+16
+user=> (/ 64 2 2 2 2 2)
+2
+#+end_src
+
+Sommige (rekenkundige) functies zijn niet in Clojure geprogrammeerd omdat Java al
+een vergelijkbare methode bevat. Bijvoorbeeld voor het berekenen van machten:
+
+#+begin_src clojure
+user=> (* 2 2 2)
+8
+user=> (Math/pow 2 3)
+8.0
+#+end_src
+
+Ook is een reden waarom een functie soms niet in Clojure zit dat het
+redelijk simpel zelf geprogrammeerd kan worden:
+
+#+begin_src clojure
+user=> (repeat 3 2)
+(2 2 2)
+user=> (reduce * (repeat 3 2))
+8
+user=> (defn int-pow [n p] (reduce * (repeat p n)))
+#'user/int-pow
+user=> (int-pow 2 3)
+8
+user=> (int-pow 2 4)
+16
+#+end_src
+
+Wat =reduce= precies doet bewaren we voor later in het gedeelte over
+functioneel programmeren.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 1.*
+#+end
+Schrijf voor jezelf de stapsgewijze evaluatie van onderstaande
+rekenkundige expressie uit:
+#+begin_src clojure
+(/ (+ 1 2 (* 2 3)) (- 10 7 (/ 4 2)) 3)
+#+end_src
+--------------------------------
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 2.*
+#+end
+De goniometrische sinus-functie is niet in Clojure ingebouwd, maar kan
+via Java-interop worden aangeroepen. Bereken de waarde van
+\(sinus(\pi)\). Hint: de (benaderde) waarde van \(\pi\) kan je in
+Clojure verkrijgen als volgt:
+#+begin_src clojure
+user=> Math/PI
+3.141592653589793
+#+end_src 
+Let op: er staan geen haakjes om de expressie. Het gaat hier immers
+niet om een functieaanroep.
+
+** Conditionele expressies
+
+In Clojure heb je zoals in vrijwel alle programmeertalen een
+=if-then-else= constructie. Deze werkt als volgt:
+
+#+BEGIN_SRC clojure
+user=> (if (= 1 2) :waar :niet-waar)
+:niet-waar
+user=> (if (= 1 1) :waar :niet-waar)
+:waar
+user=> (if (= 1 2) :waar)
+nil
+user=> (if (= 1 1) :waar)
+:waar
+#+END_SRC
+
+In Clojure verwacht =if= minimaal twee expressies. De eerste expressie
+stelt een conditie voor: iets wat logisch =true= of =false= oplevert.
+Indien de conditie logisch =true= oplevert, wordt de waarde van de
+tweede expressie opgelevert, anders de waarde van de derde expressie.
+Als de conditie logisch =false= is en er geen derde expressie
+opgegeven wordt, geeft =if= als waarde =nil= terug. Belangrijk om te
+weten is dat in Clojure wordt alles wat niet =nil= of =false= is als
+logisch =true= wordt gezien:
+
+#+begin_src clojure
+(if true "true is logisch waar" "true is logisch niet waar")
+;;=> "true is logisch waar"
+
+(if "een string" "een string is logisch waar" "een string is logisch niet waar")
+;;=> "een string is logisch waar"
+
+(if nil "nil is logisch waar" "nil is logisch niet waar")
+;;=> "nil is logisch niet waar"
+
+(if false "false is logisch waar" "false is logisch niet waar")
+;;=> "false is logisch niet waar"
+#+end_src clojure
+
+
+Enkele voorbeelden.
+
+#+BEGIN_SRC clojure
+(if (> 1 2) "foo" "bar") 
+;;=> "bar"
+
+(if (< 1 2) "foo" "bar") ;;=> "foo" 
+#+END_SRC
+
+We zien in bovenstaand voorbeeld dat =<= en =>= gewoon functies zijn
+die aangeroepen worden zoals elke andere functie in Clojure. 
+
+Een geneste if is natuurlijk ook mogelijk in Clojure. Vaak kunnen
+deze if-expressies versimpeld worden.
+
+#+begin_src clojure
+(if (= 1 1)
+  (if (> 5 4)
+    "foo"
+    "bar")
+  "bar") 
+;;=> "foo"
+#+end_src
+
+Bovenstaande expressie zegt: als de conditie ~(= 1 1)~ waar is EN de
+conditie =(> 5 4)= is waar, geef dan ="foo"= als waarde terug en in
+alle andere gevallen ="bar"=. Dit kan versimpeld worden (zoals in
+elke andere taal) tot:
+
+#+begin_src clojure
+(if (and (= 1 1) (> 5 4)) 
+    "foo" 
+    "bar")
+;;=> "foo"
+#+end_src
+
+Een ander voorbeeld:
+
+#+begin_src clojure
+(if (= 1 2)
+  "foo"
+  (if (> 4 5)
+    "bar"
+    "baz")) 
+;;=> "baz"
+#+end_src
+
+Bovenstaande expressie zegt: als ~(= 1 2)~ geef dan ="foo"= terug, zo
+niet, als =(> 4 5)= geef dan ="bar"= terug, anders ="baz"=. In plaats
+van deze geneste =if= kan =cond= gebruikt worden:
+
+#+begin_src clojure
+(cond (= 1 2) "foo"
+      (> 4 5) "bar"
+      :else "baz")
+#+end_src
+
+De =cond=-constructie is leesbaarder dan een geneste if en kan omgaan
+met een variabel aantal condities. Omdat alles behalve =false= en
+=nil= in Clojure als logisch waar wordt gezien, dus ook het keyword
+=:else=, levert de =cond=-expressie als defaultwaarde ="baz"= op. Het
+keyword =:else= kan vervangen worden door iets anders wat logisch
+waar is. De meestgebruikte stijl is echter om het zo te doen
+ \cite{styleguide}. 
+
+#+BEGIN: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 3.*
+#+END
+Hoe kan de volgende expressie vereenvoudigd worden? Test je
+antwoord met verschillende waarden voor =x=.
+#+begin_src clojure
+(if (not (nil? x)) "foo" "bar")
+#+end_src 
+--------------------------------
+#+BEGIN: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 4.*
+#+END
+Vereenvoudig de geneste =if= naar een =cond=-expressie. Test je
+antwoord met verschilende waarden voor =x=, =y=, =p= en =q=.
+#+begin_src clojure
+(if (= x y)
+  (+ 1 2 3)
+  (if (> p q)
+    (/ 1 3)
+    (/ 1 4)))
+#+end_src
+
+** Do
+
+#+BEGIN_SRC clojure
+(do 
+  (println "hello")
+  (println "how are you?")
+  10)
+#+END_SRC
+
+Een do-expressie kan bestaan uit een aantal deelexpressies. Meestal
+heb je een do nodig als je side effects op wil laten treden, zoals in
+bovenstaand voorbeeld en daarna een waarde terug wil geven. Als we
+bovenstaande expressie in een REPL toekennen aan een =Var=, zien we
+het volgende:
+
+#+BEGIN_src clojure -n
+user=> (def n (do 
+  #_=>          (println "hello")
+  #_=>          (println "how are you?")
+  #_=>          10))
+hello
+how are you?
+#'user/n
+user=> n
+10
+#+END_src 
+
+Op de eerste vier regels wordt de do-expressie toegekend aan de =Var=
+=n=. Op regel 5 en 6 zien we dat ="hello"= en ="how are you"= worden
+geprint. Daarna volgt de uitdrukking =#'user/n=. Dit betekent dat er
+een =Var n= definieert is in de namespace =user=. Op regel 8 vragen
+we de waarde van =n= op en dit is zoals verwacht =10=. Dit keer wordt
+de tekst uit de =do=-expressie niet geprint, omdat de expressie
+slechts eenmaal wordt ge-evalueerd en alleen het resultaat wordt
+opgeslagen.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 5.*
+#+end
+Definieer een do-expressie welke eerst ="hallo"= print en de waarde
+=42= teruggeeft.
+--------------------------------
+Sommige constructies in Clojure hebben een zogenaamde /implicit do/.
+Een voorbeeld hiervan is =when=:
+
+#+begin_src clojure
+user=> (when true (println "Yes, it's true!")
+  #_=>            10)
+Yes, it's true!
+10
+#+end_src
+
+In principe staat er om alles wat na de conditie volgt een =do=, maar
+deze mag je weglaten. Vandaar dat dit een impliciete do heet.
+Eigenlijk staat er dus:
+
+#+begin_src clojure
+user=> (when true (do (println "Yes, it's true!")
+  #_=>                10))
+Yes, it's true!
+10
+#+end_src
+
+=When= is een variant op =if= en heeft geen =else=-tak. 
+
+#+begin: advanced
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Verdieping 1.*
+#+end
+=When= is eigenlijk een macro, maar macro's behandelen we pas in
+hoofdstuk [[Macro's]]. Macro's zijn bedoeld om het schrijven van
+Clojure-code beknopt te kunnen houden en om nieuwe taalfeatures te
+kunnen introduceren. Een macroexpansie laat zien waar een
+macroaanroep door de Reader naar toe wordt vertaald:
+#+begin_src clojure
+user=> (macroexpand '(when true (println "Yes, it's true") 10))
+(if true (do (println "Yes, it's true") 10))
+#+end_src 
+Hier zien we dat een aanroep van =when= onder water wordt vertaald naar
+een aanroep van =if= met daarin een =do=.
+
+** Let
+
+Clojure bevat een zogenaamde let-form, dat zich het makkelijkste laat
+illustreren aan de hand van een voorbeeld.
+
+#+BEGIN_SRC clojure
+(let [x 10 
+      y 20 
+      z (+ x y)]
+  (list x y z))
+;;=> '(10 20 30)
+#+END_SRC
+
+Een let-expressie begint met het woord let, gevolgd door let-bindings
+omgeven door vierkante haken, gevolgd door een of meerdere expressies
+waarin de namen uit de let-bindings gebruikt kunnen worden. Op de
+plaats van de namen worden dan de bijbehorende waarden uit de
+let-bindings ingevuld.
+
+Bovenstaand voorbeeld komt dus neer op
+
+#+BEGIN_SRC clojure
+(list 10 20 (+ 10 20))
+;;=> (10 20 30)
+#+END_SRC
+
+De namen die aan waarden gegeven worden in de let-bindings worden in
+Clojure ook wel =locals= genoemd. =Locals= zijn synoniemen voor
+waarden. Het zijn dus geen variabelen. Ze zijn niet te wijzigen,
+oftewel immutable. Wel kunnen locals overschaduwd worden doordat
+verderop dezelfde naam nog eens gebruikt wordt:
+
+#+BEGIN_SRC clojure
+(let [x 10 
+      y 20 
+      z (+ x y)
+      x z]
+  (list x y z))
+;;=> (30 20 30)
+#+END_SRC
+
+De naam =x= in de expressie krijgt nu de waarde van =z=, dus =30=,
+maar de waarde van =z= is gebaseerd op de eerste waarde van =x=. Je
+zou bijna denken dat de waarde van =x= in deze let-expressie
+gewijzigd is, maar in werkelijkheid is het voorbeeld gelijk aan: 
+
+#+BEGIN_SRC clojure -n
+(let [x 10 
+      y 20 
+      z (+ x y)]
+  (let [x z]
+    (list x y z)))
+;;=> (30 20 30)
+#+END_SRC
+
+De expressie op regel 4 is zelf weer een nieuwe let-expressie met een
+eigen scope, waarin de naam =x= gebruikt wordt om een waarde uit een
+hogere scope, =z=, toe te kennen. De =local= =x= uit de hogere scope
+wordt dus niet verandert, maar wordt overschaduwd door een nieuwe
+local met dezelfde naam. Je kunt het voorbeeld vergelijken met het
+volgende stukje Javascript:
+
+#+begin_src javascript
+var x = 10;
+console.log(x);
+(function() {
+    var x = 20;
+    console.log(x);
+}())
+console.log(x);
+#+end_src
+
+Resultaat:
+#+begin_src console
+10
+20
+10
+#+end_src
+
+In het stukje Javascript wordt een variabele =x= gedefinieerd met de
+waarde 10 en deze waarde wordt geprint naar de console. Daarna wordt
+er een anonieme functie gemaakt waarin een lokale variable met
+de naam =x= wordt gedefinieerd. Deze waarde wordt ook geprint. De
+anonieme functie wordt meteen aangeroepen. Daarna, als de scope van
+de anonieme functie verlaten is, wordt =x= nogmaals geprint. Hier
+gaat het weer om de variabele =x= met de waarde =10=. Het verschil
+met Javascript is dat Clojure locals niet gewijzigd kunnen worden,
+maar Javascript-variabelen wel.
+
+Een anti-voorbeeld is het volgende stukje Clojure:
+
+#+begin_src clojure -n -r
+user=> (do (def x 10)       
+  #_=>     (println x)
+  #_=>     (def x 20)
+  #_=>     (println x)
+  #_=>     (do (def x 30)
+  #_=>       (println x))
+  #_=>     (println x))
+10
+20
+30
+30
+nil
+#+end_src
+
+Dit is misbruik maken van =Vars= welke uitsluitend bedoeld zijn om
+globale waarden op te slaan bij een naam, zoals functies en
+configuratie-parameters. In bovenstaand voorbeeld is =x= geen lokale
+waarde, maar een globale wijzigbare variabele. Op regel 5 begint een
+nieuwe do-expressie waarin een 'variabele' =x= op 30 wordt gezet. Op
+regel 7 zou je verwachten dat de waarde =20= wordt geprint. Omdat =x=
+echter een globale waarde is, is deze op regel 5 aangepast.
+
+#+begin: tip
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Tip 1.*
+#+end 
+Definieer =Vars= met =def= alleen op top-level en niet binnen de scope
+van een andere expressie.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 6.*
+#+end
+Vul de onderstaande code aan, zodat de uitkomst klopt.
+#+begin_src clojure
+user=> (let [x _
+  #_=>       y _
+  #_=>       _ 20]
+  #_=>   (+ x y z))
+45
+#+end_src
+
+** Namespaces
+*** Namespaces gebruiken
+Grotere programma's die gebouwd worden in Clojure worden opgedeeld in
+namespaces. Ook de programmeertaal Clojure zelf is opgedeeld in
+namespaces. De namespace =clojure.core= bevat alle
+basisfunctionaliteit en wordt standaard geladen, maar bijvoorbeeld de
+namespace =clojure.xml= bevat functionaliteit om om te gaan met
+XML en wordt niet standaard geladen.
+
+De onderstaande REPL-sessie laat zien hoe je deze namespaces kan
+laden. Eerst wordt er getoond wat er mis kan gaan als je een functie
+gebruikt uit een namespace die nog niet geladen is. Overigens start
+een REPL meestal op in de namespace =user= waarin nog niks
+gedefinieerd is en je als gebruiker vrij je gang kan gaan. Namespaces
+zijn net als bijna alles in Clojure eersteklas objecten, die je in je
+programma kunt gebruiken. 
+
+#+begin_src clojure
+user=> (clojure.xml/parse "http://http://www.w3schools.com/xml/note.xml")
+ClassNotFoundException clojure.xml  java.net.URLClassLoader$1.run (URLClassLoader.java:202)
+#+end_src
+
+In bovenstaand voorbeeld wordt er geprobeerd om de functie
+=clojure.xml/parse= toe te passen op een url welke verwijst naar een
+XML-document. Het symbol =clojure.xml/parse= noemen we volledig
+gekwalificeerd (in het Engels /fully qualified/) omdat de namespace-prefix voor de
+functienaam staat (gescheiden door een =/=). De functie =parse= is dus een functie in de
+namespace =clojure.xml=. We zien hier een foutmelding, omdat de
+namespace =clojure.xml= nog niet geladen is.
+
+Om de namespace te laden gebruiken we
+=require=:
+
+#+begin_src clojure
+user=> (require 'clojure.xml)
+nil
+user=> (clojure.xml/parse "http://www.w3schools.com/xml/note.xml")
+{:tag :note, :attrs nil, :content [# # # #]}
+#+end_src
+
+Let op het quotje. Dit is om aan te geven dat Clojure het symbol niet
+moet evalueren naar een andere waarde, maar dat het hier letterlijk om
+het symbol gaat. Alles waar in Clojure een quotje voor staat, wordt
+niet ge-evalueerd maar letterlijk genomen. Require kan je gebruiken
+voor alle clojure-files die op het classpath staan. Bij het uitvoeren
+van een Clojure-programma of REPL wordt er altijd een clojure jar-file
+gebruikt en de gehele inhoud van deze jar-file komt op het classpath
+te staan. Bij het uitvoeren van =(require 'clojure.xml)= wordt de file
+=clojure/xml.clj= geladen uit de clojure-jar-file. De source daarvan
+is te zien als je het clojure jar-bestand uitpakt en is ook te zien
+via deze [[https://github.com/clojure/clojure/blob/master/src/clj/clojure/xml.clj][link]] op Github.
+
+Bij veelgebruikte functies willen we niet altijd een volledig
+gekwalificeerd symbol hoeven te gebruiken omdat dit veel schrijfwerk
+kost. We kunnen dit als volgt oplossen:
+
+#+begin_src clojure
+user=> (require '[clojure.xml :as xml])
+nil
+user=> (xml/parse "http://www.w3schools.com/xml/note.xml")
+{:tag :note, :attrs nil, :content [# # # #]}
+#+end_src
+
+Door het gebruik van =:as= definieert =require= voor ons een alias en
+mogen we =clojure.xml= afkorten als =xml=. 
+
+Als we helemaal de prefix weg willen laten, kunnen we nog gebruik
+maken van de optie =:refer=:
+
+#+begin_src clojure
+user=> (require '[clojure.xml :refer [parse]])
+nil
+user=> (parse "http://www.w3schools.com/xml/note.xml")
+{:tag :note, :attrs nil, :content [# # # #]}
+#+end_src
+
+Tenslotte bestaat er in Clojure nog de mogelijkheid om alle =Vars=
+uit een andere namespace te 'referren'. Dit gaat met =use=. In de
+volgende kersverse REPL-sessie wordt dit getoond.
+
+#+begin_src clojure
+user=> (use 'clojure.xml)
+nil
+user=> (parse "http://www.w3schools.com/xml/note.xml")
+{:tag :note, :attrs nil, :content [# # # #]}
+#+end_src
+
+Ook is het mogelijk bij =use= om een selectie te maken zodat niet
+alle =Vars= worden 'gereferred':
+#+BEGIN_SRC clojure
+(use '[clojure.xml :only [parse]])
+#+END_SRC
+
+Dit komt dus op hetzelfde neer als 
+
+#+begin_src clojure
+(require '[clojure.xml :refer [parse]])
+#+end_src
+
+Require zal een Clojure-file slechts eenmaal laden, ook als require
+meerderen keren wordt uitgevoerd. 
+
+Het is aan te bevelen om zo weinig mogelijk gebruik te maken
+van =use= en zoveel mogelijk met =require= te werken en alleen
+individuele functies te 'referren', om namespacevervuiling tegen te
+gaan. Gebruik =use= hoogstens alleen in combinatie met =only=. In
+principe kun je alleen =require= toe en heb je =use= niet nodig.
+
+#+begin: tip
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Tip 2.*
+#+end
+Gebruik  =require= in plaats van =use=. 
+
+Het is ook mogelijk om een Clojure-files te laden buiten het
+classpath, met het meer low-level =load-file=:
+
+#+begin_src clojure
+user=> (load-file "/tmp/script.clj")
+#+end_src 
+
+In principe is dit niet aan te raden in productiecode, behalve wanneer
+je aan het experimenteren bent in de REPL.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 7.*
+#+end
+Start een nieuwe REPL op en zorg er met behulp van =require= voor dat
+de je de functies =difference= en =union= uit de namespace
+=clojure.set= kan gebruiken zoals aangegeven. Gebruik een combinatie van
+=:as= en =:refer=.
+
+#+begin_src clojure
+user=> (require '[ <aanvullen> ])
+user=> (set/difference #{1 2 3} #{3 4 5})
+#{1 2}
+user=> (union #{1 2 3} #{3 4 5})
+#{1 2 3 4 5}
+#+end_src
+
+*** Namespaces definiëren
+Namespaces en hun inhoud worden gedefinieerd in een file met dezelfde
+naam als de namespace. De namespace-declaratie zet je bovenaan de file
+neer, als volgt:
+
+#+BEGIN_SRC clojure
+(ns mijnproject.mijnnamespace)
+#+END_SRC
+
+en de file sla je dan op onder de naam =mijnnamespace.clj= in een
+directory =mijnproject=. Dit is vergelijkbaar met de structuur van
+Java-packages, met het verschil dat het laatste deel van de
+namespacenaam overeenkomt met de bestandsnaam, zonder de extensie
+=.clj=.
+
+Een namespace welke andere namespaces als dependency heeft, moet dat
+vermelden in de namespace-definitie. Dit gaat precies zoals in het
+gedeelte [[Namespaces gebruiken]], met een kleine aanpassing:
+
+#+BEGIN_SRC clojure
+(ns myproject.ns1
+  (:require [clojure.xml :as xml :refer [parse]]))
+#+END_SRC
+
+Het require-statement is nu onderdeel geworden van de ns-declaratie en
+begint nu met een dubbele punt, =:=. Ook hoeven er nu geen quotjes
+gebruikt te worden, omdat alles wat binnen =ns= valt letterlijk wordt
+opgevat. Dit heeft te maken met het feit dat =ns= geen functie, maar
+een macro is en macro's krijgen hun argumenten ongevalueerd binnen. 
+
+Alles wat onder de ns-declaratie wordt gedefinieerd zal deel uitmaken
+van de namespace:
+
+#+BEGIN_SRC clojure
+(ns myproject.ns1
+  (:require [clojure.xml :as xml :refer [parse]]))
+
+(def parsed-xml (parse "http://www.w3schools.com/xml/note.xml"))
+#+END_SRC
+
+De =Var= =parsed-xml= hoort nu bij de namespace =mijnproject.mijnnamespace=.
+
+Mochten we nu in een andere namespace gebruik willen maken van
+=parsed-xml=, dan gaat dat als volgt:
+
+#+begin_src clojure
+(ns myproject.ns2
+  (:require myproject.ns1))
+
+(defn print-xml []
+  (println myproject.ns1/parsed-xml))
+#+end_src
+
+of korter:
+
+#+begin_src clojure
+(ns myproject.ns2
+  (:require [myproject.ns1 :as ns1]))
+
+(defn print-xml []
+  (println ns1/parsed-xml))
+#+end_src
+
+Als laatste laten we zien hoe in je een ns-declaratie een Java-class
+kan importeren:
+
+#+begin_src clojure
+(ns myproject.ns3
+  (:import java.io.File))
+
+(def my-file (File. "/tmp/foo.clj"))
+#+end_src
+
+Voor meer informatie over namespaces bekijk de documentatie (vanaf de
+REPL =(doc ns)=) of bezoek [[http://clojure.org/namespaces]].
+
+** Tot slot
+Als afsluiting van dit hoofdstuk nog een oefening.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 8.*
+#+end 
+Zoek op [[http://clojure.org/special_forms]] op welke special forms er in
+dit hoofdstuk niet zijn behandeld en wat je er globaal aan hebt.
+
+* Functies
+** Een functie definiëren
+In een functionele programmeertaal vormen functies de belangrijkste
+bouwblokken. We willen natuurlijk zelf functies kunnen definiëren. In
+het vorige hoofdstuk zagen we dat de bouwblokken hiervoor zijn: =fn=,
+=def=, of het afgeleide =defn=. Een uitgebreider voorbeeld van het
+gebruik van =defn=:
+
+#+BEGIN_SRC clojure
+(defn surround-word 
+  "returns a word surrounded with the affix" 
+  [affix word]
+  (str affix word affix))
+#+END_SRC
+
+Hier wordt een functie gedefinieerd met de naam =surround-word=.
+Optioneel kun je een documentatiestring meegegeven, welke vertelt hoe
+je de functie kan aanroepen. Deze documentatie kun je dan later met
+=doc= weer opvragen. Parameters van een functie worden omgeven door
+vierkante haken, in het voorbeeld =affix= en =word=. Daarna volgt de
+body van de functie. Dat kunnen nul, één of meerdere expressies zijn
+(=defn= heeft een implicit =do=). In ons voorbeeld hebben we maar één
+expressie: een aanroep van de functie =str= welke, zoals eerder vermeld,
+stringrepresentaties van argumenten aan elkaar plakt. Roepen we deze
+functie aan met een paar voorbeeldwaarden dan zien we het volgende:
+
+#+BEGIN_SRC clojure
+(surround-word "123" "foo") ;;=> "123foo123"
+#+END_SRC
+
+** Anonieme functies
+Het is ook mogelijk om een anonieme functie te definiëren. Dat wil
+zeggen, een functie zonder naam. Dit gaat met de special form =fn=:
+
+#+BEGIN_SRC clojure
+(fn [x] (+ x 2))
+#+END_SRC
+
+Je gebruikt anonieme functies vaak in zogenaamde hogere orde functies.
+Hogere orde functies zijn functies die een functie als argument
+hebben. Een voorbeeld hiervan is =map=. Deze functie neemt een functie
+als eerste argument en een sequence (een lijstview op een bepaalde
+collectie). De functie die als argument is meegegeven wordt dan
+toegepast op elk element van de sequence en de resultaten worden
+samengevoegd tot een nieuwe sequence.
+
+#+BEGIN_SRC clojure
+(map (fn [x] (+ x 2)) [1 2 3]) ;;=> (3 4 5)
+#+END_SRC
+
+Clojure ondersteunt ook een kortere notatie voor anonieme functies:
+
+#+BEGIN_SRC clojure
+(map #(+ % 2) [1 2 3]) ;;=> (3 4 5)
+#+END_SRC
+
+De notatie is dus in plaats van =(fn [x] ...)= =#(...)= waarbij het
+procentteken het eerste argument voorstelt. In het geval dat de anonieme
+functie meerdere argumenten nodig heeft kun je de procenttekens
+nummeren:
+
+#+BEGIN_SRC clojure
+(#(+ %1 %2) 10 20) ;;=> 30
+#+END_SRC
+
+In bovenstaand voorbeeld wordt er een anonieme functie gemaakt welke
+zijn eerste en tweede argument optelt. Deze anonieme functie wordt
+meteen aangeroepen, omdat deze in functiepositie binnen een andere
+lijst staat, met de argumenten 10 en 20. Het antwoord is zoals
+verwacht 30.
+Het voorbeeld is dus hetzelfde als 
+
+#+begin_src clojure
+(let [my-fun #(+ %1 %2)]
+  (my-fun 10 20)) ;;=> 30
+#+end_src
+
+alleen nu hebben we de functie een lokale naam gegeven in de scope
+van de let-expressie.
+
+** Aantal argumenten
+In Clojure is het mogelijk om binnen een functie-declaratie meerdere
+functie-definities te geven die aangeroepen kunnen worden op basis van
+het aantal argumenten. Dat zien we in het onderstaande voorbeeld.
+
+#+BEGIN_SRC clojure
+(defn myfun 
+  ([x] ;; 1 parameter
+    (+ x 2))
+  ([x y] ;; 2 parameters
+    (+ x y)))
+
+(myfun 3) ;;=> aanroep met 1 parameter, 5
+(myfun 3 4) ;;=> aanroep met 2 parameters, 7
+#+END_SRC
+
+Bovenstaande functie zal in het geval van één argument het getal 2 erbij
+optellen. In het geval van twee argumenten zal de functie de beide
+getallen optellen.
+
+Zoals eerder gezegd is het vaak beter om een functie te schrijven die om
+kan gaan met een variabel aantal argumenten en dat doe je als volgt.
+
+#+BEGIN_SRC clojure
+(defn myfun [& args] 
+  (println "Eerste argument: " (first args))
+  (println "De rest van de argumenten: " (rest args))
+  (println "Alle argumenten: " args))
+#+end_src
+
+De aanroep en het antwoord van de functie zal er nu als volgt uitzien:
+#+begin_src clojure
+user=> (myfun 1 2 3)
+Eerste argument:  1
+De rest van de argumenten:  (2 3)
+Alle argumenten:  (1 2 3)
+nil
+#+END_SRC
+
+In bovenstaand voorbeeld wordt een ampersand =&= gebruikt en daarna de
+naam =args=. De ampersand geeft aan dat er een variabel aantal
+argumenten gebruikt kan worden. Deze argumenten worden dan verzameld
+in een sequence met de naam =args=. Deze sequence kan je dan weer
+gebruiken in de body van de functie. Van een sequence kan je het
+eerste element opvragen met behulp van de functie =first=.
+Bijvoorbeeld =(first '(1 2 3)) ;;=> 1=. Ook kan je alles behalve het
+eerste element opvragen met de functie =rest=. Dat levert dan weer een
+lijst op. Bijvoorbeeld =(rest '(1 2 3)) ;;=> (2 3)=. In bovenstaand
+voorbeeld print functie =myfun= dus eerst het eerste argument, daarna
+de rest van de argumenten en vervolgens nog eens alle argumenten. De
+returnwaarde van de functie is =nil=, omdat de functie =println= als
+returnwaarde altijd =nil= heeft.
+
+Ook een combinatie van een minimum aantal vereiste argumenten en daarna
+een variabel aantal argumenten is mogelijk:
+
+#+BEGIN_SRC clojure
+(defn myfun [x y & others] 
+  (println "x: " x)
+  (println "y: " y)
+  (println "others: " others))
+
+user=> (myfun 1 2 3 4 5)
+x:  1
+y:  2
+others:  (3 4 5)
+nil
+#+END_SRC
+
+Roepen we bovenstaande functie aan met minder dan twee argumenten, dan
+zullen we een foutmelding krijgen:
+
+#+BEGIN_SRC clojure
+user=> (myfun 1)
+ArityException Wrong number of args (1) passed to: user$myfun ...
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 9.*
+#+end
+Schrijf een functie welke minstens 3 verplichte argumenten (getallen)
+heeft en optioneel nog meer argumenten. Print de optionele argumenten
+en geef de som van de eerste drie argumenten terug als resultaat.
+
+** Destructuring
+
+Functies ondersteunen een bepaalde techniek genaamd /destructuring/ om
+gevens uit elkaar te plukken die als argument aangeboden worden.
+Hieronder een voorbeeld van een functie die als argument een sequence van
+twee elementen verwacht en die twee elementen op het scherm afdrukt.
+
+#+BEGIN_SRC clojure
+(defn myfun [seq-of-two]
+  (let [fst (first seq-of-two)
+        snd (second seq-of-two)]
+    (println "Eerste: " fst)
+    (println "Tweede: " snd)))
+
+user=> (myfun [1 2])
+Eerste:  1
+Tweede:  2
+nil
+#+END_SRC
+
+Door middel van destructuring kunnen we de lijst van twee elementen
+al in de parameterlijst uit elkaar halen:
+
+#+BEGIN_SRC clojure
+(defn myfun [[fst snd]]
+  (println "Eerste: " fst)
+  (println "Tweede: " snd))
+#+END_SRC
+
+Mocht je toch het geheel nodig hebben, naast de onderdelen kun je
+nog =:as= gebruiken:
+
+#+BEGIN_SRC clojure
+(defn myfun [[fst snd :as seq-of-two]]
+  (println "Eerste: " fst)
+  (println "Tweede: " snd)
+  (println "Geheel: " seq-of-two))
+
+user=> (myfun [1 2])
+Eerste:  1
+Tweede:  2
+Geheel:  [1 2]
+nil
+#+END_SRC
+
+De argumentenlijst vormt dus een beschrijving van de structuur die je
+als argument verwacht en wordt overeenkomstig toegekend aan de namen
+in de structuur.
+
+Bij destructuring is ook weer de =&=-notatie mogelijk voor een
+verplicht aantal en optioneel variabel aantal onderdelen:
+
+#+BEGIN_SRC clojure
+(defn myfun [[x y & rst]]
+  (println x y rst))
+
+user=> (myfun [1 2 3 4 5])
+1 2 (3 4 5)
+nil
+#+END_SRC
+
+Hier zien we dat =x= overeenkomt met =1=, =y= met =2= en =rst= met de rest van de
+sequence. De sequence die we hier meegaven is een vector, een van de belangrijkste
+datastructuren in Clojure. Hier zal in het volgende hoofdstuk dieper op
+worden ingegaan. 
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 10.*
+#+end 
+Wat is het verschil tussen
+
+#+begin_src clojure
+(defn myfun [[x y & rst]]
+  (println x y rst))
+#+end_src
+
+en 
+
+#+begin_src clojure
+(defn myfun [[x y] & rst]
+  (println x y rst))
+#+end_src
+?
+--------------------------------
+Destructuring is ook toepassen in een
+let-expressie:
+
+#+BEGIN_SRC clojure
+user=> (let [[x y & rst] [1 2 3 4 5]]
+  #_=>   (println x y rst))
+1 2 (3 4 5)
+nil
+#+END_SRC
+
+Er zijn nog ge-avanceerdere manieren van destructuring mogelijk die we
+hier niet zullen bespreken, maar te vinden zijn op
+[[http://clojure.org/special_forms]].
+
+** Recursie
+
+Een belangrijk begrip in Clojure met betrekking tot functies is
+recursie. Onderstaande functie is recursief en print de getallen =0=
+tot =n=. Het getal =n= zelf wordt als resultaat opgeleverd.
+
+#+BEGIN_SRC clojure
+(defn print-nums
+  ([n] (print-nums 0 n))
+  ([c n] (if (= c n) n
+           (do
+             (println c)
+             (recur (inc c) n)))))
+      
+user=> (print-nums 10)
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10 ;; return value
+#+END_SRC
+
+Deze functie heeft twee definities. De eerste definitie wordt gebruikt
+bij aanroep met één argument. In die definitie wordt de functie
+print-nums zelf weer aangeroepen, maar dan met twee argumenten. Bij
+aanroep met twee argumenten wordt de tweede definitie gebruikt. Daarin
+wordt met een =if= gekeken of =c= gelijk is aan =n=. Zo ja, dan wordt =n=
+teruggegeven en zijn we klaar. Zo nee, dan volgt er een =do=. Daarin wordt
+het getal =c= geprint. Op de laatste regel van de =do= vindt de recursieslag
+plaats: de functie wordt nogmaals aangeroepen, maar nu met het getal =c=
+eentje opgehoogd. De functie =inc= van (increment) verwacht namelijk een
+getal en levert dat getal + 1 op. Het argument =n= blijft gelijk. Een
+recursieve aanroep in Clojure doe je met =recur=. Op deze manier voorkom
+je dat er een stackoverflow plaats kan vinden. Dit heeft te maken met
+het feit dat de JVM geen tail-recursie-optimalisatie kent.
+
+Hoe ziet nu de functie-aanroep er van begin tot eind uit?
+
+#+BEGIN_SRC clojure
+(print-nums 10)
+#+END_SRC
+
+In bovenstaande wordt er één argument gebruikt, dus wordt de
+functie-definitie met één argument aangeroepen. Dat resulteert in het
+volgende aanroep:
+
+#+BEGIN_SRC clojure
+(print-nums 0 10)
+#+END_SRC
+
+Nu wordt de functie-definitie met twee argumenten gebruikt. Dit
+resulteert in de volgende expressie:
+
+#+BEGIN_SRC clojure
+(if (= 0 10) 10
+  (do
+    (println 0)
+    (recur (inc 0) 10)))
+#+END_SRC
+
+Aangezien 0 niet gelijk is aan 10 wordt de do-expressie teruggegeven.
+Eerst wordt 0 geprint. In de laatste expressie roepen we de
+functie-definitie met twee argumenten opnieuw aan, maar nu met de
+getallen 1 (=(inc 0)= = 1) en 10. Dit gaat door totdat =c= gelijk zal zijn
+aan =10=. Dan wordt er niet meer geprint, maar wordt het getal 10
+teruggegeven.
+
+# Overigens hoef je niet per se een functie te schrijven om een recursieve
+# loop te maken. Dat kan ook met de loop-constructie. De loop werkt net
+# zoals let met het verschil dat je daarin recur ook kan gebruiken.
+# Voorbeeld:
+
+# #+BEGIN_SRC clojure
+#     (loop [c 0, n 10]
+#       (if (= c n) n
+#           (do
+#             (print c)
+#             (recur (inc c) n))))
+#     =>
+#     10
+#     0123456789
+# #+END_SRC
+
+# Bij de loop moet je net zoals bij let bindings meegeven, maar dit keer
+# zijn het namen en hun beginwaarden. Je kan bij elke recursieslag voor
+# elke naam weer een andere waarde invullen. Dat doen we in bovenstaande
+# loop steeds voor c, maar het getal n houden we steeds gelijk.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 11.*
+#+end
+Schrijf een recursieve functie =tafel= welke de tafel van =n= print.
+Voorbeeld aanroep:
+
+#+begin_src clojure
+user=> (tafel 10)
+1 * 10 = 10
+2 * 10 = 20
+3 * 10 = 30
+4 * 10 = 40
+5 * 10 = 50
+6 * 10 = 60
+7 * 10 = 70
+8 * 10 = 80
+9 * 10 = 90
+10 * 10 = 100
+nil
+#+end_src
+--------------------------------
+Als laatste merken we nog op dat er ook een =loop=-constructie
+bestaat. Deze werkt op dezelfde manier als een recursieve functie:
+
+#+BEGIN_SRC clojure
+user=> (loop [c 0, n 10]
+  #_=>   (if (= c n) n
+  #_=>     (do
+  #_=>       (print c)
+  #_=>         (recur (inc c) n))))
+012345678910
+#+END_SRC
+
+Wij gaan hier verder niet dieper op in en merken als slotopmerking op
+dat een recursieve functie of loop in Clojure meestal te herschrijven
+is in termen van een hogere orde functies. In het gedeelte 
+[[Hogere orde functies]] wordt hier dieper op ingegaan.
+
+** Apply
+Soms verwacht een functie losse argumenten, maar hebben we de argumenten
+alleen in de vorm van een sequence. Bijvoorbeeld in onderstaand voorbeeld:
+
+#+BEGIN_SRC clojure
+(def nums [1 2 3 4])
+(+ nums) ;;=> error
+#+END_SRC
+
+Bovenstaande aanroep van =+= gaat mis omdat de functie =+= meerdere
+afzonderlijke getallen verwacht en niet een sequence van getallen. In zulke
+situaties moet je =apply= gebruiken:
+
+#+BEGIN_SRC clojure
+(apply + nums) ;;=> 10
+#+END_SRC
+
+De expressie =(+ 1 2 3 4)= komt dus op hetzelfde neer als =(apply + [1
+2 3 4])=. Tevens geldt er bij =apply= dat je ook een aantal losse argumenten
+mag meegeven:
+
+#+BEGIN_SRC clojure
+(apply + 1 2 [3 4]) ;;=> 10
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 12.*
+#+end
+Bepaal waarom de volgende code niet werkt en herschrijf met apply.
+#+begin_src clojure
+(max [1 2 3])
+#+end_src
+
+** Predicaatfuncties
+Met predicaatfunctie bedoelen we een functie van één argument welke
+=true= of =false= oplevert. In Clojure bestaan een heleboel
+voorgedefinieerde predicaatfuncties. Alle functies die in Clojure een
+boolean teruggeven, eindigen met een vraagteken; dus ook
+predicaatfuncties. Dit is een conventie, maar geen eis van de
+compiler. Niet alle functies die een boolean teruggeven zijn een
+predicaatfunctie. Voorbeelden van predicaatfuncties en hun gebruik:
+
+#+begin_src clojure
+user=> (zero? 0)
+true
+user=> (zero? 10)
+false
+user=> (pos? 0)
+false
+user=> (pos? 1)
+true
+user=> (neg? -1)
+true
+user=> (neg? 0)
+false
+user=> (even? 2)
+true
+user=> (even? 1)
+false
+user=> (even? 7)
+false
+user=> (even? 8)
+true
+user=> (odd? 9)
+true
+user=> (odd? 10)
+false
+#+end_src
+
+Voor de aardigheid laten we hier nog zien dat de functie =odd?= is
+afgeleid van =even?=.
+
+#+begin_src clojure
+user=> (source odd?)
+(defn odd?
+  "Returns true if n is odd, throws an exception if n is not an integer"
+  {:added "1.0"
+   :static true}
+  [n] (not (even? n)))
+nil
+#+end_src
+
+Clojure heeft een functie genaamd =apropos= waarmee je aan de hand
+van een string of reguliere expresse kunt zoeken naar alle definities
+in de geladen namespaces. Zo vinden we voor =(apropos #"\?$")=, welke
+zoekt naar alle definities die eindigen op een vraagteken:
+
+#+begin_src clojure
+(superset? subset? within? function? successful?
+modifiable-classloader? clojuredocs-available? keyword? chunked-seq?
+instance? sequential? fn? nil? string? sorted? false? true? odd?
+symbol? thread-bound? future-done? number? integer? reduced?
+reversible? seq? identical? zero? char? distinct? ratio? neg? isa?
+extends? future? vector? counted? class? special-symbol? var? empty?
+list? not-any? associative? float? decimal? map? not-every? even?
+future-cancelled? bound? pos? contains? ifn? delay? realized?
+rational? set? coll? every? satisfies? blank?)
+#+end_src
+
+Nogmaals merken we op dat elke functie die hier staat genoemd, niet
+per se een predicaatfunctie is. 
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 13.*
+#+end
+Zoek in bovenstaande lijst de juiste predicaatfunctie om de volgende
+code werkend te krijgen met bijbehorende output. Denk eraan dat in
+Clojure logische waarheid betekent: alles wat niet =nil= of =false=
+is, wordt als logisch waar gezien.
+#+begin_src clojure
+(... nil) ;;=> false
+(... false) ;;=> false
+(... true) ;;=> true
+(... "appel") ;;=> true
+#+end_src  
+
+** Hogere orde functies
+Een belangrijk onderdeel van functioneel programmeren is het begrip
+/hogere orde functie/ of kortweg HOF. Een hogere orde functie is een
+functie die een andere functie als argument verwacht en iets met die
+functie gaat doen. Een voorbeeld:
+
+#+BEGIN_SRC clojure
+(filter (fn [x] (< x 5)) [1 6 5 2 3]) ;;=> (1 2 3)
+#+END_SRC
+
+De functie =filter= neemt een predicaatfunctie als eerste argument en een
+collectie als tweede argument. Als resultaat wordt opgeleverd een sequence
+van alle elementen die voldoen aan het predicaat, dus waarvoor de
+predicaatfunctie /true/ oplevert. 
+
+maar ook in een hogere orde functie:
+
+#+BEGIN_SRC clojure
+(filter odd? [1 2 3 4 5 6]) ;;=> (1 3 5)  
+(filter even? [1 2 3 4 5 6]) ;;=> (2 4 6)
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 14.*
+#+end
+Selecteer alle strings met een lengte van langer dan drie karakters.
+Hint: met de functie =count= kan je de lengte van een string
+verkrijgen. De groter-dan functie in Clojure is =>=, dus =(> 5 4=)
+levert =true= op en =(> 4 5)= =false=.
+#+begin_src clojure
+(filter ... ["Bas" "Bert" "Gerard" "Henk" "Jan"]) ;;=> ("Bert" "Gerard" "Henk")
+#+end_src
+--------------------------------
+Andere voorbeelden van hogere orde functies zullen we nu bespreken. De
+functie =map= is al even aan de orde geweest en is bedoeld om een functie
+toe te laten passen op elk element van een sequence en hier een nieuwe
+sequence van te maken. Een voorbeeld:
+
+#+BEGIN_SRC clojure
+(map (fn [x] (- x 2) [1 2 3 4])) ;;=> (-1 0 1 2)
+#+END_SRC
+
+Wat we nog niet hebben gezien is dat =map= ook om kan gaan met meerdere
+sequence. De functie die je meegeeft aan =map= moet dan om kunnen gaan met
+zoveel argumenten als dat er sequences worden meegegeven:
+
+#+BEGIN_SRC clojure
+(map (fn [x y] (- x y)) [10 9 8] [1 2 3]) ;;=> (9 7 5)
+#+END_SRC
+
+De functie wordt eerst toegepast op de getallen 10 en 1, dan op 9 en
+2, etc. Oftewel, de nieuwe lijst komt er als volgt uit te zien:
+
+#+BEGIN_SRC clojure
+((- 10 1) (- 10 2) (- 10 3)) ;;=>
+(   9        7        5    )
+#+END_SRC
+
+Dit werkt ook voor andere aantallen sequences dan 2.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 15.*
+#+end
+Vul de juiste functie in.
+#+begin_src clojure
+(range 5) ;;=> (0 1 2 3 4)
+(map ... (range 5)) ;;=> (1 2 3 4 5)
+#+end_src
+--------------------------------
+De derde hogere orde functie die we hier behandelen is =reduce=. Dit
+is een lastige HOF om te begrijpen. Deze HOF verwacht altijd een
+functie van twee argumenten en past de functie toe op de eerste twee
+elementen van een sequence. Daarna wordt het resultaat in plaats van de
+twee elementen voorop geplaatst en begint het proces opnieuw, totdat
+er nog maar één element over is. Met andere woorden: de sequence
+wordt met behulp van de functie gereduceerd tot één element. Vandaar
+de naam =reduce=.
+Een simpel voorbeeld:
+
+#+begin_src clojure
+(reduce (fn [x y] (+ x y)) [1 2 3 4 5]) ;;=> 15
+#+end_src
+
+In het voorbeeld wordt de meegegeven optelfunctie eerst toegepast op
+de getallen =1= en =2=. Dit levert 3 op. Daarna wordt de optelfunctie
+toegepast op =3=, het resultaat van de vorige optelling en =2=. Zo
+gaat het verder totdat er nog één getal over is: =15=.
+
+Om dit verder te illustreren zullen we een optelfunctie met side
+effect gebruikt, welke informatie over de tussenstappen print:
+
+#+BEGIN_SRC clojure
+(defn add-two [x y]
+  (println x "+" y "=" (+ x y))
+  (+ x y))
+
+user=> (add-two 1 2)
+1 + 2 = 3 ;; resultaat van println, side effect
+3 ;; antwoord
+#+END_SRC
+
+Nu gaan we deze functie gebruiken om een lijst van getallen te
+reduceren:
+
+#+BEGIN_SRC clojure
+user=> (reduce add-two [1 2 3 4 5])
+1 + 2 = 3
+3 + 3 = 6
+6 + 4 = 10
+10 + 5 = 15
+15
+#+END_SRC
+
+Natuurlijk hadden we ook gewoon de functie =+= mee mogen geven aan
+=reduce=, omdat deze functie ook met =2= argumenten om kan gaan.
+#+begin_src clojure
+(reduce + [1 2 3 4 5]) ;;=> 15
+#+end_src
+
+Overigens is het ook mogelijk de tussenstappen van =reduce= te
+verkrijgen als waarden. Dit gaat met de functie =reductions=:
+
+#+begin_src clojure
+user=> (reductions + [1 2 3 4 5])
+(1 3 6 10 15)
+#+end_src
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 16.*
+#+end
+Welke functie moet er op de puntjes staan? 
+#+begin_src clojure
+(reduce ... [2 2 2 2]) ;;=> 16
+#+end_src
+--------------------------------
+** Partiële applicatie
+Het is mogelijk om functies te maken uit andere functies. De eerste
+manier die we hier laten zien is partiële applicatie. Partiële
+applicatie wil zeggen dat je een functie slechts een deel van de
+argumenten geeft welke deze nodig heeft. Als resultaat wordt er dan
+een nieuwe functie opgeleverd welke nog de rest van de argumenten
+verwacht.
+
+Een voorbeeld.
+
+#+BEGIN_SRC clojure
+(defn add [x y]
+  (+ x y))
+
+(def add-5 
+  (partial add 5))
+
+(add-5 10) ;;=> 15
+#+END_SRC
+
+Let er in bovenstaand voorbeeld op dat we nu niet =defn= gebruiken om een
+nieuwe functie door middel van partiële applicatie te definiëren, maar
+=def=. Het resultaat van partial is namelijk een functie die we direct aan
+een =Var= kunnen toekennen.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 17.*
+#+end
+Definieer met =partial= een functie welke een getal maal twee
+oplevert:
+
+#+begin_src clojure
+(def times-2 ...)
+(times-2 10) ;;=> 20
+#+end_src
+
+** Comp
+Een andere manier om functies op basis van andere functies te definiëren
+is functiecompositie. Een voorbeeld.
+
+#+BEGIN_SRC clojure
+(def composed-fun (comp - /))
+(composed-fun 5 8) ;;=> -5/8
+#+END_SRC
+
+De functies die worden meegegeven aan comp worden van rechts naar links
+aangeroepen, wanneer de nieuwe functie wordt aangeroepen. In bovenstaand
+voorbeeld gebeurt er dus dit:
+
+#+BEGIN_SRC clojure
+(- (/ 5 8))
+#+END_SRC
+
+Een veelgebruikte compositie is =not= met een predicaatfunctie:
+#+begin_src clojure
+(filter (comp not zero?) [0 1 2 0 3 4 0 5 6]) ;;=> (1 2 3 4 5 6)
+#+end_src
+
+Een complexer voorbeeld is het volgende:
+
+#+begin_src clojure
+(filter even? [0 1 2 3 4 5 6]) ;;=> (0 2 4 6)
+(count '(0 2 4 6)) ;;=> 4
+
+(def countif (comp count filter))
+(countif even? [0 1 2 3 4 5 6]) ;;=> 4
+#+end_src
+
+De argumenten van de functie =countif= zijn een predicaatfunctie en
+een collectie. Deze argumenten worden aan =filter= gegeven. Het
+antwoord van =filter=, een sequence, wordt vervolgens weer aan =count=
+gegeven. Het antwoord daarvan is het antwoord van de functie
+=countif=. Zonder =comp= zou je de functie =countif= zo kunnen
+opschrijven:
+#+begin_src clojure
+(defn countif [f coll] (count (filter f coll)))
+#+end_src
+
+Omdat de notatie met =comp= niet de argumenten zelf benoemt, heet dit
+in functioneel programmeren terminologie /point free/ notatie. 
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 18.*
+#+end
+Definieer met =comp= een functie welke eerst een aantal getallen bij
+elkaar optelt en van de som een string maakt.
+
+** Complement
+De functie complement neemt een functie als argument en levert een
+nieuwe functie op welke dezelfde argumenten accepteert als de oude
+functie, maar een tegengestelde waarheidswaarde oplevert. 
+
+#+BEGIN_SRC clojure
+(def my-even? (complement odd?))
+(my-even? 2) ;;=> true
+(my-even? 3) ;;=> false
+#+END_SRC
+
+Merk op dat je dit ook met =comp= en =not= kan doen:
+#+begin_src clojure
+(def my-even? (comp not odd?))
+#+end_src
+
+Als we nog een stap verder gaan kunnen we van =odd?= ook een
+parameter maken en zelf een versie van =complement= bouwen:
+
+#+begin_src clojure
+(defn my-complement [f]
+  (comp not f))
+;; of met partial:
+(def my-complement (partial comp not))
+
+(def my-even? (my-complement odd?))
+(my-even? 3) ;;=> false
+(my-even? 4) ;;=> true
+#+end_src
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 19.*
+#+end
+Vul de puntjes aan zodat de uitkomst klopt.
+#+begin_src clojure
+(map (complement (partial ...)) [1 2 3 4 5]) ;;=> (true true true false false)
+#+end_src
+
+** Closure
+Functionele programmeertalen ondersteunen /closures/. Aan dit
+woord ontleent Clojure zijn naam: alleen de s is vervangen door de j van
+Java. De definitie van closure op Wikipedia is als volgt:
+
+#+begin_quote 
+"In de informatica is een closure een combinatie van een functie met een
+eigen lokaal variabelenbereik (of: omgeving, Engels: environment)
+waarbij de functie gebruik maakt van één of meer variabelen in dit
+bereik. Wanneer de functie aangeroepen wordt heeft deze toegang tot de
+variabelen in dit bereik, ook al liggen deze buiten het aanroepende
+bereik. Closures worden vooral gebruikt in functionele programmeertalen
+(zoals Haskell en OCaml) en programmeertalen die sterk gebaseerd zijn op
+functionele talen (zoals JavaScript)."
+#+end_quote
+
+Een voorbeeld van een functie die een closure retourneert, in Clojure:
+
+#+BEGIN_SRC clojure
+(defn print-message-fn [msg]
+  (let [txt (str "Hello " msg)]
+    (fn [] (println txt))))
+
+(def msg-printer1 (print-message-fn "world"))
+(def msg-printer2 (print-message-fn "planet"))
+
+user=> (msg-printer1)
+Hello world
+nil
+user=> (msg-printer2)
+Hello planet
+nil
+#+END_SRC
+
+Bovenstaande functie accepteert een waarde =msg=, creëert een local
+=txt= op basis van de =msg= en levert een (anonieme) functie op als
+resultaat, waar deze =txt= in gebruikt wordt. De anonieme functie
+houdt een referentie vast naar deze waarde van =txt=. De anonieme
+functie kan buiten de scope van de omgeving waarin deze gemaakt is (de
+functie =print-message-fn=) gebruik blijven maken van deze waarde.
+Zodra een functie gebruik maakt van variabelen/waarden buiten zijn
+eigen variabelenbereik mag het een closure genoemd worden. Ook als we
+geen local =txt= hadden gebruikt en de anonieme functie maakte alleen
+gebruik van =msg=, dan was het nog steeds een closure geweest.
+
+Ook Javascript ondersteunt closures, zoals we in onderstaand voorbeeld
+zien:
+
+#+BEGIN_SRC javascript
+> function printMessageFn(msg) {
+    var text = 'Hello ' + msg; // 
+    var printFn = function() { console.log(text); }
+    return printFn;
+  }
+
+  var msgPrinter1 = printMessageFn('world');
+  var msgPrinter2 = printMessageFn('planet');
+
+  msgPrinter1();
+  msgPrinter2();
+  -------------------------------------------------
+  Hello world
+  Hello planet
+#+END_src 
+
+De functie =printMessageFn= heeft =msg= als argument en levert als resultaat
+een functie op. De opgeleverde functie is een closure over de lokale
+variabele =text=, waarin ook =msg= verwerkt is.
+In de variabele =msgPrinter1= slaan we zo'n closure op: een closure over de
+string "Hello world". Daarna roepen we =msgPrinter1= aan. "Hello
+world" zal dan geprint worden naar de console. We kunnen echter de string
+'world' niet meer aanpassen, deze zit verborgen in de closure.
+
+Closures faciliteren in (functionele) programmeertalen een vorm van
+encapsulatie: data is ge-encapsuleerd in een functie, maar is
+onzichtbaar van buitenaf.
+
+We dienen nog op te merken dat functies gecreëerd met =partial= ook
+closures zijn:
+
+#+BEGIN_SRC clojure
+(def add-10 (partial + 10))
+(add-10 5) ;;=> 15
+(add-10 7) ;;=> 17
+#+END_SRC
+
+#+begin: advanced
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Verdieping 2.*
+#+end
+Tot zover hebben we alleen closures bekeken welke beschikking hadden
+over immutable data. We zullen nu een voorbeeld tonen waarin een
+closure beschikking heeft over mutable data in de vorm van een
+=atom=. 
+
+#+BEGIN_SRC clojure
+(def count-times-called 
+  (let [calls (atom 0)]
+    (fn [] 
+      (swap! calls inc)
+      (println "Times called: " @calls))))
+
+user=> (count-times-called)
+Times called:  1
+nil
+user=> (count-times-called)
+Times called:  2
+nil
+user=> (count-times-called)
+Times called:  3
+nil
+#+END_SRC
+
+In het let-block van =count-times-called= wordt een local gebruikt
+genaamd =calls= welke het aantal keren zal bijhouden dat de functie is
+aangeroepen. Daarvoor gebruiken we een =atom=. Dit is één van de vier
+mutable reference types waarover Clojure beschikt. Als resultaat van
+de let-expressie wordt er een (anonieme) functie opgeleverd waarin de
+=atom= gebruikt wordt. Deze functie is een closure over de =atom=. Die
+functie wordt toegekend aan de =Var= met de naam =count-times-called=.
+Als die functie wordt aangeroepen dan zal de expressie =(swap! calls
+inc)= eerst worden uitgevoerd. Dit betekent zoveel als: de nieuwe
+waarde van de atom wordt de oude waarde + 1. Daarna wordt er een regel
+naar standard output geschreven met de boodschap hoeveel keer de
+functie is aangeroepen. De waarde van een atom haal je op met het
+@-teken, dit noemt men ook wel dereferencing.
+--------------------------------
+
+Samenvattend: een closure is een functie met referenties naar
+waarden/objecten buiten zijn eigen bereik. Deze referenties blijven
+bewaard binnen de functie, maar kunnen niet van buitenaf worden
+beïnvloed. Closures zijn in functioneel programmeren een manier van
+encapsulatie. 
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 20.*
+#+end
+Maak een functie =make-closure= welke een closure oplevert over een
+string als argument van =make-closure=. De closure accepteert op zijn
+beurt weer een getal en levert 'getal' keer de string achter elkaar
+op, zoals in het volgende fragment. 
+
+#+begin_src clojure
+;; hint:
+(apply str (repeat 3 "hallo")) ;;=> "hallohallohallo"
+
+(def my-closure (make-closure "hallo"))
+(my-closure 5) ;;=> "hallohallohallohallohallo"
+#+end_src
+
+** Threading macro's
+Geneste functieaanroepen komen veel voor in Clojure:
+
+#+begin_src clojure
+(/ (* (Math/sqrt 25) 2) 5) ;;=> 2.0
+#+end_src
+
+In een imperatief programma zou dit er stapsgewijs als volgt uit
+kunnen zien:
+
+#+begin_src javascript
+var x = Math.sqrt(25);
+x = x * 2;
+x = x / 5;
+// x == 2.0
+#+end_src
+
+Je zou dit in Clojure met een =let= kunnen simuleren:
+
+#+begin_src clojure
+(let [x (Math/sqrt 25)
+      x (* x 2)
+      x (/ x 5)]
+  x) ;;=> 2.0
+#+end_src
+
+maar hier zijn =lets= eigenlijk niet voor bedoeld. De oplossing die
+Clojure hiervoor biedt zijn de threading macro's. Deze worden
+genoteerd met een pijltjes notatie. De eerste threading macro die we
+laten zien is =->=:
+
+#+begin_src clojure
+(-> (Math/sqrt 25)
+    (* 2)
+    (/ 5))
+#+end_src
+
+Je kunt dit als volgt lezen. Begin met de expressie
+=(Math/sqrt 25)=. Vul deze waarde in als eerste argument van de
+volgende expressie. Dit wordt =(* (Math/sqrt 25) 2)=. Vul deze
+expressie weer in als argument van de daarop volgende expressie. Dit
+wordt dan: =(/ =(* (Math/sqrt 25) 2) 5)=. 
+
+De volgende =->=-expressies zijn equivalent:
+
+#+begin_src clojure
+(-> 1 (inc) (inc) (inc))
+#+end_src
+
+#+begin_src clojure
+(-> 1 inc inc inc) ;;=> 4
+#+end_src
+
+Als de opvolgende expressie geen lijst is, ziet =->= het dus
+impliciet als lijst.
+
+Een variant op =->= is =->>=. Hierbij wordt de voorgaande expressie steeds op de
+laatste positie van de volgende expressie ingevoegd.
+
+#+begin_src clojure
+(->> [1 2 3 4 5]
+     (map inc)
+     (map inc)) ;;=> (3 4 5 6 7)
+#+end_src
+ 
+Omdat =->= en =->>= macro's zijn (die je ook zelf kan programmeren in
+Clojure!), kun je hiervan de macroexpansie bekijken. 
+
+#+begin_src clojure
+user=> (use 'clojure.walk)
+nil
+user=> (macroexpand-all '(->> [1 2 3 4 5]
+  #_=>      (map inc)
+  #_=>      (map inc)))
+(map inc (map inc [1 2 3 4 5]))
+#+end_src
+
+Een laatste threading macro die we behandelen is =->as=. Deze macro
+is sinds Clojure v1.5 toegevoegd. Deze macro is flexibeler dan de
+voorgaande, omdat je hierbij zelf kunt bepalen op welke positie de
+vorige expressie wordt ingevoegd.
+
+#+begin_src clojure
+(as-> 10 x
+      (inc x)
+      (map dec [x x x])
+      (apply + x)
+      (- x 2)) ;;=> 28
+#+end_src
+
+Dit kun je lezen als volgt. Begin met de waarde =10= en noem deze
+=x=. In de volgende expressie wordt =10= dus ingevuld voor =x=: =(inc
+10)=. De waarde hiervan is =11=. =11= wordt dus ingevuld voor =x= in
+de volgende expressie: =(map dec [11 11 11])=, hetgeen =(10 10 10)=
+oplevert. =(apply + '(10 10 10))= levert =30= op en =(- 30 2)= levert
+=28= op.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 21.*
+#+end
+Gebruik =as->= om de volgende stapsgewijze berekening uit te voeren:
+1. Begin met de waarde 10.
+2. Tel er 2 bij op.
+3. Bereken 5 min de waarde van de vorige stap.
+4. Bereken met =Math/pow= de macht 10^x (waarbij =x= is de waarde van stap 3).
+5. Controleer je antwoord. Dit dient =1.0E-7= te zijn.
+--------------------------------
+ 
+Voordat we meer over functies kunnen vertellen moeten we eerst een
+paar datastructuren behandelen die Clojure rijk is. Functies en
+datastructuren gaan namelijk hand in hand.
+
+* Datastructuren
+** Simpele data
+Clojure bevat een aantal datastructuren. Met datastructuur wordt bedoeld
+een simpel stukje data zoals een =byte=, =int=, =String=, etc., maar ook
+samengestelde data zoals lijsten van =Strings=, een =HashMap=,
+boomstructuren, etc. Dit hoofdstuk schenkt het meeste aandacht aan de
+samengestelde datastructuren in Clojure. Een totaaloverzicht van de
+datastructuren die je in Clojure kan gebruiken kan je vinden op
+[[http://clojure.org/data_structures]].
+
+De standaard Java primitieve types en classes zoals =char=, =int=, =double= en
+=String= zijn allemaal beschikbaar in Clojure. Dat kun je zien in
+onderstaande tabel. Merk op dat de notatie voor characters in Clojure
+verschilt van de notatie in Java. Dit heeft te maken met het feit dat
+het enkele quotje in Clojure ergens anders voor is gereserveerd: het
+is een shortcut voor de special form =quote=.
+
+| type    | Java-notatie | Clojure-notatie |
+|---------+--------------+-----------------|
+| char    | 'c'          | \c              |
+| String  | "hello"      | "hello"         |
+| int     | 123          | 123             |
+| double  | 0.5          | 0.5             |
+| keyword | n.v.t.       | :foo            |
+
+Primitieve waarden worden wel altijd 'geboxt', dat wil zeggen, ze worden
+in hun object-variant gebruikt:
+
+#+BEGIN_SRC clojure
+(type 1) ;;=> java.lang.Long
+(type 2.0) ;;=> java.lang.Double
+#+END_SRC
+
+Standaard werkt Clojure niet met integers, maar met longs. Mocht een
+bepaalde Java-methode toch een =int= verwachten, dan kan je de
+functie =int= hiervoor gebruiken:
+
+#+begin_src clojure
+(type (int 1)) ;;=> java.lang.Integer
+#+end_src
+
+Bij numeriek zeer intensieve berekeningen of in het geval van veel
+data is dat niet bevorderlijk voor de performance. In dat geval biedt
+Clojure primitive support. Normaal gesproken hoef je daar geen gebruik
+van te maken en voldoet het gebruik van geboxte getallen. Pas wanneer
+performance een bottleneck wordt, zul je moeten gaan kijken naar
+optimalisatie. We zullen verder niet ingaan op primitive support.
+
+Over keywords zullen we uitvoeriger spreken in het gedeelte over
+[[Maps]]. 
+
+** Clojures datastructuren
+De datastructuren die in Clojure worden gebruikt zijn persistent en
+immutable. Met persistent wordt hier niet bedoeld dat er gebruik wordt
+gemaakt van een database, maar dat voorgaande versies altijd
+ongewijzigd blijven. Een instantie van een persistente datastructuur
+gaat zelf nooit meer gaat veranderen. Clojure kan op basis van een
+oude datastructuur wel heel erg efficient een nieuwe versie maken,
+door de structuur die ze gemeenschappelijk hebben te delen. Dat mag,
+omdat je er zeker van kan zijn dat de oude datastructuur nooit meer
+verandert. De datastructuren waarvoor dit opgaat zijn: =list=,
+=vector=, =map= en =set=. We zullen ze nu achtereenvolgens gaan
+behandelen. Meer informatie over persistente datastructuren vind je
+[[http://en.wikipedia.org/wiki/Persistent_data_structure][hier]]. Er wordt vaak de vergelijking gemaakt tussen persistente
+datastructuren en git, [[http://www.jayway.com/2013/03/03/git-is-a-purely-functional-data-structure/][omdat git op een vergelijkbare manier werkt]].
+
+*** Lists
+Een =list= in Clojure is een datastructuur die een kop en een staart
+heeft. De kop heeft een inhoud en een verwijzing naar de rest van de
+lijst. Als je dus het derde element van een lijst op wil halen gebeurt
+dit altijd door eerst langs het eerste en daarna het tweede element te
+gaan. Daarom kost het altijd =n= stappen om het =n=-de element op te halen.
+Men noemt deze structuur in andere programmeertalen ook wel een linked
+list. In onderstaande figuur zien we een representatie van een lijst met
+drie elementen.
+
+#+LABEL:   fig-my-list
+#+CAPTION: lijst met drie elementen
+[[file:pictures/123list.png]]
+
+We kunnen een lijst definiëren met behulp van de functie =list=. Vervolgens kunnen we
+het eerste element, tweede element of het =n=-de element opvragen.
+
+#+BEGIN_SRC clojure
+(def my-list (list 1 2 3))
+(first my-list) ;;=> 1
+(second my-list) ;;=> 2
+(nth my-list 2) ;;=> 3
+#+END_SRC
+
+Ook is het mogelijk de rest van de lijst op te vragen. Dat is alles
+behalve het eerste element:
+
+#+BEGIN_SRC clojure
+(rest my-list) ;;=> (2 3)
+#+END_SRC
+
+Ook is het mogelijk om met =quote= een lijst te verkrijgen:
+
+#+begin_src clojure
+(quote 1 2 3) ;;=> (1 2 3)
+'(1 2 3) ;;=> (1 2 3)
+#+end_src
+
+Het verschil met =quote= en =list= is echter dat =quote= geen van
+zijn subelementen evalueert en =list= al zijn subelementen evalueert:
+
+#+begin_src clojure
+'(1 (+ 1 1) (+ 1 1 1)) ;;=> (1 (+ 1 1) (+ 1 1 1))
+(list 1 (+ 1 1) (+ 1 1 1)) ;;=> (1 2 3)
+#+end_src
+
+Zoals gezegd kan je een bestaande instantie van een lijst niet
+veranderen. Wel kan je een nieuwe lijst op basis van de oude lijst
+aanmaken. Een voorbeeld hebben we al gezien bij het gebruik van =rest=: de
+rest van een lijst is een nieuwe lijst. Stel dat we nu 0
+vooraan de lijst willen plaatsen. Dat kan als volgt:
+
+#+BEGIN_SRC clojure
+(def my-list (list 1 2 3))
+;; lijst kan niet gewijzigd worden
+(def new-list1 (cons 0 my-list))
+(def new-list2 (conj my-list 0))
+new-list1 ;;=> (0 1 2 3)
+new-list2 ;;=> (0 1 2 3)
+#+END_SRC
+
+De functie =cons= voegt ongeacht welke datastructuur je gebruikt,
+altijd een element voorop de oude datastructuur. De lijst =new-list1=
+is dus de oude lijst met de =0= voorop geplakt.
+De functie =conj= is een polymorfe functie. Het gedrag hiervan is
+afhankelijk van het soort datastructuur. Omdat in het geval van een
+lijst er goedkoper een element voorop geplakt kan worden dan achteraan
+(1 stap in plaats van =n= stappen) is dit het gedrag van =conj= bij
+een lijst. Als je aan =conj= een =vector= meegeeft, zal het element
+achteraan geplaatst worden:
+
+#+begin_src clojure
+(conj [1 2 3] 0) ;;=> [1 2 3 0]
+#+end_src
+
+Verder is het verschil tussen =cons= en =conj= dat de volgorde en het
+aantal geaccepteerde argumenten anders is. =cons= accepteert maar één
+toe te voegen element, maar =cons= meerdere:
+
+#+begin_src clojure
+(cons 0 '(1 2 3)) ;;=> (0 1 2 3)
+(conj '(1 2 3) 0 -1 -2) ;;=> (-2 -1 0 1 2 3)
+#+end_src
+
+Omdat lijsten vooral van toepassing zijn bij data welke van begin tot
+eind, van kop tot staart, doorgelopen moet worden, spelen lijsten
+vooral een rol in de representatie van Clojure-programma's zelf.
+Clojure-programma's worden als lijst gerepresenteert, zodat je op
+basis van oude code nieuwe code kan genereren. Dit kan met behulp van
+macro's. Dit onderwerp zullen we later behandelen.
+
+In onderstaand figuur zien we hoe een nieuwe lijst opgebouwd wordt
+aan de hand van de oude lijst. Het verschijnsel dat een deel van de
+structuur van de oude lijst hergebruikt wordt in de nieuwe lijst noemen
+we /structural sharing/.
+
+#+Caption: Hergebruik van gemeenschappelijke data
+[[file:pictures/0123list.png]]
+
+We springen nu over naar een andere datastructuur, genaamd de vector.
+Dit is tevens de meest gebruikte datastructuur in Clojure
+vergelijkbaar met een =ArrayList= in Java. Echter, de Clojure variant
+is weer immutable.
+
+*** Vectoren
+In onderstaand voorbeeld zien we twee manieren hoe je een vector kan
+aanmaken. De eerste manier is door gebruikmaking van een /vector
+literal/: de elementen van de vector worden omgeven door twee vierkante
+haken. De tweede manier laat het gebruik van de functie =vector= zien die
+een aantal argumenten accepteert en ze in een nieuwe vector zet. Daarna
+zien we het gebruik van de functie ~=~ welke twee waarden kan vergelijken.
+In Clojure gaat de vergelijking tussen twee collecties door de elementen
+te vergelijken: dus levert de vergelijking hier true op. We zien op de
+laatste regel dat de vergelijking tussen een vector of list met dezelfde
+elementen ook true oplevert.
+
+#+BEGIN_SRC clojure
+(def vector1 [1 2 3]) ;;=> [1 2 3]
+(def vector2 (vector 1 2 3)) ;;=> [1 2 3]
+(def vector3 (vec '(1 2 3))) ;;=> [1 2 3]
+(= vector1 vector2 vector3) ;;=> true
+(= vector1 (list 1 2 3)) ;;=> true
+#+END_SRC
+
+In onderstaand fragment staat beschreven hoe je elementen uit vectoren
+kan ophalen aan de hand van hun positie (vanaf 0 genummerd). De functie
+=get= levert geen exceptie op als er een ongeldige positie gebruikt wordt,
+maar =nil=. Ook kan er een default waarde worden meegegeven zodat er niet
+=nil= maar iets anders wordt opgeleverd.
+
+#+BEGIN_SRC clojure
+(def vector1 [1 2 3])
+(get vector1 0) ;;=> 1
+(get vector1 1) ;;=> 2
+(get vector1 2) ;;=> 3
+(get vector1 3) ;;=> nil
+(get vector1 3 :not-found) ;;=> :not-found
+#+END_SRC
+
+In onderstaand fragment zien we dat je in plaats van =get= ook =nth= kan
+gebruiken om elementen op te halen uit een vector. Het verschil tussen
+=get= en =nth= is dat =nth= wel een exceptie oplevert bij een ongeldige
+positie.
+
+#+BEGIN_SRC clojure
+(def vector1 [1 2 3])
+(nth vector1 0) ;;=> 1
+(nth vector1 1) ;;=> 2
+(nth vector1 2) ;;=> 3
+(nth vector1 3) ;;=> java.lang.IndexOutOfBoundsException
+#+END_SRC
+
+In Clojure gedragen vectoren zich als functies van hun indices. Dat zien we in onderstaand
+fragment.
+
+#+BEGIN_SRC clojure
+(def vector1 [1 2 3])
+(vector1 0) ;;=> 1
+(vector1 1) ;;=> 2
+(vector1 2) ;;=> 3
+(vector1 3) ;;=> java.lang.IndexOutOfBoundsException
+#+END_SRC
+
+Merk op dat =vector1= hier op functiepositie staat. De
+vector-datastructuur implementeert intern een interface, genaamd
+=IFn=, waardoor deze aan te roepen is als functie in Clojure. Het
+gedrag van een vector als functie is equivalent aan dat van =nth=:
+dus excepties in het geval van niet bestaande indices.
+Vector-literals gedragen zich uiteraard ook als functies:
+
+#+begin_src clojure
+([1 2 3] 0) ;;=> 1
+#+end_src
+
+Zoals gezegd gebruik je in Clojure standaard vectoren boven lijsten.
+De reden hiervan is dat vectoren betere random access bieden: de tijd
+die nodig is om een willekeurig element in de vector op te zoeken is
+voor elk element nagenoeg hetzelfde (orde log_32(n), zie daarvoor ook
+[[http://blog.higher-order.net/2009/02/01/understanding-clojures-persistentvector-implementation][deze blogpost]]).
+
+In Clojure hoeven niet alle elementen van een collectie van hetzelfde type te zijn:
+#+BEGIN_SRC clojure
+(def various-types-vector ["a" \b 1 :d [1 2 3]])
+#+END_SRC
+
+Dit heeft te maken met het feit dat Clojure dynamisch getypeerd. Dit
+kan per functionele programeertaal verschillen. Bijvoorbeeld voor
+Haskell gaat dit niet op, want Haskell is statisch getypeerd.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 22.*
+#+end
+Beantwoord voor jezelf de volgende vragen.
+
+-  Hoeveel elementen heeft =various-types-vector=?
+-  Noem de types op van elk element.
+
+Je zou je nu kunnen afvragen hoe je bijvoorbeeld het tweede element
+(index 1) uit de vector krijgt die op index 4 staat in =various-types-vector=. Dat
+kan je in stapjes doen door eerst de binnenste vector op te vragen en
+daar vervolgens weer een element uit op te vragen:
+
+#+BEGIN_SRC clojure
+(def various-types-vector ["a" \b 1 :d [1 2 3]])
+(let [inner-vec (various-types-vector 4)
+      wanted-elt (inner-vec 1)]
+      wanted-elt) ;;=> 2
+;; of korter:
+((vector1 4) 1) ;;=> 2 
+#+END_SRC
+
+In Clojure bestaat er een functie die elementen in dit soort geneste
+structuren in een keer kan opzoeken: =get-in=. De documentatie van =get-in=:
+
+#+BEGIN_EXAMPLE
+clojure.core/get-in
+([m ks] [m ks not-found])
+Returns the value in a nested associative structure,
+where ks is a sequence of keys. Returns nil if the key is not present,
+or the not-found value if supplied.
+#+END_EXAMPLE
+
+Ons voorbeeld met het gebruik van =get-in=:
+
+#+BEGIN_SRC clojure
+(def v ["a" \b 1 :d [1 2 3]])
+(get-in v [4 1]) ;;=> 2
+#+END_SRC
+
+In de documentatie wordt gezegd dat de keys (in dit geval posities van
+de vector) in een sequence moeten worden aangeleverd. Een sequence is in
+Clojure een abstractie over diverse datastructuren. Hier komen we later
+in dit hoofdstuk nog op terug.
+
+Nu volgt er een voorbeeld waarin we een vector 'aanpassen'. Voor het
+gemak zeggen we aanpassen, ook al moet je steeds beseffen dat de
+Clojure-datastructuren immutable zijn en dus niet aangepast kunnen
+worden. We creëren een nieuwe vector op basis van een oude. Zoals
+gezegd kun je met =conj= een element toevoegen achteraan de vector:
+
+#+BEGIN_SRC clojure
+(conj [1 2 3] 4) ;;=> [1 2 3 4]
+#+END_SRC
+
+Je kunt een element vervangen met de functie assoc:
+
+#+BEGIN_SRC clojure
+(assoc [1 2 3] 0 2) ;;=> [2 2 3]
+#+END_SRC
+
+Dit betekent zoveel als: vervang op positie 0 de huidige waarde met de
+waarde 2.
+
+Ter informatie de documentatie van assoc:
+
+#+BEGIN_EXAMPLE
+clojure.core/assoc
+([map key val] [map key val & kvs])
+assoc[iate]. When applied to a map, returns a new map of the
+same (hashed/sorted) type, that contains the mapping of key(s) to
+val(s). When applied to a vector, returns a new vector that
+contains val at index. Note - index must be <= (count vector).
+#+END_EXAMPLE
+
+Van assoc bestaat ook weer een variant assoc-in welke elementen in
+geneste structuren kan vervangen:
+
+#+BEGIN_SRC clojure
+(def nested-vector [[1 2 3] [1 2 3]])
+(assoc-in nested-vector [0 0] 10) ;;=>  [[10 2 3] [1 2 3]]
+#+END_SRC
+
+We lezen in deze documentatie dat assoc niet alleen voor vectors maar
+ook voor maps gebruikt kan worden. Dit vormt een mooi bruggetje naar
+deze datastructuur.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 23.*
+#+end
+Gegeven de geneste vector, zorg er met =assoc-in= voor dat de vector
+veranderd wordt zoals zichtbaar in de output.
+#+begin_src clojure
+(def v [[:x  :x  :y]
+        [:x  :x  nil]
+        [nil nil nil]])
+(assoc-in v ...) ;;=>
+;;[[:x  :x  :y]
+;; [:x  :x  nil]
+;; [nil :y nil]]
+#+end_src
+
+*** Maps
+Een map in Clojure kun je vergelijken met een HashMap in Java, met het
+verschil dat een map in Clojure natuurlijk weer immutable is. Een map
+is net als een vector een associatieve datastructuur. Maps kun je
+aanmaken met map literals en met de functie =hash-map=:
+
+#+begin_src clojure -n
+(def my-map {:a 10 :b 20}) 
+(def my-map (hash-map :a 10 :b 20))
+#+end_src
+
+Op regel 1 zien we een definitie van een map met behulp van een
+map-literal. Een map noteer je met twee accolades en daar tussenin
+keys en values. Je mag op zich key-values scheiden door een komma,
+={:a 10, :b 20}=, maar Clojure negeert komma's gewoon. Dit is dus niet
+verplicht. Op regel 2 zien we dat dezelfde map aangemaakt wordt, maar
+dan met de functie =hash-map=. 
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 24.*
+#+end
+Stel je hebt een vector met als inhoud [:a 10 :b 20]. Hoe maak je
+hier een map van in Clojure?
+#+begin_src clojure
+(... ... [:a 10 :b 20]) ;;=> {:a 10, :b 20}
+#+end_src
+--------------------------------
+
+Maps gedragen zich net als vectoren ook als functies, maar dan van hun
+keys. Een voorbeeld:
+
+#+begin_src clojure -n
+(my-map :a) ;;=> 10
+(my-map :b) ;;=> 20
+(my-map :c) ;;=> nil
+(my-map :c :not-found) ;;=> not-found
+#+end_src
+
+Op regel 1 zien we in bovenstaande code dat de waarde bij de key =:a=
+opgehaald wordt, namelijk 10. Op regel 2 idem maar dan voor key :b.
+Op regel drie wordt de waarde opgevraagd bij een key die niet in de
+map voorkomt. Het resultaat is dan =nil=. Op regel 4 wordt er een
+default waarde meegegeven voor als de waarde bij een key niet
+gevonden kan worden. Het gedrag is dus hetzelfde als bij de functie =get=.
+
+In bovenstaand voorbeeld worden keywords gebruikt als keys, maar in
+principe mag je alles gebruiken als key in een map (Strings, ints,
+zelfs =nil=), zolang de key maar uniek is. In Clojure is het hoe dan
+ook gebruikelijk om keywords te gebruiken als keys. Keywords beginnen
+met een dubbele punt en evalueren naar zichzelf, net als alle andere
+simpele waarden:
+
+#+BEGIN_SRC clojure
+:a ;;=> :a
+#+END_SRC
+
+Keyword zijn erg efficiënt en kunnen erg snel met elkaar vergeleken
+worden. Daarom zijn ze erg geschikt als keys in maps.
+
+De datastructuur map mag je niet verwarren met de functie =map=: dat zijn
+twee heel verschillende zaken.
+
+Erg handig is het dat een keyword zich ook gedraagd als functie, maar
+dan van een map. Het keyword zoekt zichzelf dan op in de map en
+retourneert de bijbehorende waarde. Om die reden is het dus ook aan te raden
+om keywords te gebruiken voor keys. Een voorbeeld in het gebruik
+hiervan:
+
+#+BEGIN_SRC clojure
+(def my-map {:a "appel" :b "peer"})
+(:a my-map) ;;=> "appel"
+(:b my-map) ;;=> "peer"
+#+END_SRC
+
+#+begin: tip
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Tip 3.*
+#+end
+Gebruik indien mogelijk keywords als keys in maps.
+
+Nu volgt er een voorbeeld waarin een geneste map-structuur gebruikt
+wordt en waarin getoond wordt hoe je met get en get-in daar elementen
+uit kunt halen.
+
+#+BEGIN_SRC clojure
+(def my-map 
+  {:a {:a [1 2 3], 
+       :b [4 5 6]}, 
+   :b ...}) 
+      
+(get my-map :a) ;;=> {:a [1 2 3], :b [4 5 6]}
+
+(get-in my-map [:a :a 0]) ;;=> 1
+#+END_SRC
+
+Merk op dat een map bijna net zo leest als een stukje JSON, je hoeft
+alleen maar de dubbele punt van het keyword achteraan in plaats van
+vooraan te zetten.
+
+Natuurlijk willen we ook key-values toe kunnen voegen aan een map. Dat
+doen we met de functie =assoc=:
+
+#+BEGIN_SRC clojure
+(assoc {:a "foo", :b "bar"} :c "baz") ;;=> {:c "baz", :a "foo", :b "bar"} 
+#+END_SRC
+
+We zien hier dat de volgorde van key-values in een map niet
+gegarandeerd is. Dit heeft te maken met hoe Clojure maps intern
+opslaat. Indien je de volgorde van keyvalue-paren toch belangrijk
+vindt, gebruik dan =sorted-map=.
+
+Een value bij een key aanpassen gaat op dezelfde manier:
+
+#+BEGIN_SRC clojure
+(assoc {:a "foo", :b "bar"} :a "baz") ;; => {:a "baz", :b "bar"} 
+#+END_SRC
+
+Een key-value verwijderen:
+
+#+BEGIN_SRC clojure
+(dissoc {:a "foo", :b "bar"} :a) ;;=> {:b "bar"} 
+#+END_SRC
+
+Opmerking: =dissoc= werkt niet voor vectoren. Stel dat het wel zou
+werken, dan zou het volgende gebeuren:
+
+#+begin_src clojure
+(def v [1 2 3 4 5])
+(v 2) ;;=> 3
+(def v (dissoc v 0)) ;;=> [2 3 4 5]
+(v 2) ;;=> 4...
+#+end_src
+
+Alle waarden na de verwijderde index zouden dan dus naar een andere
+index verschuiven. Aangezien de bedoeling van de functie =dissoc= is
+om zowel de key als de value te verwijderen, is dit bij vectoren niet
+zinvol: in bovenstaand voorbeeld blijft de key gewoon bestaan maar
+krijgt een andere bijbehorende waarde.
+
+*** Sets
+De vierde persistente datastructuur in Clojure is de set, oftewel de
+verzameling. Een verzameling is een ongeordende collectie met unieke
+elementen. Een set kun je aanmaken via een literal, =hash-set=, of =set=:
+
+#+BEGIN_SRC clojure
+(def set1 #{1 2 3})
+(def set2 (hash-set 1 2 3))
+(def set3 (set [1 1 2 3]))
+(= set1 set2) ;;=> true
+#+END_SRC
+
+Een set literal noteer je met twee accolades om de elementen
+voorafgegaan door een hekje. De functie =hash-set= maakt een set uit
+losse elementen. De functie =set= transformeert een collectie (een
+lijst, vector of map) om naar een set. Als er dubbele items voorkomen
+in de collectie worden deze verwijderd. Een set aanmaken via een
+literal met twee dezelfde items levert een exceptie op:
+
+#+BEGIN_SRC clojure
+#{1 1 2} 
+;;=> IllegalArgumentException java.lang.IllegalArgumentException: Duplicate key: 1
+#+END_SRC
+
+Sets zijn functies van hun elementen. Hier kan je gebruik van maken als
+je wil controleren of een set een element heeft:
+
+#+BEGIN_SRC clojure
+(#{1 2 3} 1) ;;=> 1
+(#{1 2 3} 3) ;;=> 3
+(#{1 2 3} 4) ;;=> nil
+#+END_SRC
+
+Dit kunnen we ook doen met de predikaatfunctie contains?:
+
+#+BEGIN_SRC clojure
+(contains? #{1 2 3} 1) ;;=> true
+#+END_SRC
+
+De functie contains? levert soms verwarring op in Clojure, omdat men
+denkt dat je deze ook kan gebruiken om te kijken of er een element in
+een vector zit:
+
+#+BEGIN_SRC clojure
+(contains? [10 20 30] 10) ;;=> false
+#+END_SRC
+
+Dit komt omdat contains? niet checkt op het aanwezig zijn van elementen
+maar op het aanwezig zijn van /keys/:
+
+#+BEGIN_EXAMPLE
+clojure.core/contains?
+([coll key])
+Returns true if key is present in the given collection, otherwise
+returns false.  Note that for numerically indexed collections like
+vectors and Java arrays, this tests if the numeric key is within the
+range of indexes. 'contains?' operates constant or logarithmic time;
+it will not perform a linear search for a value.  See also 'some'.
+#+END_EXAMPLE
+
+De 'keys' van een vector zijn de indices. Je kunt met =contains?= dus
+checken of een vector een bepaalde index heeft:
+
+#+BEGIN_SRC clojure
+(contains? [10 20 30] 0) ;;=> true
+#+END_SRC
+
+De keys van een set zijn zijn elementen en daarom checkt =contains?= op de
+aanwezigheid van elementen in een set.
+
+#+begin: tip
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Tip 4.*
+#+end
+Gebruik =contains?= om te kijken of een key in een associatieve
+datastructuur voorkomt en niet om te controleren of een =element= al
+voorkomt (dit gaat alleen bij sets goed).
+
+Vaak worden sets ook gebruikt als controlflowmechanisme, wanneer
+bekeken moet worden of een bepaalde waarde met een aantal
+alternatieven overeenkomt:
+
+#+begin_src clojure
+(def x 1)
+(if (#{1 2 3} x) "x is 1, 2 or 3" "x is neither 1, 2 or 3")
+;;=> "x is 1, 2 or 3"
+(def x 4)
+(if (#{1 2 3} x) "x is 1, 2 or 3" "x is neither 1, 2 or 3")
+;;=> "x is neither 1, 2 or 3"
+#+end_src
+
+Dit is dus een kortere notatie voor:
+
+#+begin_src clojure
+(if (or (= x 1) (= x 2) (= x 3)) ...)
+#+end_src
+
+Belangrijke functies die je op sets kan toepassen zijn: =intersection=,
+=union= en =difference=. Deze functies bevinden zich in de namespace
+=clojure.set=.
+
+De functie =intersection= geeft de doorsnede van meerdere verzamelingen,
+dat zijn alle gemeenschappelijke elementen:
+
+#+BEGIN_SRC clojure
+(clojure.set/intersection #{1 2 3 4} #{3 4 5 6}) 
+;;=> #{3 4}
+#+END_SRC
+
+De functie =union= verenigt meerdere sets, dat wil zeggen: de elementen
+uit de sets worden tot één nieuwe set samengevoegd:
+#+BEGIN_SRC clojure
+(clojure.set/union #{1 2 3} #{3 4 5})
+;;=> #{1 2 3 4 5}
+#+END_SRC
+
+Tenslotte, de functie =difference= levert de elementen op die wel in de
+eerste verzameling maar niet in de volgende verzamelingen zitten:
+#+BEGIN_SRC clojure
+(clojure.set/difference #{1 2 3} #{2 3 4})
+;;=> #{1}  
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 25.*
+#+end
+Vul je juiste functienaam in om het gewenste resultaat te verkrijgen.
+#+begin_src clojure
+(... #{:a :b :c :d} #{:b :c :e :f})
+;;=>  #{:b :c}
+(... #{:a :b :c :d} #{:b :c :e :f})
+;;=>  #{:a :d}
+(... #{:a :b :c :d} #{:b :c :e :f})
+;;=> #{:a :c :b :f :d :e}
+#+end_src
+
+--------------------------------
+Onderstaande tabel geeft een kort overzicht van de vier persistente
+datastructuren in Clojure.
+
+| Soort  | Via functie          | Literal      | 
+|--------+----------------------+--------------|
+| list   | (list 1 2 3)         | (1 2 3)      |
+| vector | (vector 1 2 3)       | [1 2 3]      | 
+| map    | (hash-map :a 1 :b 2) | {:a 1, :b 2} |                 
+| set    | (set 1 2 3)          | #{1 2 3}     |                 
+
+
+*** Sequences
+
+Een sequence in Clojure is een abstractie over een concrete
+datastructuur. Je zou dit kunnen vergelijken met een interface in Java.
+Elk object welke de =ISeq= interface implementeert en daarmee de
+functies =first=, =rest= en =cons= ondersteunt, kan 'bekeken worden'
+als sequence. Veel functies in Clojure gaan uit van de sequence view
+op een collectie.
+
+Je verkrijgt een sequence view over een concrete datastructuur door er
+=seq= op aan te roepen:
+
+#+BEGIN_SRC clojure
+(seq [0 1 2 3 4]) ;;=> (0 1 2 3 4)
+#+END_SRC
+
+Een sequence wordt geprint zoals een lijst, zoals te zien in
+bovenstaand voorbeeld.
+
+Op een sequence kun je zoals gezegd drie functies aanroepen: =first=, =rest=
+en =cons=. De functie cons moet je niet verwarren met de polymorfe functie =conj=
+welke afhankelijk van het concrete type een element voor of achteraan
+toevoegt. De functie =cons= voegt altijd een element toe vooraan een
+sequence, of beter gezegd: levert een nieuwe sequence op met een element
+aan de voorkant erbij gezet.
+
+We bekijken nu de documentatie van first en rest nader:
+
+#+BEGIN_EXAMPLE
+clojure.core/first
+([coll])
+Returns the first item in the collection. Calls seq on its
+argument. If coll is nil, returns nil.
+
+clojure.core/rest
+([coll])
+Returns a possibly empty seq of the items after the first. Calls seq on its
+argument.
+#+END_EXAMPLE
+
+In de documentatie van =first= en =rest= staat dat deze eerst =seq= aanroept
+op zijn argument. Dit hoef je dus niet zelf te doen.
+
+Er is een heel scala aan functies die overweg kunnen met datastructuren
+op basis van hun sequence-view. Deze functies maken onder water
+dus allemaal gebruik van de functies =first=, =rest= en/of =cons=. Deze
+functies kun je vinden op [[http://clojure.org/sequences]]. Sommige van
+deze functies kennen we inmiddels al, zoals =filter=, =map= en =reduce=.
+
+Een demonstratie van enkele functies:
+
+#+BEGIN_SRC clojure
+(distinct [1 1 3 4]) ;;=> (1 3 4)
+(concat [1 2 3] [4 5 6]) ;;=> (1 2 3 4 5 6)
+(interleave [1 2 3] [\a \b \c]) ;;=> (1 \a 2 \b 3 \c)
+(take 2 [1 2 3 4]) ;;=> (1 2)
+(drop 2 [1 2 3 4]) ;;=> (3 4)
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 26.*
+#+end
+Bekijk de documentatie van bovenstaande functies in het geval je nog
+niet helemaal begrijpt wat deze doen.
+
+Voorbeelden van HOFs die collecties transformeren op basis van een
+anonieme functie:
+
+#+BEGIN_SRC clojure
+(map (fn [x] (+ x 1)) [4 5 6 7]) ;;=> (5 6 7 8)
+(filter (fn [x] (> x 5)) [4 5 6 7]) ;;=> (6 7)
+(remove (fn [x] (> x 5)) [4 5 6 7]) ;;=> (4 5)
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 27.*
+#+end
+Bekijk de lijst van sequence functies en probeer en experimenteer
+hiermee.
+# TODO concreter maken
+
+*** Lazy sequences
+Veel sequence-functies leveren zogenaamde lazy sequences op. Dat zijn
+sequences die hun elementen pas gaan berekenen als ze daadwerkelijk
+worden opgevraagd. Een voorbeeld daarvan is de functie =range= welke een
+lijst met getallen oplevert in de vorm van een LazySeq:
+
+#+BEGIN_SRC clojure
+(range 10) ;;=> '(0 1 2 3 4 5 6 7 8 9)
+#+END_SRC
+
+De elementen van de LazySeq worden allemaal geproduceerd, omdat ze door
+de Reader (daar komt de R van REPL vandaan) opgevraagd worden.
+
+Als je het volgende zou evalueren:
+
+#+BEGIN_SRC clojure
+(range)
+#+END_SRC
+
+dan zal de Reader een oneindig lange lijst met getallen proberen op te
+vragen en dit zal resulteren in een java.lang.OutOfMemoryError-exceptie.
+
+Dit kun je in Clojure voorkomen door het volgende te evalueren:
+
+#+begin_src clojure
+user=> (set! *print-length* 20)
+20
+user=> (range)
+(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 ...)
+#+end_src
+
+Door de (dynamische) Var =*print-length*= op 20 te zetten, worden er
+maximaal 20 elementen geprint en dus opgevraagd van de, in potentie,
+oneindige lijst met gehele getallen.
+
+De documentatie van =range=:
+
+#+BEGIN_EXAMPLE
+clojure.core/range
+([] [end] [start end] [start end step])
+Returns a lazy seq of nums from start (inclusive) to end
+(exclusive), by step, where start defaults to 0, step to 1, and end
+to infinity.
+#+END_EXAMPLE
+
+Met de functie =take= vraag je de eerste =n= items op van een
+sequence. Deze functie levert zelf ook weer een lazy sequence op:
+
+#+BEGIN_EXAMPLE
+clojure.core/take
+([n coll])
+Returns a lazy sequence of the first n items in coll, or all items if
+there are fewer than n.
+#+END_EXAMPLE
+
+Een demonstratie:
+
+#+BEGIN_SRC clojure
+(take 10 (range)) ;;=>  '(0 1 2 3 4 5 6 7 8 9)
+#+END_SRC
+
+Een andere eigenschap van LazySeqs is dat berekende elementen gecached
+worden: ze worden dus slechts eenmaal berekend, namelijk de eerste keer
+dat ze worden opgevraagd. De volgende keer dat ze worden opgevraagd
+wordt het reeds berekende resultaat teruggegeven. Als er een side effect
+optreedt bij het berekenen van een element in een LazySeq zal deze dus
+slechts maximaal éénmaal optreden. Het volgende fragment illustreert
+dit.
+
+#+BEGIN_SRC clojure -n
+user=> (def my-seq (map (fn [x] (println "side effect") x) 
+                        '(1 2 3 4 5)))
+#'user/my-seq
+user=> (first my-seq)
+side effect
+1
+user=> (first my-seq)
+1
+user=> (second my-seq)
+side effect
+2
+user=> (second my-seq)
+2
+user=> my-seq
+(1 side effect
+2 side effect
+3 side effect
+4 5)
+user=> my-seq
+(1 2 3 4 5)
+#+END_SRC
+
+Op regel 1 definiëren we =my-seq= welke gemaakt wordt met =map= welke
+een functie toepast over 5 elementen van een lijst. De functie print
+eerst de tekst "side effect" en geeft daarna zijn argument terug. 
+Op regel 4 vragen we het eerste element van =my-seq= op. Omdat =map=
+een LazySeq teruggeeft, wordt dit element nu pas geproduceerd. Dus nu
+pas zal de functie toegepast worden op het eerste element van de
+lijst. Daarom zien we dat op regel 5 de tektst "side effect" geprint
+wordt en daarna wordt =1= getoond, omdat dit het resultaat is dat we
+opvroegen.
+Op regel 9 tot en met 13 gebeurt hetzelfde voor het tweede element. 
+Op regel 14 vragen we heel =my-seq= op. We zien dat hier nog drie keer
+een side effect optreedt, namelijk voor de elementen die nog niet
+waren geproduceerd. Als we daarna nog een keer =my-seq= opvragen zien
+we dat er geen side effect meer optreedt. 
+
+# Het merkwaardige is nu dat we 32 keer het side effect op zien treden,
+# terwijl we hadden verwacht dat het side effect maar 1 keer zou optreden:
+# we vroegen immers maar om 1 element. Dit heeft te maken met efficientie:
+# Clojure produceert 32 elementen in één klap om de overhead voor het
+# produceren van elementen te beperken. Het eerste element van de my-seq
+# is nu geproduceerd. Als we hier nogmaals om vragen dan zien we het
+# volgende:
+
+# #+BEGIN_SRC clojure
+#     (take 1 my-seq) ;;=> '(0)
+# #+END_SRC
+
+# Nu treedt er geen side effect op: de functie voor het berekenen van het
+# element hoeft niet te worden aangeroepen, want het resultaat van de
+# vorige keer is bewaard gebleven. Dit zal ook gelden voor de volgende 31
+# elementen:
+
+# #+BEGIN_SRC clojure
+#     (take 32 my-seq)
+#     =;;> (0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+#     25 26 
+#     27 28 29 30 31)
+# #+END_SRC
+
+# Hierbij zien we ook geen side-effects optreden: deze elementen waren
+# allemaal berekend toen we het eerste element opvroegen. Als we het
+# 33-ste element gaan opvragen dan zien we dit:
+
+# #+BEGIN_SRC clojure
+#     (nth my-seq 33)
+#     ;;=> 33
+#     side effect side effect side effect side effect side effect side
+#     effect (in totaal 32 x)
+# #+END_SRC
+
+# Bij het opvragen van een element welke valt in een chunk die nog niet is
+# berekend zal de gehele chunk berekend worden. Daarom zien we hier weer
+# 32 side effects.
+
+Een risico bij het gebruik van LazySeqs is het vasthouden van de
+referentie naar het eerste element (holding on to the head), zoals in
+onderstaand voorbeeld.
+
+#+BEGIN_SRC clojure
+(let [r (range 10000000)
+      lst (last r)
+      fst (first r)]
+    [fst lst])
+;;=> java.lang.OutOfMemoryError
+#+END_SRC
+
+Wat er gebeurt is dat er een LazySeq wordt aangemaakt die potentieel de
+getallen 0 tot 10000000 (tien miljoen) kan bevatten. Als je deze
+getallen allemaal tegelijk in memory laadt krijg je (afhankelijk van je
+instelling voor de heap size) een OutofMemoryError-exceptie. Omdat bij
+het berekenen van de local =lst= het laatste getal wordt opgevraagd,
+worden alle getallen berekend (omdat je via de seq-interface van voor
+naar achter moet lopen). Normaal gesproken heeft de compiler door dat
+hij alles behalve het laatste getal mag laten opruimen door de
+Garbage-Collector, maar omdat we hierna ook nog het eerste getal
+opvragen, moeten alle getallen bewaard blijven in het geheugen, waardoor
+de heapsize overschreden wordt.
+
+Dit zou je kunnen voorkomen door eerst het eerste element te berekenen
+en dan het laatste. De compiler heeft dan door dat de tussenliggende
+getallen weg gegooid mogen worden:
+
+#+BEGIN_SRC clojure
+(let [r (range 10000000)
+      fst (first r)
+      lst (last r)]
+  [fst lst]) ;;=> [0 9999999]
+#+END_SRC
+
+#+begin: tip
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Tip 5.*
+#+end
+Let erop dat je geen onnodige referenties vasthoudt naar elementen in
+potentiëel oneindige datastructuren.
+
+*** Itereren over sequences
+Clojure kent een aantal manieren om te itereren over een sequence. De
+eerste manier die veel gebruikt is aan de hand van de for macro:
+
+#+BEGIN_SRC clojure
+(for [i [1 2 3]]
+  (+ i 2)) ;;=> '(3 4 5)
+#+END_SRC
+
+Dit lijkt een beetje op wat je met map ook kunt bereiken:
+
+#+BEGIN_SRC clojure
+(map #(+ % 2) [1 2 3]) ;;=> '(3 4 5)
+#+END_SRC
+
+=Map= en =for= leveren beide lazy sequences op. Dat wil zeggen: de elementen
+worden pas geproduceerd als ze worden opgevraagd en de resultaten worden
+gecached. =For= ondersteunt echter net als =let= bindings van locals en
+waarden. Het verschil met let is dat de local een element uit een
+sequence voorstelt. Wel zijn er net als bij let meerdere bindings
+toegestaan:
+
+#+BEGIN_SRC clojure
+(for [i [1 2 3]
+      j [:a :b :c]]
+  [i j])
+;;=> ([1 :a] [1 :b] [1 :c] [2 :a] [2 :b] [2 :c] [3 :a] [3 :b] [3 :c])
+#+END_SRC
+
+Wat er in bovenstaande for-loop gebeurt is dat i eerst de waarde 1
+krijgt. Daarna wordt er met j de hele lijst met key-words doorgelopen en
+worden de bijbehorende resultaten verzamelt in een (lazy) sequence.
+Daarna krijgt i de waarde 2, etc.
+
+For ondersteunt bepaalde modifiers, namelijk :let, :while en :when.
+
+Een voorbeeld met het gebruik van :let en :when:
+
+#+BEGIN_SRC clojure
+(for [x [0 1 2 3 4 5]
+  :let [y (* x 3)]
+  :when (even? y)]
+   y)
+;;=> (0 6 12)
+#+END_SRC
+
+Met =:let= kun je dus een lokale waarde aanmaken. Alleen de elementen die
+voldoen aan de conditie opgegeven bij =:when= worden meegenomen in het
+eindresultaat.
+
+Een variant op =for= is =doseq=. Doseq levert echter geen sequence als
+resultaat op, maar =nil= en voert voor elk element uit de sequence(s)
+instructies/side effects uit:
+
+#+BEGIN_SRC clojure
+(doseq [x [1 2 3] 
+        y [1 2 3]] 
+  (prn (* x y)))
+1 ;; side effect
+2
+3
+2
+4
+6
+3
+6
+9 ;; last side effect
+nil ;; result
+#+END_SRC
+
+*** Functies en datastructuren
+
+In het vorige hoofdstuk hebben we gezien hoe we functies kunnen
+definiëren. Nu we kennis hebben van de meest gebruikte datastucturen
+kunnen we functies bouwen die een datastructuur als input heeft en een
+andere datastructuur als output levert.
+
+**** Sequential destructuring
+
+Eerder in dit dictaat hebben we al een voorbeeld gezien van sequential
+destructuring. Voor de duidelijkheid herhalen we dit principe.
+
+Onderstaande functie verwacht een sequence van drie (of meer) elementen.
+Vervolgens wordt er een lijst opgeleverd van die drie elementen.
+
+#+BEGIN_SRC clojure
+(defn list-xyz [some-seq]
+  (list (first some-seq) (second some-seq) (nth some-seq 2)))
+#+END_SRC
+
+Dit kan ook simpeler, met gebruikmaking van sequential destructuring:
+
+#+BEGIN_SRC clojure
+(defn list-xyz [[x y z]]
+  (list x y z))
+#+END_SRC
+
+**** Map destructuring
+Naast destructuring op een sequence kent Clojure ook destructuring op
+een map. Dat werkt als volgt:
+
+#+BEGIN_SRC clojure
+(defn list-xyz [xyz-map]
+  (list (:x xyz-map) (:y xyz-map) (:z xyz-map)))
+#+END_SRC
+
+Bovenstaande functie verwacht een map als input. Als resultaat wordt er
+een lijst opgeleverd die de waarden bij de keys =:x=, =:y= en =:z= uit =xyz-map=
+bevat. Ditzelfde kan je ook doen door map-destructuring toe te passen:
+
+#+BEGIN_SRC clojure
+(defn list-xyz [{x :x, y :y, z :z}]
+  (list x y z))
+(list-xyz {:x 1 :y 2 :z 3}) ;;=> (1 2 3)
+#+END_SRC
+
+Op de plek waar we de map als argument verwachten zetten we een map neer
+met namen en keys. In de functie kun je vervolgens refereren aan de
+namen, waar dan de waarden in staan die horen bij de keys uit de map.
+
+Tenslotte kent Clojure nog een kortere notatie voor map destructuring:
+
+#+begin_src clojure
+(defn list-xyz [{:keys [x y z]}]
+  (list x y z))
+(list-xyz {:x 1 :y 2 :z 3}) ;;=> (1 2 3)
+#+end_src
+
+# TODO more exercises in this chapter
+
+* Casus 1: Fibonacci
+
+In dit hoofdstuk tonen we hoe je de rij van Fibonacci kan programmeren
+op diverse manieren in zowel Java als in Clojure.
+
+** In Java
+
+De getallenrij van Fibonacci ziet er als volgt uit:
+
+#+BEGIN_EXAMPLE
+    0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ...
+#+END_EXAMPLE
+
+De eerste twee getallen zijn gedefinieerd als 0 en 1. De volgende
+getallen zijn de som van de voorgaande twee getallen. In wiskundige
+notatie:
+
+\begin{equation}
+F_{n} = F_{n-1} + F_{n-2}, n > 1 \\
+F_{0} = 0 \\
+F_{1} = 1
+\end{equation}
+
+We laten eerst zien hoe je de rij van Fibonacci in Java zou kunnen
+programmeren. Een typisch iteratieve manier:
+
+#+BEGIN_SRC java
+public class FibonacciIterative {
+
+  public static int fib(int n) {
+
+    int previous1 = 0, previous2 = 1;
+
+    for(int i = 0; i < n; i++) {
+      int temp = previous1;
+      previous1 = previous2;
+      previous2 = temp + previous2;
+    }
+
+    return previous1;
+  }
+
+}
+#+END_SRC
+
+Het n-de Fibonacci-getal wordt met een methode =fib= uitgerekend waarin
+for-loop gebruikt wordt.
+
+-  Als =fib(0)= wordt berekend, dan zullen er geen iteraties plaats vinden
+   in de for-loop en wordt de lokale variabele =previous1= met waarde 0
+   teruggegeven.
+
+-  Als =fib(1)= wordt berekend, dan zal er slechts 1 iteratie plaatsvinden
+   in de for-loop. De lokale variabele =previous1= krijgt dan de waarde van
+   =previous2= met waarde 1. Na de for-loop wordt 1 teruggegeven.
+
+-  Bij aanroepen van =fib= met een waarde =n= groter dan 1 loopt de for-loop
+   =n= iteraties en wordt het n-de getal van de rij van Fibonacci berekend
+   op basis van de voorgaande waarden.
+
+Omdat er voor de berekening van =fib(n)= precies =n= stappen nodig zijn
+zeggen we ook wel dat dit algoritme werkt in tijd $O(n)$ of lineaire
+tijd. Deze notatie noemen we de grote $O$ notatie en is een maat voor de
+complexiteit van het algoritme.
+
+Een voordeel van deze implementatie is dat het een recht-toe recht-aan
+implementatie is die weinig geheugen kost: er zijn steeds slechts drie
+lokale variabelen waarin tussentijdse waarden moeten worden bijgehouden.
+Een nadeel van deze implementatie is dat bij een tweede aanroep van fib
+met eenzelfde waarde alle berekeningen weer opnieuw moeten worden
+gedaan. Verder is de code vergeleken met de wiskundige definitie van
+Fibonacci minder elegant.
+
+Een manier om de code meer elegant te maken is door recursie toe te
+passen. Zo lijkt de code meer op de wiskundige definitie.
+
+#+BEGIN_SRC java
+public class FibonacciRecursive {
+      
+  public static int fib(int n) {
+  
+    if (n < 2) {
+      return n;
+    }
+    else {
+      return fib(n-1)+fib(n-2);
+    }
+    
+  }
+}
+#+END_src 
+
+Deze oplossing werkt prima voor kleine n. Bijvoorbeeld:
+
+#+BEGIN_src java
+public static void main(String[] args) {
+      
+  System.out.println(Fibonacci.fib(10))
+}
+#+END_src
+
+levert als output =55=.
+
+De methode fib aanroepen met =100= duurt echter al aanzienlijk langer. Dit
+komt omdat dit algoritme niet erg efficiënt is. Bijvoorbeeld voor ~n =
+100~ moet =fib(99)= en =fib(98)= worden uitgerekend. Maar =fib(99)=
+en =fib(98)= worden geheel onafhankelijk van elkaar uitgerekend, terwijl
+je het resultaat van =fib(98)= juist zou kunnen gebruiken om =fib(99)= te
+berekenen. Het n-de element van Fibonacci en het n-min-1de element van
+Fibonacci kunnen beide het n-min-2de delen. Dat gebeurt nu niet.
+Onderstaande afbeelding illustreert dit voor =fib(5)=. In grote
+$O$-notatie zegt men dat dit algoritme in $O(2^n)$ tijd werkt. Voor
+elke n verdubbelt het aantal stappen.
+
+#+CAPTION: Recursief maar inefficient. Bron: reader Datastructuren en Algoritmen, Joop Kaldeway
+[[file:pictures/fib_rec1.png]]
+
+# plot is gemaakt met gnuplot, zie folder plots
+[[file:pictures/plot1.png]]
+
+Een vergelijking tussen het iteratieve algoritme en het recursieve
+algoritme in termen van complexiteit zien we in figuur bovenstaand figuur.
+Daaraan zien we dat het algoritme wat in tijd $O(n)$ werkt altijd beter
+presteert. Een ander nadeel van het recursieve algoritme is dat er een
+stackoverflow op zou kunnen treden.
+
+Hoe kunnen we een recursieve oplossing schrijven die net zo goed
+presteert als de iteratieve oplossing? Dat kan door in plaats van lokale
+variabelen te gebruiken om de vorige waarden te onthouden deze mee te
+geven als parameter.
+
+#+begin_src java
+public class FibTailRecursive {
+
+  public static int fib(int n) {
+    if (n < 2) {
+      return n;
+    }
+    else {
+      return fib(n, 1, 0, 1);
+    }
+  }
+
+  private static int fib(int n, int iteration, 
+                         int f_min_2, int f_min_1) {
+    if (n == iteration) {
+      return f_min_1;
+    }
+    else {
+      return fib(n, iteration + 1, 
+                 f_min_1, f_min_2 + f_min_1);
+    }
+  }
+}
+#+end_src
+
+In bovenstaande oplossing zien we dat bij een aanroep van =fib(n)=
+voor =n < 2= n zelf wordt teruggegeven. Als =n= gelijk aan of groter wordt een
+overloaded versie van =fib= aangeroepen met vier argumenten. Het eerste
+argument =n= is het argument waarmee =fib(n)= aangeroepen werd. Het tweede
+argument is een iteratie-variabele: hiermee houden we bij hoe vaak we
+nog een recursieslag moeten ingaan. De laatste twee argumenten stellen
+twee opvolgende waarden uit de rij van Fibonacci voor.
+
+Een voorbeeld-aanroep van =fib(5)= verloopt nu als volgt:
+
+$fib(5) \rightarrow fib(5,1,0,1) \rightarrow fib(5,2,1,1) \rightarrow fib(5,3,1,2) \rightarrow
+fib(5,4,2,3) \rightarrow fib(5,5,3,5) \rightarrow 5$
+
+Qua complexiteit is dit recursieve algoritme gelijk aan het iteratieve
+algoritme: voor =fib(n)= zijn er n stappen nodig. We zeggen dus dat dit
+algoritme in tijd $O(n)$ werkt. De gebruikte techniek is echter anders.
+In het iteratieve algoritme gebruikten we lokale variabelen die we
+gingen mutereren. In dit recursieve algoritme muteren we geen
+variabelen, maar geven we steeds nieuwe waarden mee aan een volgende
+recursieve aanroep. Omdat we in Clojure zoveel mogelijk functioneel
+willen werken en daarom geen muteerbare variabelen willen gebruiken,
+lijkt deze aanpak erg op de aanpak die we zometeen in Clojure zullen
+gaan gebruiken.
+
+*Tail recursion*
+Bovenstaand recursief algoritme is een voorbeeld van een /tail
+recursive/ algoritme. Dat wil zeggen dat de return-waarde van de methode
+een simpele waarde is (de uiteindelijke uitkomst) of een recursieve call
+naar zichzelf. Het eerste inefficiente algoritme was niet tail
+recursive: de return-waarde is de som van twee recursieve
+aanroepen. In Clojure kan een tail recursive functie worden
+ge-optimaliseerd, mits de recursieslag met =recur= gedaan wordt.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 28.*
+#+end
+De tail recursive variant zou met 1 parameter minder kunnen.
+Hoe?
+
+*Memoization*
+Een veelgebruikte oplossing om berekeningen niet dubbel uit te voeren
+bij een aanroep van een functie met hetzelfde argument is memoization.
+Bij een aanroep van de functie wordt er in een tabel gekeken of er voor
+die argumenten al eens een berekening is uitgevoerd. Zo ja, dan wordt
+het resultaat uit de tabel gehaald en teruggegeven als return-waarde van
+de functie. Zo nee, dan wordt de berekening uitgevoerd, het resultaat in
+de tabel opgeslagen en het resultaat teruggegeven als return-waarde van
+de functie.
+
+In Java zou je memoization als volgt kunnen implementeren. Als "tabel"
+gebruiken we een simpele ArrayList welke de opeenvolgende elementen van
+de reeks van Fibonacci voorstellen.
+
+#+BEGIN_SRC java
+import java.math.BigInteger;
+import java.util.ArrayList;
+
+public class FibonacciMemoized {
+
+  private static ArrayList<BigInteger> fibCache = 
+    new ArrayList<BigInteger>();
+
+  static {
+    fibCache.add(BigInteger.ZERO);
+    fibCache.add(BigInteger.ONE);
+  }
+        
+  public static BigInteger fib(int n) {
+    if (n >= fibCache.size()) {
+      BigInteger fib_n_min_1 = fib(n-1);
+      BigInteger fib_n_min_2 = fib(n-2);
+      BigInteger fib_n = fib_n_min_1.add(fib_n_min_2);
+      fibCache.add(n, fib_n);
+    }
+    return fibCache.get(n);
+  }    
+}
+#+END_src
+
+Een =static= block wordt uitgevoerd zodra een class wordt geladen in Java,
+nadat de static attributen zijn geinitialiseerd. De =ArrayList= =fibCache=
+wordt dus eerst geinitialiseerd en vervolgens worden er het getal =0=
+en =1= in de vorm van =BigIntegers= aan toegevoegd. Dit zijn de eerste twee
+getallen uit de Fibonacci-reeks. Voor documentatie van BigInteger zie:
+[[http://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html]].
+Als =fib= nu wordt aangeroepen wordt er gekeken of =n= groter is dan de
+lengte van =fibCache=. Zo ja, dan is er nog geen berekening gedaan voor
+het getal =n=. Vervolgens wordt er op de n-de positie van =fibCache=
+uitgerekende waarde van =fib(n)= geplaatst. Het uitrekenen vindt weer op
+een recursieve manier plaats. Merk op dat we hier geen tail-recursion
+gebruiken. Bij gebruik van memoization maakt het namelijk niet veel uit
+of je tail recursion gebruikt zoals we nu zullen zien. In Clojure
+zullen we echter wel zoveel mogelijk werken met tail-recursion
+(=recur= dwing dit af).
+
+[[file:pictures/fibmem1.png]]
+
+In bovenstaande zien we een aanroep van =fib(4)=. Om =fib(4)= te
+berekenen moeten we eerst =fib(3)= en later =fib(2)= berekenen. Voor
+=fib(3)= moet eerst =fib(2)= worden berekend en later =fib(1)=. Voor
+de berekening van =fib(2)= is =fib(1)= en =fib(0)= nodig, maar deze
+kunnen rechtstreeks uit de cache worden opgevraagd. In vet is
+aangegeven welke waarden van =fib= al in de cache aanwezig zijn, zoals
+ook zichtbaar is in de tabel. De omcirkeling geeft aan welke waarde
+van fib als eerstvolgende stap zal worden berekend, dat is nu =fib(2)=.
+De pijltjes wijzen naar de waarden die nodig zijn om deze stap uit te
+rekenen. Zodra =fib(2)= is berekend wordt de uitkomst toegevoegd aan de
+cache.
+
+[[file:pictures/fibmem2.png]]
+
+In bovenstaande gaan we verder met de berekening van =fib(3)=.
+Inmiddels is de uitkomst van =fib(2)= toegevoegd aan de cache. De uitkomst
+van =fib(3)= is afhankelijk van =fib(2)= en =fib(1)= welke beide al in de
+cache aanwezig zijn. We tellen deze waarden op en voegen het resultaat
+in de cache toe. Het resultaat daarvan zien we onderstaande figuur.
+
+[[file:pictures/fibmem3.png]]
+
+De berekening van =fib(4)= kan nu verder gaan. Deze waarde is afhankelijk
+van =fib(3)= en =fib(2)= welke beide in de cache aanwezig zijn. De laatste
+stap die nu plaats vindt is het toevoegen van de uitkomst van =fib(4)= aan
+de cache en het teruggeven van de uitkomst als return-waarde van de
+methode. Het eindresultaat zien we in de volgende figuur.
+
+[[file:pictures/fibmem4.png]]
+
+We kunnen nu nadenken over de complexiteit van dit algoritme. Hoeveel
+stappen kostte het om =fib(4)= te berekenen? Evenveel als in het
+tail-recursive algoritme. De tijd-complexiteit is daarom weer $O(n)$. Er
+zit hier echter een addertje onder het gras. De volgende keer als we
+=fib(4)= willen opvragen, kan de waarde rechtstreeks uit de cache worden
+teruggegeven en hoeft niet opnieuw worden te berekend. Daardoor zal dit
+algoritme voordeliger zijn bij veel herhaalde aanroepen van fib met
+dezelfde waarden. Dit algoritme heeft als nadeel dat het meer geheugen
+kost: bij het opvragen van =fib(n)= worden alle waarden van =fib(x)=, =0 <= x
+<= n= berekend en opgeslagen in de cache.
+
+De Java-code uit bovenstaande voorbeelden is grotendeels ontleend aan de
+pagina [[http://en.literateprograms.org/Fibonacci_numbers_(Java)]].
+
+** In Clojure
+
+We zullen nu de voorbeelden die we geprogrammeerd hebben in Java in
+Clojure gaan uitwerken.
+
+Als we het algoritme beschreven in class =FibonacciIterative=  willen nabootsen
+in Clojure lopen we tegen een probleem aan. Je zou in dit algoritme
+lokale variabelen nodig hebben die je moet muteren. Dat is in Clojure
+geen goede aanpak. Het kan wel, maar het is vaak niet nodig. En als het
+niet nodig is, doe het dan ook niet, maar probeer je code functioneel te
+houden en waar mogelijk mutable state te vermijden.
+
+**** Recursieve oplossingen
+
+We gaan verder met het algoritme beschreven in class =FibonacciRecursive=. Dit
+algoritme maakt geen gebruik van mutable state, maar is zoals eerder
+aangetoond nogal inefficiënt. Je kunt het in Clojure echter wel op deze
+manier programmeren:
+
+#+BEGIN_SRC clojure
+(defn fib [n]
+  (if (< n 2) n
+    (+' (fib (dec n)) (fib (- n 2)))))
+#+END_SRC
+
+Hier moeten we opmerken dat deze manier van recursie in Clojure als niet
+"idiomatic" wordt gezien. Je moet in Clojure voor recursie eigenlijk
+altijd de recur-constructie gebruiken. Deze dwingt af dat je een
+recursieve functie tail recursive maakt en ook geoptimaliseerd kan
+worden door de Clojure-compiler. Daarmee komen we bij het
+programmeren van het tail recursive algoritme in Clojure.
+
+In bovenstaand voorbeeld zien we dat de functie +' in plaats van =+=
+gebruikt wordt. Dit is nodig wanneer we met erg grote getallen gaan
+werken:
+
+#+begin_src clojure
+user=>  Long/MAX_VALUE
+9223372036854775807
+user=> (+ Long/MAX_VALUE 1)
+ArithmeticException integer overflow
+user=> (+' Long/MAX_VALUE 1)
+9223372036854775808N
+user=> (type *1) ;; *1 is de vorige waarde
+clojure.lang.BigInt
+#+end_src
+  
+In het geval van +' gaat Clojure automatisch over van een Long naar
+een =clojure.lang.BigInt=.
+
+#+BEGIN_SRC clojure
+(defn fib
+  ([n] (if (< n 2) n
+    (fib n 1 0 1)))
+  ([n iter fmin2 fmin1]
+    (if (= n iter) fmin1
+      (recur n (inc iter) fmin1 (+' fmin2 fmin1)))))
+#+END_SRC
+
+Deze functiedefinitie bestaat uit twee delen. Het eerste gedeelte is
+bedoeld voor het geval dat de functie met =1= argument aangeroepen wordt.
+Indien =n= kleiner is dan 2 dan wordt =n= zelf teruggegeven. Dus =fib(0)=
+wordt 0 en =fib(1)= wordt 1: de eerste twee Fibonacci getallen. Als =n=
+groter of gelijk aan 2 is roepen we de functie aan met vier argumenten.
+Daarvoor is het tweede gedeelte van de functie. Dit gedeelte accepteert
+de volgende waarden:
+
+-  n: het n-de Fibonacci-getal
+
+-  iter: met welke iteratie zijn we bezig?
+
+-  fmin2: het getal voorafgaand aan het vorige Fibonacci-getal
+
+-  fmin1: het vorige Fibonacci getal
+
+Als we even een =println= toevoegen aan de code en dan een aanroep doen
+met ~n >= 2~ dan is goed te volgen wat er gebeurt.
+
+#+begin_src clojure -n
+(defn fib
+  ([n] (if (< n 2) n
+           (fib n 1 0 1)))
+  ([n iter fmin2 fmin1]
+    (println n iter fmin2 fmin1)
+    (if (= n iter) fmin1
+      (recur n (inc iter) fmin1 (+' fmin2 fmin1)))))
+
+(fib 5)
+;;=>
+5 1 0 1 ;; side effect
+5 2 1 1 ;; side effect
+5 3 1 2 ;; side effect
+5 4 2 3 ;; side effect
+5 5 3 5 ;; side effect
+5       ;; resultaat
+#+end_src
+
+Op regel 11 zien we de println van de eerste iteratie. De eerste twee
+getallen van de Fibonacci-reeks zijn meegegeven: =0= en =1=. Op regel 12
+zien we de aanroep van de tweede iteratie. We zien dat het tweede getal
+van de eerste iteratie een naar links is geschoven en het volgende
+Fibonacci-getal op de rechterplaats wordt meegegeven. Dit proces
+herhaalt zich net zo lang tot we genoeg iteraties hebben doorlopen. Dan
+wordt het eindresultaat teruggegeven.
+
+**** Atoms
+
+In het gedeelte wat hierop volgt, gaan we memoization toepassen met
+het gebruik van mutable state. Clojure bevat vier soorten mutable
+storage locations: Vars, Atoms, Refs en Agents. Atoms zijn bedoeld om
+onafhankelijke data op te kunnen slaan en synchroon te updaten. Het
+updaten van atoms gebeurt op een thread-safe manier, vrij van
+race-condities. Refs zijn een uitgebreider referentietype. Meerdere
+Refs kunnen binnen één enkele transactie worden ge-updated,
+vergelijkbaar met een commit bij een database. We zullen ons in dit
+dictaat beperken tot het gebruik van Atoms. Meer informatie over de
+andere mutable storage locations in Clojure is te vinden op
+[[http://clojure.org/Vars]].
+
+Het aanmaken van een atom gebeurt met de atom-functie en een
+beginwaarde:
+
+#+BEGIN_SRC clojure
+(def my-atom (atom {}))
+#+END_SRC
+
+In dit geval hebben we als beginwaarde een lege map gekozen. De waarde
+van de atom kan opgevraagd worden als volgt:
+
+#+BEGIN_SRC clojure
+@my-atom ;;=> {}
+#+END_SRC
+
+Het bijwerken van de waarde van een atom kan op twee manieren, met =swap!=
+of =reset!=. Bij =swap!= moet je de atom, een functie en argumenten voor de
+functie meegeven. De functie krijgt als extra argument nog de huidige
+waarde van de atom mee. Een voorbeeld:
+
+#+BEGIN_SRC clojure
+(swap! my-atom assoc :foo 1) ;;=> {:foo 1}
+#+END_SRC
+
+De functie assoc krijgt nu de huidige waarde van my-atom (een lege map)
+mee en de argumenten :foo en 1. Het resultaat van deze functie-aanroep
+wordt vervolgens opgeslagen in de atom. Deze operatie is thread-safe.
+
+Om het voorbeeld toe te lichten pakken we de documentatie van =swap!= er
+bij:
+
+#+BEGIN_EXAMPLE
+clojure.core/swap!
+([atom f] [atom f x] [atom f x y] [atom f x y & args])
+Atomically swaps the value of atom to be:
+(apply f current-value-of-atom args). Note that f may be called
+multiple times, and thus should be free of side effects.  Returns
+the value that was swapped in.
+#+END_EXAMPLE
+
+Wat =swap!= dus doet is de waarde van de atom verwisselen met de
+expressie =(apply assoc {} :foo 1)= en dit resulteert in ={:foo 1}=.
+In plaats van de map die zich in de atom bevond, wordt nu dus
+diezelfde map met een key-value paar toegevoegd erin gezet. Let erop
+dat de map zelf die zich in de atom bevindt nog steeds immutable is.
+Kortom, =swap!= verwacht een functie die aan de hand van de oude
+waarde in de atom een nieuwe waarde maakt.
+
+Verder kent de atom nog de =reset!=-operatie. Deze verwisselt ongeacht de
+huidige waarde van de atom de inhoud van de atom met een nieuwe waarde:
+
+#+BEGIN_SRC clojure
+(reset! my-atom {:bar 2})
+;;=> {:bar 2}
+#+END_SRC
+
+Ook deze operatie is thread-safe. Beide operaties =swap!= en =reset!=
+leveren als resultaat de nieuwe waarde van de atom op. In Clojure is het
+de gewoonte om de namen van functies die state veranderen als side
+effect op een uitroepteken te laten eindigen. Vandaar dat dit bij =swap!=
+en =reset!= ook het geval is: als side effect wijzigen ze de inhoud van
+een atom.
+
+**** Memoization
+
+Tot slot gaan we in Clojure een oplossing van Fibonacci met memoization
+programmeren. Deze oplossing houdt dus reeds berekende waarden bij in
+een tabel. Als de functie die we gaan programmeren dus twee keer met
+dezelfde argumenten aangeroepen wordt, berekent de functie niet een
+tweede keer de return-waarde, maar wordt deze opgehaald uit een tabel.
+In Clojure zijn hier twee manieren voor. De eerste is het gebruik van
+een mutable storage location waarin we een vector bijhouden. De ander is
+het gebruik van een lazy sequence.
+
+*Memoization met een atom*
+
+De atom waarin we de tabel gaan opslaan ziet er als volgt uit:
+
+#+BEGIN_SRC clojure
+(def my-atom (atom {0 0, 1 1}))
+#+END_SRC
+
+De atom bevat als beginwaarde een map met twee key-value paren. In deze
+map stellen de keys het argument n van de functie fib voor en de values
+de bijbehorende Fibonacci-waarden. We hadden als tabel trouwens evengoed
+een vector kunnen gebruiken.
+
+Een versie van Fibonacci die gebruik maakt van de atom ziet er als volgt
+uit:
+
+#+begin_src clojure -n
+(defn fib-memo [n]
+  (let [fibn (get @my-atom n)]
+    (if fibn fibn
+     (let [res (+' (fib-memo (dec n))
+                  (fib-memo (- n 2)))]
+       (swap! my-atom assoc n res)
+         res))))
+#+end_src
+
+Je bovenstaande code als volgt lezen. Als de functie =fib-memo= wordt
+aangeroepen, wordt er eerst gekeken of bij bijhorende =n= al een waarde in
+de map in =my-atom= zit. Zo ja, dan wordt die waarde teruggegeven (regel
+3). Zo niet, dan gaan we eerst het resultaat berekenen. Dat is de som
+van =fib-memo(n-1)= en =fib-memo(n-2)=. Vervolgens voegen we de key =n= en de
+berekende waarde res aan de map in de atom toe (regel 6). Als laatste
+stap leveren we het resultaat op (regel 7).
+
+Een verbetering aan de functie zou zijn om de atom te verbergen door van
+de functie een closure te maken over de atom. In dat geval hebben we de
+losse =my-atom= niet meer nodig:
+
+#+begin_src clojure -n
+(def fib-memo
+  (let [cache (atom {0 0, 1 1})]
+    (fn [n]
+      (let [fibn (get @cache n)]
+        (if fibn fibn
+          (let [res (+' (fib-memo (dec n))
+                        (fib-memo (- n 2)))]
+               (swap! cache assoc n res)
+               res))))))  
+#+end_src
+
+Let erop dat de atom aangemaakt moet worden buiten de functiedefinitie.
+Anders zal er bij elke functieaanroep weer een nieuwe atom aangemaakt
+worden, waardoor we niet meer bij de key-values van de vorige
+functie-aanroep kunnen. Alle functie-aanroepen van =fib-memo= delen nu dus
+dezelfde (verborgen) atom, net zoals in het vorige voorbeeld. De
+functie =fib-memo= is een closure over de atom.
+
+We kunnen nu een test doen in Clojure om te kijken of een herhaalde
+berekening daadwerkelijk sneller gaat. Daarvoor kunnen we de time-macro
+gebruiken. Deze accepteert een stukje code en rekent uit hoeveel tijd
+het kost om het stukje code uit te voeren:
+
+#+BEGIN_SRC clojure
+user=> (time (fib-memo 1000))
+"Elapsed time: 7.812 msecs"
+43466557686937456435688527675040625802564660517371780...
+user=> (time (fib-memo 1000))
+"Elapsed time: 0.041 msecs"
+43466557686937456435688527675040625802564660517371780...
+#+END_SRC
+
+We zien dat de tweede aanroep aanzienlijk minder tijd kost.
+
+# Tenslotte nog een piepkleine verbetering aan onze code. In plaats van
+# het patroon
+
+# #+begin_src clojure
+# (let [i (f x)]
+#  (if i "i is niet nil of false"
+#        "i is wel nil of false"))
+# #+end_src
+
+# kun je in Clojure het volgende schrijven:
+
+# #+begin_src clojure
+# (if-let [i (f x)]
+#   "i is niet nil of false"
+#   "i is wel nil of false")
+# #+end_src
+
+# De constructie =if-let= combineert dus =let= en =if=. Als we dit
+# toepassen op =fib-memo= krijgen we:
+
+# #+begin_src clojure 
+# (def fib-memo
+#   (let [cache (atom {0 0, 1 1})]
+#     (fn [n]
+#       (if-let [fibn (get @cache n)]
+#         fibn
+#         (let [res (+' (fib-memo (dec n))
+#                       (fib-memo (- n 2)))]
+#              (swap! cache assoc n res)
+#              res)))))  
+# #+end_src
+
+# #+begin_src clojure 
+# (def fib-memo
+#   (let [cache (atom {0 0, 1 1})]
+#     (fn [n]
+#       (or (get @cache n)
+#           (let [res (+' (fib-memo (dec n))
+#                         (fib-memo (- n 2)))]
+#              (swap! cache assoc n res)
+#              res))))) 
+# #+end_src
+
+Overigens hoef je memoization bij een functie niet handmatig te
+programmeren zoals hierboven is gedaan. De HOF =memoize= kan een
+gememoizde versie van een functie maken:
+
+#+begin_src clojure
+(defn fib
+  "non memoized fibonacci"
+  ([n] (if (< n 2) n
+           (fib n 1 0 1)))
+  ([n iter fmin2 fmin1]
+    (if (= n iter) fmin1
+      (recur n (inc iter) fmin1 (+' fmin2 fmin1)))))
+
+(time (fib 1000)) ;;=> "Elapsed time: 0.322 msecs"
+(time (fib 1000)) ;;=> "Elapsed time: 0.296 msecs"
+
+(def fib-memo (memoize fib))
+
+(time (fib-memo 1000)) ;;=> "Elapsed time: 0.537 msecs"
+(time (fib-memo 1000)) ;;=> "Elapsed time: 0.027 msecs"
+#+end_src
+
+De versies van Fibonacci die we tot nu toe hebben gezien in dit
+hoofdstuk gebruiken =recur=. Vaak wordt =recur= in Clojure gezien als
+'too low level'. Je kunt immers iteraties ook programmeren met hogere
+orde functies. Kandidaten voor iteraties zijn bijvoorbeeld de functie
+=iterate= en =reduce=. Een toepassing van beide functies zien we
+hieronder:
+
+#+begin_src clojure 
+user=> (defn fib-step [[a b]]
+  #_=>   [b (+ a b)])
+#'user/fib-step
+user=> (fib-step [0 0])
+[0 0]
+user=> (fib-step [0 1])
+[1 1]
+user=> (fib-step [1 1])
+[1 2]
+user=> (fib-step [1 2])
+[2 3]
+user=> (fib-step [2 3])
+[3 5]
+user=> (take 10 (iterate fib-step [0 1]))
+([0 1] [1 1] [1 2] [2 3] [3 5] [5 8] [8 13] [13 21] [21 34] [34 55])
+user=> (nth (take 10 (iterate fib-step [0 1])) 9)
+[34 55]
+user=> (first (nth (take 10 (iterate fib-step [0 1])) 9))
+34
+user=> (defn fibonacci [n]
+  #_=>   (-> (iterate fib-step [0 1])
+  #_=>       (nth n)
+  #_=>       first))
+#'user/fibonacci
+user=> (fibonacci 0)
+0
+user=> (fibonacci 1)
+1
+user=> (fibonacci 2)
+1
+user=> (fibonacci 3)
+2
+user=> (fibonacci 4)
+3
+user=> (fibonacci 5)
+5
+user=> (defn fibonacci' [n]
+  #_=>   (first (reduce (fn [[a b] n] (fib-step [a b])) [0 1] (range n))))
+user=> (fibonacci' 5)
+5
+#+end_src
+
+#+begin: advanced
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Verdieping 3.*
+#+end
+
+*Memoization met een lazy sequence* Als toegift geven we hier nog een
+zeer korte, elegante oplossing voor Fibonacci als lazy sequence. (De
+oplossing met =iterate= maakte trouwens ook gebruik van een lazy
+sequence.) De volgende oplossing is geïnspireerd door Haskell en is wat
+lastiger te begrijpen.
+
+#+BEGIN_SRC clojure
+(def fib-seq (lazy-cat [0 1] (map +' fib-seq (rest fib-seq))))
+#+END_SRC
+
+=Lazy-cat= zorgt ervoor dat twee collecties aan elkaar geplakt worden
+en als lazy sequence beschikbaar worden gesteld. De collecties worden
+hierbij niet ge-evalueerd totdat de elementen hiervan nodig zijn. De
+eerste twee elementen van de sequence zijn 0 en 1. De rest van de
+sequence wordt gevormd door de expressie =(map +' fib-seq (rest
+fib-seq))=. Hier hebben we te maken met een recursieve definitie.
+Laten we eens nagaan wat er gebeurt wanneer het derde element van
+=fib-seq= wordt opgevraagd. Eerst worden dan de eerste twee elementen
+opgevraagd, dit zijn 0 en 1. Het volgende element is het eerste
+element van =(map + fib-seq (rest fib-seq))=, wat de som is van 0 en
+1, dus 1. Het vierde element is dan de som van het tweede element van
+=fib-seq= en het derde element van fib-seq (welke zojuist was
+berekend): dit is 2. Je ziet dat dit de reeks van Fibonacci oplevert
+op een lazy manier.
+
+#+begin_src clojure
+(time (nth fib-seq 1000)) ;;=> "Elapsed time: 1.88 msecs"
+(time (nth fib-seq 1000)) ;;=> "Elapsed time: 0.114 msecs"
+#+end_src
+
+Omdat resultaten van lazy sequences worden gecached zien we bij de
+tweede vraag naar het duizendste element van =fib-seq= een
+aanzienlijke tijdsverbetering.
+
+* Macros
+Clojure is een Lisp. Dat betekent onder andere dat programma's
+gerepresenteerd zijn als lijsten en dat zo'n lijst opgevat kan worden
+als data waarmee je binnen de taal kan werken. 
+
+** Evaluatie, quoting en unquoting
+
+Normaal gesproken wordt een Clojure-expressie meteen ge-evalueerd.
+Dit zien we hieronder:
+#+BEGIN_SRC clojure
+(+ 1 2 3) ;;=> 6
+#+END_SRC
+
+De expressie =(+ 1 2 3)= is in feite een lijst waarvan het eerste
+element een Symbol is en de overige elementen int-literals. We
+kunnen evaluatie van de expressie tegenhouden door de special form
+=quote= toe te passen of er een quotje voor te
+zetten, wat een shortcut voor =quote= is:
+
+#+BEGIN_SRC clojure
+(quote (+ 1 2 3)) ;;=> (+ 1 2 3)
+'(+ 1 2 3) ;;=> (+ 1 2 3)
+#+END_SRC
+
+Zo kunnen we ook aantonen wat we hierboven hebben beweerd:
+
+#+BEGIN_SRC clojure
+(def quoted-expr '(+ 1 2 3)) 
+(type quoted-expr) ;;=> clojure.lang.PersistentList
+(type (first quoted-expr)) ;;=> clojure.lang.Symbol
+(type (second quoted-expr)) ;;=> java.lang.Long
+#+END_SRC
+
+Zonder quoting beschouwt de Reader deze lijst als een
+Clojure-expressie en zal de expressie gaan evalueren. De eerste stap is
+dat er symbol-resolutie wordt toegepast. Het Symbol =+= wordt geresolved
+naar de Var =#'clojure.core/+=. Vervolgens wordt de functie die bij deze
+Var hoort toegepast op de rest van de lijst: drie getallen. Het
+resultaat is =6=. Dat resultaat wordt vervolgens in de REPL afgedrukt.
+
+Een gequote expressie kan je alsnog evalueren met eval:
+
+#+BEGIN_SRC clojure
+(eval quoted-expr) ;;=> 6
+#+END_SRC
+
+Een Clojure-expressie kan genest zijn. Zo in onderstaand voorbeeld:
+#+BEGIN_SRC clojure
+'(+ (- 1 2) (+ 1 2)) ;;=> (+ (- 1 2) (+ 1 2))
+#+END_SRC
+
+Het quotje zorgt ervoor dat de gehele expressie onge-evalueerd blijft.
+
+Je kan een bovenstaande lijst ook opbouwen met =list=, maar je moet dan
+per deel-expressie weer een quotje gebruiken, omdat de argument van
+=list= ge-evalueerd worden:
+
+#+BEGIN_SRC clojure
+(list '+ '(- 1 2) '(+ 1 2)) ;;=> (+ (- 1 2) (+ 1 2))
+#+END_SRC
+
+Een variant van het simpele quotje is de syntax-quote, waarvoor het
+symbool =`= gebruikt wordt. Men noemt dit symbool ook wel de backtick.
+Met de backtick blijft een expressie onge-evalueerd, maar worden symbols
+wel volledig gekwalificeerd naar hun bijbehorende namespace:
+
+#+BEGIN_SRC clojure
+`(+ (- 1 2) (+ 1 2)) ;;=> 
+(clojure.core/+ (clojure.core/- 1 2) (clojure.core/+ 1 2))
+#+END_SRC
+
+De syntax-quote heeft als bijkomende eigenschap dat je deelexpressies
+kan unquoten, door er een tilde, =~= , voor te zetten:
+
+#+BEGIN_SRC clojure
+`(+ ~(- 1 2) (+ 1 2)) ;;=>
+(clojure.core/+ -1 (clojure.core/+ 1 2))
+#+END_SRC
+
+De =~= heet in Clojure ook wel =unquote= en heeft alleen betekenis
+binnen de syntax quote, =`=. In bovenstaand voorbeeld zien we dat de
+deelexpressie (- 1 2) wel gesubstitueerd wordt door de resulterende waarde =-1=, maar dat de rest
+ongevalueerd blijft.
+
+Hetzelfde kun je als volgt bereiken.
+
+#+BEGIN_SRC clojure
+(list `+ (- 1 2) `(+ 1 2)) ;;=>
+(clojure.core/+ -1 (clojure.core/+ 1 2))
+#+END_SRC
+
+In bovenstaande wordt dus alles ge-syntax-quoted, behalve de
+expressie =(-1 2)= welke evalueert naar =1=.
+
+Als variant op de tilde hebben we nog de unquote-splicing operator,
+die met =~@= genoteerd wordt. Het idee daarvan is dat je niet een
+lijst substitueert, maar alleen de elementen uit die lijst.
+Het verschil met of zonder splicing wordt in onderstaand voorbeeld
+getoond:
+
+#+BEGIN_SRC clojure
+(let [x '(2 3)] `(1 ~x)) ;;=> (1 (2 3))
+(let [x '(2 3)] `(1 ~@x)) ;;=> (1 2 3)
+#+END_SRC
+
+De technieken die hier zijn besproken met betrekking tot het quoten
+van code staan niet op zichzelf, maar worden vaak toegepast in
+macro's, waarover het volgende gedeelte gaat.
+
+** Macros
+
+In Clojure wordt code als data gerepresenteerd. Deze data kunnen we
+bewerken en aan de hand daarvan nieuwe data produceren, welke ook
+code representeerd. Dit wordt gedaan aan de hand van macro's. We
+zullen nu eerst enkele voorbeelden behandelen van macro's in Clojure:
+
+*** cond
+Het eerste voorbeeld wat we hier behandelen is een toepassing van de
+=cond=-macro, welke we in hoofdstuk [[Clojure Basics]] al voorbij hebben
+zien komen.
+
+#+BEGIN_SRC clojure
+(cond (< 5 4) :foo
+      (= 5 4) :bar
+      :else   :baz) ;;=> :baz
+#+END_SRC
+
+Eigenlijk is =cond= niets anders dan een verkorte notatie voor een geneste
+if:
+
+#+BEGIN_SRC clojure
+(if (< 5 4) :foo
+  (if (= 5 4) :bar
+    (if :else :baz))) ;;=> :baz
+#+END_SRC
+
+Onder water wordt het =cond=-voorbeeld daadwerkelijk omgezet naar
+bovenstaande code.
+
+De =cond=-macro verwacht als argumenten paren van condities en
+resultaten. Vervolgens maakt deze macro er geneste if-expressies van
+die Clojure kan evalueren. Macroexpansie gebeurt normaal gesproken
+door de compiler, maar je kan de macroexpansie ook opvragen in
+Clojure zodat je deze zelf kan bekijken.
+
+#+BEGIN_SRC clojure
+(def cond-expr '(cond (< 5 4) :foo
+                        (= 5 4) :bar
+                        :else   :baz))
+(macroexpand cond-expr) ;;=>
+(if (< 5 4) :foo (clojure.core/cond (= 5 4) :bar :else :baz))
+
+(use '[clojure.walk :only [macroexpand-all]])
+(macroexpand-all cond-expr) ;;=>
+(if (< 5 4) :foo (if (= 5 4) :bar (if :else :baz nil)))
+#+END_SRC
+
+Een macro is bedoeld om stukjes code korter op te kunnen schrijven. De
+macro levert na aanroep dan een uitgebreider stukje code op, wat
+vervolgens weer gecompileerd wordt. Je kunt het resultaat van een
+expansie bekijken met =macroexpand= en =macroexpand-all=. Het verschil
+tussen =macroexpand= en =macroexpand-all= is dat =macroexpand= geen
+sub-expressies expandeert.
+
+Macro's hebben als belangrijke eigenschap dat hun argumenten niet eerst
+ge-evalueerd worden, zoals bij functies wel het geval is. Daardoor kan
+een macro zelf bepalen wat er met een argument moet gebeuren: evalueren
+of niet evalueren en ook het moment van evalueren.
+
+We gaan nu de source bekijken van cond om te bekijken hoe deze macro is
+geschreven:
+
+#+begin_src clojure -n
+(defmacro cond
+  "Takes a set of test/expr pairs. It evaluates each test one at a
+  time.  If a test returns logical true, cond evaluates and returns
+  the value of the corresponding expr and doesn't evaluate any of the
+  other tests or exprs. (cond) returns nil."
+  {:added "1.0"}
+  [& clauses]
+    (when clauses
+      (list 'if (first clauses)
+            (if (next clauses)
+                (second clauses)
+                (throw (IllegalArgumentException.
+                         "cond requires an even number of forms")))
+            (cons 'clojure.core/cond (next (next clauses))))))
+#+end_src
+
+Op regel 8 staat: als er clauses zijn, lever dan het resultaat op van
+de volgende expressie, anders nil (=when levert iets of =nil= op). Als
+=cond= dus met niets aangeroepen wordt, is het resultaat =nil=. Op
+regel 9 wordt er een lijst opgebouwd met als eerste element het Symbol
+=if=, gevolgd door het eerste element van clauses. Stel dat we =cond=
+zouden aanroepen als volgt:
+
+#+BEGIN_SRC clojure
+(cond (< 5 4) :foo
+      (= 5 4) :bar
+      :else   :baz) ;;=> :baz
+#+END_SRC
+
+dan zou =(first clauses)= evalueren naar =(< 5 4)=. Tot nu toe zou er
+dan dus staan: =(list 'if '(< 5 4) ... )=. Vervolgens wordt er op
+regel 10 in een if-expressie met =next= gekeken of er nog meer clauses
+zijn. De functie =next= levert het volgende element in een collectie
+op, of =nil= indien er geen volgend element is. Hier evalueert de
+=if=-expressie dus naar de volgende clausule of het gooien van een
+Exceptie. In het geval van een Exceptie was er blijkbaar geen sprake
+van een even aantal clausules. In dat geval heeft de programmeur
+=cond= verkeerd aangeroepen, want het aantal clausules moet altijd
+even zijn: paren van testen en resultaten. In het geval van
+bovenstaande aanroep zou er nu staan: =(list 'if '(< 5 4) :foo ... )=.
+Vervolgens komt er op de plek van de puntjes nog iets te staan: =(cons
+'clojure.core/cond (next (next clauses)))=. De expressie =(next (next
+clauses))= levert alles behalve de eerste twee clausules op, dus in
+het geval van onze aanroep ~((= 5 4) :bar :else :baz)~. =Cons= zorgt
+ervoor dat het symbol =clojure.core/cond= vooraan deze lijst wordt
+geplakt en dit levert dus op: ~(clojure.core/cond (=
+5 4) :bar :else :baz)~.
+
+Als gevolg van de aanroep zou er dus het volgende worden opgeleverd:
+
+#+BEGIN_SRC clojure
+(if (< 5 4) :foo
+  (clojure.core/cond (= 5 4) :bar 
+                     :else :baz))
+#+END_SRC
+
+We zien dat deze macro zichzelf weer aanroept en dus recursief is.
+
+Als we de macroexpansie stap voor stap uitschrijven, dan komen we op:
+#+BEGIN_SRC clojure
+(if (< 5 4) :foo
+  (clojure.core/cond (= 5 4) :bar 
+                     :else :baz))
+=>
+
+(if (< 5 4) :foo
+  (if (= 5 4) :bar 
+    (clojure.core/cond :else :baz)))
+
+=>
+
+(if (< 5 4) :foo
+  (if (= 5 4) :bar
+    (if :else :baz)))
+#+END_SRC
+
+Als we deze laatste expressie gaan evalueren dan komt daar uiteraard
+=:baz= uit.
+
+*** or
+De macro =or= kun je als volgt gebruiken in Clojure:
+
+#+BEGIN_SRC clojure
+(or nil (println "foo") false "bar" (println "baz"))
+#+END_SRC
+
+De macro =or= levert de eerste waarde op die logisch gezien waar is (alles
+wat niet =nil= of =false= is). We zien hier dat bovenstaande expressie de
+string ="bar"= oplevert. ="foo"= wordt geprint als side effect van de
+expressie =(println "foo")=, maar de print-expressie levert zelf =nil= op.
+Het laatste argument is weer een expressie met een side-effect, maar dit
+side-effect wordt niet uitgevoerd. Dat komt omdat =or= alle argumenten na
+de eerst logisch ware waarde negeert: deze worden dus niet ge-evalueerd.
+Om =or= te kunnen implementeren is er dus controle nodig over welke
+argumenten wel en niet worden ge-evalueerd. Daarom is =or= een macro. De
+source van de macro ziet er als volgt uit:
+
+#+begin_src clojure -n
+(defmacro or
+  "Evaluates exprs one at a time, from left to right. If a form
+  returns a logical true value, or returns that value and doesn't
+  evaluate any of the other expressions, otherwise it returns the
+  value of the last expression. (or) returns nil."
+  {:added "1.0"}
+  ([] nil)
+  ([x] x)
+  ([x & next]
+      `(let [or# ~x]
+         (if or# or# (or ~@next)))))
+#+end_src
+
+Toelichting.
+Op regel 7 zien we dat als =or= wordt aangeroepen zonder argumenten, het
+resultaat =nil= is.
+Regel 8: als het een aanroep betreft met één argument, dan wordt het
+argument zelf teruggegeven.
+Op regel 9-11: indien meerdere argumenten, dan gaan we het eerste
+argument evalueren en bewaren het resultaat in een lokale variabele =or#=.
+Over de merkwaardige hekjesnotatie volgt zometeen uitleg. Als =or#=
+logisch gezien waar is, dan wordt deze teruggegeven als resultaat. Zo
+niet, dan wordt or opnieuw aangeroepen met de rest van de argumenten.
+
+***** Auto-gensym
+
+Omdat binnen in een syntax quote een symbol altijd volledig wordt
+gekwalificeerd met zijn bijbehorende namespace...
+
+#+BEGIN_SRC clojure
+`(let [x 5] (+ x 10))
+;;=> (clojure.core/let [user/x 5] (clojure.core/+ user/x 10))
+(eval `(let [x 5] (+ x 10)))
+;;=> java.lang.Exception: Can't let qualified name: user/x (NO_SOURCE_FILE:38)
+#+END_SRC
+
+...moeten we binnen een syntax-quote een hekje achter een symbol zetten
+als het om een local gaat. Deze notatie zorgt er tevens voor dat er een
+unieke naam wordt gegenereerd:
+
+#+BEGIN_SRC clojure
+`(let [x# 5] (+ x# 10))
+;;=>
+(clojure.core/let [x__611__auto__ 5] 
+  (clojure.core/+ x__611__auto__ 10))
+#+END_SRC
+
+Waarom worden er unieke namen gegenereerd? Dit maken we duidelijk aan de
+hand van het volgende voorbeeld. Stel, we definiëren een macro welke een
+aantal keren een stukje code uitvoert:
+
+#+BEGIN_SRC clojure
+(defmacro my-dotimes [times & body]
+  `(loop [~'amount 0]
+    (if (< ~'amount ~times)
+      (do
+        ~@body
+          (recur (inc ~'amount))))))
+#+END_SRC
+
+Nu hebben we in bovenstaande macro een local met de naam amount
+gedefinieerd. Er staat steeds een tilde en een quotje voor, dit zorgt er
+binnen een syntax quote voor dat er gewoon amount blijft staan en niet
+een volledig gekwalificeerde naam zoals user/amount.
+
+Als we de macro zouden aanroepen als volgt:
+
+#+BEGIN_SRC clojure
+(let [amount 5]
+  (my-dotimes 10 (println amount)))
+#+END_SRC
+
+dan zouden we verwachten dat er 10 keer het getal 5 wordt geprint. Dit
+is echter niet het geval:
+
+#+BEGIN_SRC clojure
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+nil
+#+END_SRC
+
+Als we de volledige macroexpansie van onze aanroep bekijken dan zien we
+het volgende:
+
+#+BEGIN_SRC clojure
+(let*
+ [amount 5]
+ (loop*
+  [amount 0]
+  (if
+      (clojure.core/< amount 10)
+    (do (println amount) 
+        (recur (clojure.core/inc amount))))))
+#+END_SRC
+
+Wie zien hier dat amount in (println amount) niet meer op de local uit
+onze eigen let slaat, maar op de local uit de loop in de macro. Als we
+de hekjesnotatie voor locals hadden gebruikt, dan hadden we dit probleem
+kunnen voorkomen en had de macroexpansie er bijvoorbeeld zo uit gezien:
+
+#+BEGIN_SRC clojure
+(let*
+ [amount 5]
+ (loop*
+  [amount__584__auto__ 0]
+  (if
+      (clojure.core/< amount__584__auto__ 10)
+    (do
+      (println amount)
+      (recur (clojure.core/inc amount__584__auto__))))))
+#+END_SRC
+
+*** time
+Een andere handige macro is time. Deze neemt de tijd op, voert een
+stukje code uit, neemt dan weer de tijd op en berekent en toont dan hoe
+lang het heeft geduurd om het stukje code uit te voeren. Een reden
+waarom je dit niet met een functie kan doen is omdat argumenten van
+functies worden ge-evalueerd voordat de functie wordt uitgevoerd. Als we
+dus een stukje code zouden meegeven aan een functie, kan de functie
+alleen het ge-evalueerde resultaat zien van dat stukje code, en zo niet
+meer de tijd berekenen die nodig was voor evaluatie. Time levert
+overigens als resultaat de ge-evalueerde resultaat van de code op.
+
+Een demonstratie van time:
+
+#+BEGIN_SRC clojure
+user=>(time (+ 1 2 3))
+"Elapsed time: 0.04 msecs"
+6
+
+user=>(time (dotimes [n 100] (+ 1 2 3)))
+"Elapsed time: 0.977 msecs"
+nil
+
+user=> (time (dotimes [n 1000] (+ 1 2 3)))
+"Elapsed time: 4.004 msecs"
+nil
+#+END_SRC
+
+We zien hier dat om de berekening =(+ 1 2 3)= uit te voeren er 0.04
+milliseconden nodig zijn. Dit verschilt uiteraard per machine en is
+afhankelijk van waar de machine nog meer mee bezig is. Daarna voeren we
+met behulp van dotimes dezelfde berekening 100 keer uit. Dat kost in dit
+geval 0.977 milliseconden. 1000 keer kost 4.004 milliseconden.
+
+De source van time ziet er als volgt uit:
+
+#+BEGIN_SRC clojure
+(defmacro time
+  "Evaluates expr and prints the time it took.  Returns the value of
+   expr."
+  {:added "1.0"}
+  [expr]
+  `(let [start# (. System (nanoTime))
+         ret# ~expr]
+     (prn (str "Elapsed time: " 
+               (/ (double (- (. System (nanoTime)) start#)) 1000000.0) 
+               " msecs"))
+     ret#))
+#+END_SRC
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 29.*
+#+end
+Ook dotimes is zelf weer een macro. Bedenk waarom je dotimes
+niet met een functie kan schrijven en bestudeer de source van dotimes.
+
+*** Verder lezen
+Blogs over macro's:
+
+-  [[http://techbehindtech.com/2010/09/28/clojure-macros-simplified/]]
+
+-  [[http://calculist.org/blog/2012/04/17/homoiconicity-isnt-the-point/]]
+
+
+
+* Casus 2: webapplicatie
+
+In dit hoofdstuk behandelen we een een grotere applicatie welke
+bestaat uit meerdere Clojure-namespaces. Het betreft het het spelletje
+TicTacToe gemaakt als webapplicatie, waarbij diverse Clojure libraries
+en tools gebruikt worden. De source-code van deze applicatie kan
+verkregen worden op [[https://github.com/borkdude/tictactoe/]].
+
+De projectstructuur is afgeleid van een Luminus-project. [[http://www.luminusweb.net/][Luminus]] een
+microframework om webapplicaties te ontwikkelen. In feite is het niets
+anders dan een verzameling templates welke de meest populaire Clojure
+web-development libraries bundelen. Bovendien bevat de Luminus-website
+duidelijke tutorials. Als je zelf een nieuwe webapplicatie wil
+bouwen, dan vormt Luminus een goed startpunt. 
+
+** De applicatie downloaden en runnen
+*** Leiningen
+De applicatie is opgezet als Leiningen-project. Dit betekent dat je
+eerst Leiningen op je machine moet installeren om de source code te
+kunnen builden en runnen. Leiningen is een Clojure-laagje om de Java
+build-tool Maven. 
+
+Als je Leiningen nog niet hebt geïnstalleerd, doe dat dan eerst en
+volg de aanwijzingen van https://github.com/technomancy/leiningen.
+Leiningen bestaat uit een script front-end (=lein= of =lein.bat=
+afhankelijk van je OS) en een JVM back-end. Het script moet op het
+=PATH= staan opgenomen, zodat deze aanroepbaar is vanaf de command
+prompt. Door middel van de instructie =lein self-install= download
+het script automatisch de JVM back-end. Ook biedt de CounterClockwise
+plugin in Eclipse ondersteuning voor Leiningen-projecten, waaronder
+het automatisch downloaden van dependencies en op het Eclipse
+classpath zetten. 
+
+*** Downloaden en runnen
+De stappen waarmee je deze applicatie kan verkrijgen zijn:
+
+#+begin_example
+$ git clone https://github.com/borkdude/tictactoe/
+$ cd tictactoe
+#+end_example
+
+De file-structuur van onze applicatie is als volgt:
+
+#+begin_example
+├── Procfile
+├── README.md
+├── project.clj
+├── resources
+│   └── public
+│       └── css
+│           └── tictactoe.css
+├── src
+│   └── tictactoe
+│       ├── controller.clj
+│       ├── handler.clj
+│       ├── model.clj
+│       ├── repl.clj
+│       └── view.clj
+└── test
+    └── tictactoe
+        └── test
+            ├── model.clj
+            └── testdata.clj
+#+end_example
+
+De projecteigenschappen en dependencies staan omschreven in
+=project.clj= welke het hart vormt van een Leiningen-project. De
+inhoud van de file =project.clj=:
+
+#+begin_src clojure
+(defproject tictactoe "0.1.1"
+  :description "Tictactoe using ring, compojure, lib-noir and hiccup"
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [lib-noir "0.4.9"]
+                 [compojure "1.1.5"]
+                 [ring-server "0.2.7"]
+                 [hiccup "1.0.2"]]
+  :ring {:handler tictactoe.handler/war-handler}
+  :profiles {:production
+             {:ring
+              {:open-browser? false, :stacktraces? false, :auto-reload? false}}}
+  :plugins [[lein-ring "0.8.3"]]
+  :min-lein-version "2.0.0")
+#+end_src
+
+Zoals te zien is maakt Leiningen gebruik van Clojure-syntax voor
+instellingen. Onder de key =:dependencies= volgt een opsomming van
+alle libraries waarvan onze applicatie gebruik zal maken. Clojure
+zelf is ook een normale library. Deze applicatie gebruikt Clojure
+versie =1.5.1=. De overige libraries zullen terloop ter sprake komen.
+
+De daadwerkelijke applicatiecode staat in de folder =src/tictactoe=.
+Elke =.clj= file bevat een afzonderlijke namespace. De namespacenamen
+komen overeen met de bestandsstructuur. In het bestand
+=controller.clj= staat bv de namespace-declaratie:
+
+#+begin_src clojure
+(ns tictactoe.controller
+  (:use compojure.core)
+  (:require [compojure.core :as compojure]
+            [tictactoe.view :as view]
+            [tictactoe.model :as model]))
+#+end_src
+
+Stond dit bestand in een dieper geneste subfolder, bijvoorbeeld
+=src/tictactoe/applogic/controller.clj= dan moest de namespace-naam verandert worden
+naar =tictactoe.applogic.controller=.
+
+Om de dependencies te downloaden die bij het project horen voer je
+het volgende uit:
+
+#+begin_example
+$ lein deps
+#+end_example
+
+Vaak hebben dependencies die je definieert =project.clj= weer hun
+eigen dependencies. Om te zien welke dit allemaal zijn kun je een
+optie meegeven: 
+
+#+begin_example
+$ lein deps :tree
+ [compojure "1.1.5"]
+   [org.clojure/core.incubator "0.1.0"]
+   [org.clojure/tools.macro "0.1.0"]
+   [ring/ring-core "1.1.7"]
+     [clj-time "0.3.7"]
+       [joda-time "2.0"]
+     [commons-codec "1.6"]
+     [commons-fileupload "1.2.1"]
+     [commons-io "2.1"]
+     [javax.servlet/servlet-api "2.5"]
+     ...
+#+end_example
+
+We hebben hier niet de gehele dependency-tree afgebeeld.
+
+De applicatie maakt gebruik van [[https://github.com/ring-clojure/ring][Ring]]. Ring is een library welke een
+Clojure-abstractie over HTTP vormt. Ring maakt het bijvoorbeeld mogelijk om HTTP
+requests en responses als Clojure-maps te behandelen binnen je
+programma. Om een Ring applicatie te starten maken we gebruik van de
+Leiningen Ring-plugin. In de =project.clj= staat de volgende regel:
+=:plugins [[lein-ring "0.8.3"]]=, waardoor de Ring-plugin automatisch
+beschikbaar is. De opties van deze plugin kun je als volgt opvragen:
+
+#+begin_example
+$ lein ring
+
+Subtasks available:
+server            Start a Ring server and open a browser.
+server-headless   Start a Ring server without opening a browser.
+war               Create a $PROJECT-$VERSION.war file.
+uberwar           Create a $PROJECT-$VERSION.war with dependencies.
+jar               Create an executable $PROJECT-$VERSION.jar file.
+uberjar           Create an executable $PROJECT-$VERSION.jar file with dependencies.
+
+Run `lein help ring $SUBTASK` for subtask details.
+#+end_example
+
+Voor nu zijn we alleen even geïnteresseerd in de bovenste optie,
+=server=. Verder zijn er zoals te zien is allerlei mogelijkheden om
+de applicatie te packagen voor deployment. Out of the box draait een
+Ring app op de embedded webserver Jetty. Het is uiteraard ook
+mogelijk om een Ring app in een andere willekeurige servlet-container
+te runnen. We gaan nu de applicatie starten:
+
+#+begin_example
+$ lein ring server
+2013-04-02 12:46:37.808:INFO:oejs.Server:jetty-7.6.1.v20120215
+2013-04-02 12:46:37.880:INFO:oejs.AbstractConnector:Started SelectChannelConnector@0.0.0.0:3000
+Started server on port 3000
+#+end_example
+
+De Jetty webserver wordt nu opgestart op poort =3000= en een browser
+opent de webpagina =http://localhost:3000=. Tictactoe kan nu gespeeld
+worden! Afsluiten van de webserver doe je met =Ctrl-C=.
+
+Tijdens het programmeren is het handiger om de applicatie niet via
+=lein ring server= op te starten maar via de REPL. Daar is het
+bestand =repl.clj= voor bedoeld. Door middel van de functies
+=start-server= en =stop-server= kun je zo programmaties de webserver
+bedienen.
+
+*** Infrastructuur
+De applicatie bevat een bestand =handler.clj=. Een handler is
+niets anders dan een functie welke een HTTP-request in de vorm van
+een Clojure-map verkrijgt en een HTTP-response in de vorm van een
+Clojure-map als resultaat geeft. Deze functies kunnen worden
+gecomposeert, zodat een request een ketting van functies doorloopt
+die elk een eigen gedeelte aan de response-map kunnen toevoegen,
+verwijderen of wijzigen. De Var =war-handler= is een handler welke is
+samengesteld uit een aantal standaard handlers uit de library
+=lib-noir=. Deze library gebruiken wij in de applicatie voor session
+management. 
+
+*** Routing
+Verder bevat =war-handler= een aantal routes,
+gedefinieerd door middel van de routing library =Compojure=. 
+
+In onze applicatie zijn er maar routes gedefinieerd voor het spel
+TicTacToe. Deze kun je vinden in het bestand =controller.clj=:
+
+#+begin_src clojure
+(defroutes tictactoe-routes
+  (GET "/" [] (start-page))
+  (POST "/" {button-pressed :params} (turn-page button-pressed)))
+#+end_src
+
+Dit betekent wanneer er een request met methode =GET= wordt gedaan
+naar de url =localhost:3000/"= de functie =start-page= het
+bijbehorende antwoord geeft. Als er echter een =POST= wordt gedaan
+naar =/= dan geeft de functie =turn-page= het antwoord. Het is
+mogelijk bij routes om parameters af te vangen. Bij bovenstaand
+=GET=-request wordt dit niet gedaan, maar bij =POST= wel. In dit geval
+zullen de parameters verzameld worden in een map =button-pressed= (er
+is hier destructuring toegepast, zie
+[[https://github.com/weavejester/compojure/wiki/Destructuring-Syntax]]).
+In =handler.clj= staan nog twee routes gedefinieerd:
+
+#+begin_src clojure
+(defroutes app-routes
+  (route/resources "/")
+  (route/not-found "Not Found"))
+#+end_src
+
+De eerste route dient voor het beschikbaar stellen van statische
+files, zoals ="resources/public/css/tictactoe.css"=. Als de gebruiker
+surft naar =http://localhost:3000/css/tictactoe.css= zal het juiste
+bestand uit de resources-directory worden geserveerder. De tweede
+route dient ervoor dat alles wat niet door andere routes wordt
+afgehandeld beantwoord wordt door de String ="Not found"=. Surfen
+naar =http://localhost:3000/foobar= zal dit effect bijvoorbeeld hebben.
+
+Verder is is de applicatie opgedeeld in een model en een
+view-gedeelte. Het model handelt de spellogica af en houdt bij wat de
+huidige stand is en welke speler aan de beurt is. De view zorgt
+ervoor dat de juiste HTML wordt gepresenteerd aan de hand van het model.
+
+** Model
+We gaan nu eerst in op het model van onze applicatie. De broncode van
+het model is te zien in het bestand =src/tictactoe/model.clj= of via
+de link [[https://github.com/borkdude/tictactoe/blob/master/src/tictactoe/model.clj]].
+
+Het model heeft geen kennis van de view. Wel maakt het model gebruik
+van de namespace =noir.session= om zaken op te kunnen slaan. 
+
+Zoals we gewend zijn van een functioneel programma bestaat het spel
+uit vele kleine functies en weinig mutable state. We zullen enkele
+vars en functies toelichten.
+
+- =init-state= Dit is de beginrepresentatie van het spel. Deze map
+  houdt het bord en de speler bij. De bordrepresentatie is een vector
+  met daarin weer drie vectoren welke de rijen van TicTacToe
+  voorstellen. De player wordt gepresenteerd door een karakter: =X= of
+  =O=. Het beginbord is een leeg bord en de beginspeler is =X=.
+
+- =reset-game!= De naam van deze functie eindigt op een uitroepteken. Het is een
+  conventie in Clojure om functies die state kunnen wijzigen met een
+  uitroepteken te laten eindigen. Deze functie en de functie =play!= zijn de
+  enige twee functies in deze applicatie die state wijzigen. In
+  reset-game! wordt de functie =session/put!= aangeroepen van de
+  =noir= library. Deze verandert waarden in de session-map, behorende
+  bij de browser-sessie van de speler. Wij houden de status van het
+  spel bij onder de key =:game-state=. Bij het aanroepen van
+  =reset-game!= wordt de beginstatus gezet in de sessie onder de key =:game-state=.
+
+- =play!= Deze functie heeft als argumenten een rij- en kolomnummer.
+  Met =session/swap!= wordt de nieuwe state gezet aan de hand van de
+  oude state. De nieuwe state wordt berekend door de pure functie
+  =new-state=.
+
+- =new-state= Deze functie berekent aan de hand van de oude status
+  (bord en speler) een nieuwe status. Alleen wanneer het vakje dat de
+  huidige speler wil invullen leeg is en er nog geen winnaar is, wordt
+  er een nieuwe status opgeleverd. Wanneer het vakje niet leeg is, is
+  dit geen geldige zet en wordt de oude status teruggegeven. Het
+  nieuwe bord is het oude bord met de huidige speler ingevuld op het
+  aangegeven rij- en kolomnummer. De nieuwe speler is simpelweg de
+  andere speler.
+
+Een illustratie van =new-state= in de REPL:
+#+begin_src clojure
+=> init-state
+{:board [[\- \- \-] [\- \- \-] [\- \- \-]], :player \X}
+=> (new-state 0 0 init-state)
+{:board [[\X \- \-] [\- \- \-] [\- \- \-]], :player \O}
+#+end_src
+
+Gegeven de beginstatus en het feit dat de huidige speler (in het
+begin =X=) op positie =0 0= wil spelen, krijg je de bovenstaande nieuwe
+status: speler =X= staat ingevuld op de juiste positie en de huidige
+speler is nu =O= geworden. Wat als we op basis van deze nieuwe status
+nog een zet willen zien?
+
+#+begin_src clojure
+=> (new-state 0 1 (new-state 0 0 init-state))
+{:board [[\X \O \-] [\- \- \-] [\- \- \-]], :player \Y}
+#+end_src
+ 
+Merk op dat we dit ook kunnen noteren met behulp van de =->>= macro:
+
+#+begin_src clojure
+=> (->> init-state
+        (new-state 0 0) ;; speler X speelt positie 0 0
+        (new-state 0 1)) ;; speler Y speelt positie 0 1
+{:board [[\X \O \-] [\- \- \-] [\- \- \-]], :player \X}
+#+end_src
+
+Wat nu als er een illegale zet gebeurt, bijvoorbeeld speler =O=
+kiest in bovenstaand voorbeeld geen =0 1= maar ook =0 0=?
+
+#+begin_src clojure
+=> (->> init-state
+        (new-state 0 0) ;; speler X speelt positie 0 0
+        (new-state 0 0)) ;; speler Y speelt positie 0 0
+{:board [[\X \- \-] [\- \- \-] [\- \- \-]], :player \O}
+#+end_src
+
+In dat geval is de nieuwe status gelijk aan de oude status. 
+
+- =winner?= Deze functie heeft meerdere definities op basis van het
+  aantal argumenten. Wanneer deze functie aangeroepen wordt zonder
+  argumenten, wordt =winner?= opnieuw aangeroepen, met het huidige
+  bord welke opgehaald wordt uit de sessie. =winner?= kan ook met een
+  ander bord aangeroepen worden; dit maakt het makkelijker om deze
+  functie te testen. Merk op dat de functie zonder argumenten niet
+  puur is! Indien =winner?= wordt aangeroepen met één argument,
+  namelijk een bord, dan wordt =winner?= aangeroepen met ditzelfde
+  bord en de speler =X= of =O=. De vraag die dan dus gesteld wordt is:
+  is er bij een gegeven bord en een gegeven speler de speler de
+  winnaar? Als =X= de winnaar blijkt te zijn, wordt de aanroep voor =O=
+  niet ook nog eens uitgevoerd, omdat =or= lazy is. Indien =winner?= met
+  twee argumenten wordt aangeroepen, een bord en een spel, dan wordt
+  er op drie manieren gekeken of de speler winnaar is bij het bord:
+  rij-gewijs, kolomsgewijs en diagonaal-gewijs.
+
+- =winner-in-rows?=
+
+  De functie =winner-in-rows?= bekijkt of voor een bord en een speler
+  tenminste één (de functie =some=) rij op het bord geldt: elk (de functie
+  =every?=) karakter is gelijk aan het karakter van de speler. De functie
+  =some= is een hogere orde functie welke met behulp van een
+  predicaatfunctie kijkt of tenminste één element uit een collectie
+  voldoet aan het predicaat en geeft dat element terug, anders =nil=. De
+  functie =every?= is ook een hogere orde functie en levert =true= op als de
+  meegegeven predicaatfunctie logisch waar is voor alle elementen uit een
+  collectie (in dit geval een rij van het bord). Omdat de functie =some= het
+  eerste logisch ware element (alles wat niet nil of false is) teruggeeft
+  waarvoor de predikaatfunctie waar is, zal het resultaat van =some= hier
+  een rij (een vector) van het bord zijn, of =nil=. Omdat we =true= of =false=
+  willen teruggeven, staat hier nog de functie =boolean= omheen.
+
+- =winner-in-cols?=
+
+  Omdat het bepalen van een winnaar voor de rijen bijna hetzelfde gaat als
+  voor de kolommen, kunnen we de functie =winner-in-rows?= hier gewoon
+  hergebruiken. We hoeven daarvoor alleen maar de kolommen als rijen te
+  gaan representeren. Daarvoor hebben we de de functie =transposed-board=
+  gemaakt, welke een gekantelde versie van het bord oplevert. Stel, het
+  bord heeft op een gegeven moment de volgende representatie:
+
+#+BEGIN_SRC clojure
+[[\X \O \-] 
+ [\X \O \-] 
+ [\X \- \-]]
+#+END_SRC
+
+De functie transposed-board levert dan het volgende bord op, waarbij de
+kolommen als rijen zijn gerepresenteerd:
+
+#+BEGIN_SRC clojure
+[[\X \X \X] 
+ [\O \O \-] 
+ [\- \- \-]]
+#+END_SRC
+
+Daar kunnen we dan vervolgens de functie winner-in-rows? op toepassen.
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 30.*
+#+end
+Bestudeer de functies =winner-in-diagonals?= en =full-board?= en
+ga na of je werking ervan begrijpt.
+
+** Testen bij het model
+
+Clojure biedt de mogelijkheid tot het schrijven van (unit)tests. De
+test API van Clojure vindt je in de namespace =clojure.test=.
+Documentatie hiervan staat op
+[[http://richhickey.github.com/clojure/clojure.test-api.html]]. 
+
+#+begin: exercise
+#+BEGIN_LATEX
+\noindent \\ 
+#+END_LATEX
+*Oefening 31.*
+#+end
+Bestudeer bovenstaande pagina.
+
+In de rest van deze sectie gaan we ervan uit dat je deze documentatie
+hebt bestudeerd en bekend bent met de werking van =deftest=, =is=,
+etc.
+
+De source code van de tests vindt je in de file
+=test/tictactoe/test/model.clj= of op Github:
+[[https://github.com/borkdude/tictactoe/blob/master/test/tictactoe/test/model.clj]].
+
+De testen en de testdata zijn zoveel mogelijk gescheiden in namespaces.
+Zo zien we bij de test =transposed-board-test= het gebruik van
+=transposed-test-data= afkomstig uit de namespace
+=tictactoe.test.testdata=. Deze testdata is als volgt gedefinieerd:
+
+#+BEGIN_SRC clojure
+(def transposed-test-data
+  #{ {:input [[\X \X \X]
+              [\O \X \O]
+              [\X \X \X]],
+      :expected-output [[\X \O \X]
+                        [\X \X \X]
+                        [\X \O \X]]}})
+#+END_SRC
+
+Het is mogelijk om eventueel meerdere testcases aan de verzameling toe
+te voegen. De testcode is daar op voorbereid. Met =doseq= wordt er met
+elke map welke een input-bord en verwacht output-bord bevat een test
+uitgevoerd. =Doseq= werkt net als =for=, maar bij =doseq= gaat het enkel om de
+side effects, niet om een uiteindelijke return-waarde.
+
+De testdata voor sommige andere testen is geparametriseerd. Zo ziet de
+testdata voor borden waarbij er een winnaar in één van de kolommen is er
+zo uit:
+
+#+BEGIN_SRC clojure
+(defn col-win-combinations [p]
+  #{ [[p  \- \-]
+      [p  \- \-]
+      [p  \- \-]],
+     [[\- p  \-]
+      [\- p  \-]
+      [\- p  \-]], 
+     [[\- \- p ]
+      [\- \- p ]
+      [\- \- p ]] })
+#+END_SRC
+
+Door middel van het invullen van een speler wordt de testdata pas
+concreet gemaakt.
+
+De macro defboardtest is een abstractie die ontstaan is doordat er eerst
+duplicatie in de code zat, wat er als volgt uit zag:
+
+#+BEGIN_SRC clojure
+(deftest winner-in-rows?-test
+  (doseq [player [\X \O]]     
+    (doseq [board (td/row-win-combinations player)]
+      (is (= (winner-in-rows? board player) true) 
+          (str "Player " player " should win with board " board)))
+    (doseq [board (td/no-row-win-combinations player)]
+      (is (= (winner-in-rows? board player) false)
+          (str "Player " player " should not win with board "
+               board)))))
+
+(deftest winner-in-cols?-test
+  (doseq [player [\X \O]]     
+    (doseq [board (td/col-win-combinations player)]
+      (is (= (winner-in-cols? board player) true) 
+          (str "Player " player " should win with board " board)))
+    (doseq [board (td/no-col-win-combinations player)]
+      (is (= (winner-in-cols? board player) false)
+          (str "Player " player " should not win with board "
+               board)))))
+
+(deftest winner-in-diagonals?-test
+  (doseq [player [\X \O]]     
+    (doseq [board (td/diag-win-combinations player)]
+      (is (= (winner-in-diagonals? board player) true) 
+          (str "Player " player " should win with board " board)))
+    (doseq [board (td/no-diag-win-combinations player)]
+      (is (= (winner-in-diagonals? board player) false)
+          (str "Player " player " should not win with board "
+               board)))))
+#+END_SRC
+
+Deze testen lijken erg veel op elkaar. De verschillen zijn: de naam, de
+functie die getest wordt en de testborden waarmee er wel een winnaar of
+geen winnaar is. Met behulp van de macro defboardtest kunnen deze drie
+testen korter worden opgeschreven en is er minder duplicatie:
+
+#+BEGIN_SRC clojure
+(defboardtest winner-in-rows?-test
+   winner-in-rows?
+                  td/row-win-combinations
+                  td/no-row-win-combinations)
+
+(defboardtest winner-in-cols?-test
+      winner-in-cols?
+                  td/col-win-combinations
+                  td/no-col-win-combinations)
+
+(defboardtest winner-in-diagonals?-test
+      winner-in-diagonals?
+                  td/diag-win-combinations
+                  td/no-diag-win-combinations)
+#+END_SRC
+
+Het draaien van de tests is erg eenvoudig. Dit kan vanaf de REPL:
+
+#+BEGIN_SRC clojure
+(run-tests 'tictactoe.test..model)
+=>
+Testing tictactoe.test.models.model
+
+    Ran 7 tests containing 41 assertions.
+    0 failures, 0 errors.
+    {:type :summary, :test 7, :pass 41, :fail 0, :error 0}
+#+END_SRC
+
+maar ook vanaf de command prompt:
+
+#+BEGIN_EXAMPLE
+$ lein test
+
+lein test tictactoe.test.model
+
+lein test tictactoe.test.testdata
+
+Ran 7 tests containing 41 assertions.
+0 failures, 0 errors.
+#+END_EXAMPLE
+
+Het is aan te bevelen voordat je de applicatie serieus gaat
+gebruiken, de testen via de command prompt te draaien, omdat de
+status van de REPL niet overeen hoeft te komen met de daadwerkelijke
+code (functies die worden geherdefinieerd vanaf de REPL, maar niet in
+de code, etc).
+
+Het voordeel van een uitgebreide verzameling testen en testdata is dat
+je bij het wijzigen van code door middel van het draaien van tests kunt
+nagaan of de gewijzigde code nog steeds naar behoren werkt.
+
+Zo is de functie =full-board?= gewijzigd van:
+
+#+BEGIN_SRC clojure
+    (defn full-board?
+      ([] (full-board? (get-board)))
+      ([board] (every? (fn [row]
+                         (every? (fn [elt]
+                                   (not (= elt \-)))
+                                 row))
+                       board)))
+#+END_SRC
+
+naar
+
+#+BEGIN_SRC clojure
+    (defn full-board?
+      ([] (full-board? (get-board)))
+      ([board] (let [all-cells (apply concat board)]
+                 (not-any? #(= % \-) all-cells))))
+#+END_SRC
+
+De laatste versie zou hetzelfde moeten werken, maar leest iets
+prettiger: in alle cellen is er geen enkele cel gelijk aan een streepje.
+Dat de functie correct werkte kon snel worden gecontroleerd door het
+uitvoeren van de testen. Voor de wijzigen waren er namelijk 41 geslaagde
+assertions en erna ook.
+
+** View
+In dit gedeelte zullen we ingaan op het view-gedeelte van de
+TicTacToe-webapplicatie. De broncode is te vinden in het bestand
+=src/tictactoe/view.clj= of via Github:
+https://github.com/borkdude/tictactoe/blob/master/src/tictactoe/view.clj
+
+De =tictactoe.view=-namespace is ervoor verantwoordelijk om de juiste
+HTML te genereren voor zowel de onderdelen van de pagina als de
+pagina als geheel. Deze namespace maakt intensief gebruik van de
+library [[https://github.com/weavejester/hiccup][Hiccup]], een templating library voor Clojure. Naast Hiccup
+zijn er tal van alternatieven, waaronder [[https://github.com/cgrand/enlive][Enlive]] en [[https://github.com/Raynes/laser][Laser]]. Bij de
+laatste twee is het mogelijk om HTML en templates totaal van elkaar
+gescheiden te houden. In Hiccup is het mogelijk om HTML en Clojure
+door elkaar heen te gebruiken. De HTML wordt dan geschreven door
+middel van geneste vectors.
+Een klein voorbeeld:
+
+#+begin_src clojure
+[:a {:href "http://github.com"} "GitHub"]
+#+end_src
+
+wordt door Hiccup vertaald naar:
+
+#+begin_src html
+<a href="http://github.com">GitHub</a>
+#+end_src
+
+Voor meer voorbeelden van de Hiccup-syntax, raadpleeg de
+Hiccup-wiki:
+
+https://github.com/weavejester/hiccup/wiki
+
+Toelichting bij enkele fragmenten uit de view-code.
+
+- =cell-html= Zometeen zullen we zien dat de bordrepresentatie gevormd
+  wordt door een html-tabel gevuld met buttons. Een bouwsteen daarvoor
+  is =cell-html=. Deze functie verwacht als argumenten het rij- en
+  kolomnummer, de inhoud van de cel (een karakter) en een boolean die
+  aangeeft of er een submit-knop moet komen of een normale button.
+
+  De functie =cell-html= is makkelijk interactief te testen vanaf een REPL:
+
+  #+BEGIN_SRC clojure
+  (use '[hiccup.core :only [html]])
+  (html (cell-html 0 0 \X true))
+  ;;=> "<td><input name=\"b00\" type=\"submit\" value=\"X\" /></td>"
+  (html (cell-html 1 1 \O false))
+  ;;=> "<td><input name=\"b11\" type=\"button\" value=\"O\" /></td>"
+  (html (cell-html 2 2 \- true))
+  ;;=>"<td><input name=\"b22\" type=\"submit\" value=\"-\" /></td>"
+  #+END_SRC
+
+  We wrappen de functie in een =html= call van Hiccup, zodat de
+  opgeleverde vectoren daadwerkelijk naar HTML vertaald worden. In
+  onze applicatiecode hoeft dit niet voor elke afzonderlijke functie,
+  omdat deze functies binnen de functie =layout= gebruikt worden en
+  deze wordt gewrapped in een =html5=, aanroep. Deze functie doet
+  hetzelfde als =html=, maar voegt ook nog een doctype en omliggende
+  html-tags toe:
+
+  #+BEGIN_SRC clojure
+  (html5 "foo") ;;=> "<!DOCTYPE html>\n<html>foo</html>"
+  #+END_SRC
+
+  - =row-html=
+  Deze functie verwacht een rijnummer, een rij uit een tictactoe-bord en
+  een boolean die aangeeft of er wel of niet knoppen van type submit
+  moeten worden aangemaakt. Deze partial laat zich weer het beste
+  uitleggen aan de hand van een demo:
+
+  #+BEGIN_SRC clojure
+  (html (row-html 0 [\X \X \O] false))
+  ;;=> 
+  "<tr><td><input name=\"b00\" type=\"button\" value=\"X\"/></td>
+       <td><input name=\"b01\" type=\"button\" value=\"X\"/></td>        
+       <td><input name=\"b02\" type=\"button\" value=\"O\"/></td>
+   </tr>"
+
+  (html (row-html 1 [\O \- \O] false))
+  ;;=>
+  "<tr><td><input name=\"b10\" type=\"button\" value=\"O\"/></td>
+       <td><input name=\"b11\" type=\"button\" value=\"-\"/></td>
+       <td><input name=\"b12\" type=\"button\" value=\"O\" /></td>
+  </tr>"
+
+  (html (row-html 2 [\- \- \X] false))
+  ;;=>
+  "<tr><td><input name=\"b20\" type=\"submit\" value=\"-\" /></td>
+       <td><input name=\"b21\" type=\"submit\" value=\"-\" /></td>
+       <td><input name=\"b22\" type=\"submit\" value=\"X\" /></td>
+  </tr>"
+  #+END_SRC
+
+  Een functie die wordt gebruikt in =row-html= is =map-indexed=. Dit is net
+  zoals =map= een hogere orde functie, maar met het verschil dat ook de
+  index van een element in een collectie meegenomen wordt in de functie
+  die je kunt opgeven:
+
+  #+BEGIN_SRC clojure
+  (map-indexed (fn [idx elt] [idx elt]) [\a \b \c \d \e])
+  ;;=> ([0 \a] [1 \b] [2 \c] [3 \d] [4 \e])
+  (map-indexed (fn [idx elt] idx) [\a \b \c \d \e])
+  ;;=> (0 1 2 3 4)
+  (map-indexed (fn [idx elt] elt) [\a \b \c \d \e])
+  (\a \b \c \d \e)
+  #+END_SRC
+
+  In de functie =row-html= wordt =map-indexed= aangeroepen met een functie
+  welke itereert over de kolomnummers van cellen en de cellen van een rij
+  zelf. De functie levert vervolgens de html voor elke cel, door =cell-html=
+  aan te roepen.
+
+- =board-html= itereert ook met behulp van =map-indexed=, maar dan over
+  de rijen van het bord en roept voor elke rij en bijbehorend
+  rijnummer de functie =row-html= aan. De inhoud wordt in een tabel
+  gezet en de tabel staat vervolgens weer in een form, welke bij een
+  submit een post doet naar de url =/=. Een aanroep van =board-html= ziet
+  er bijvoorbeeld als volgt uit:
+
+  #+BEGIN_SRC clojure
+  (html (board-html [[\X \X \-] [\O \- \O] [\O \O \-]] true))
+  ;;=>
+  "<form action=\"/\" method=\"POST\">
+   <table>
+     <tr>
+       <td><input name=\"b00\" type=\"submit\" value=\"X\" /></td>
+       <td><input name=\"b01\" type=\"submit\" value=\"X\" /></td>
+       <td><input name=\"b02\" type=\"submit\" value=\"-\" /></td>
+     </tr>
+     <tr>
+       <td><input name=\"b10\" type=\"submit\" value=\"O\" /></td>
+       <td><input name=\"b11\" type=\"submit\" value=\"-\" /></td>
+       <td><input name=\"b12\" type=\"submit\" value=\"O\" /></td>
+     </tr>
+     <tr>
+       <td><input name=\"b20\" type=\"submit\" value=\"O\" /></td>
+       <td><input name=\"b21\" type=\"submit\" value=\"O\" /></td>
+       <td><input name=\"b22\" type=\"submit\" value=\"-\" /></td>
+     </tr>
+   </table>
+  </form>"
+  #+END_SRC
+
+- De functies =play-screen=, =winner-screen= en =draw-screen= zijn
+  bedoeld om complete HTML-pagina's op te leveren. Welk scherm
+  getoond moet worden dat wordt bepaald in =controller.clj=. 
+
+** Controller
+In de namespace =tictactoe.controller= wordt de verbinding gelegd
+tussen het binnenkomende request (via Compojure), het model en de
+view-logica.
+
+#+BEGIN_SRC clojure
+(defn start-page []
+  (model/reset-game!)
+  (view/play-screen))
+
+(defn turn-page [button-pressed]
+  (let [button-id (name (first (keys button-pressed)))
+        rownr (Integer/parseInt (str (second button-id)))
+        colnr (Integer/parseInt (str (nth button-id 2)))]
+    (model/play! rownr colnr)
+    (if-let [winner (model/winner?)]
+      (view/winner-screen winner)
+      (if (model/full-board?)
+        (view/draw-screen)
+        (view/play-screen)))))
+
+(defroutes tictactoe-routes
+  (GET "/" [] (start-page))
+  (POST "/" {button-pressed :params} (turn-page button-pressed)))
+#+END_SRC
+
+Er zijn eigenlijk maar twee soorten requests mogelijk:
+1. De gebruiker begint met een schone lei
+2. De gebruikt klikt op een knop van TicTacToe
+
+In het eerste geval wordt de =GET=-route getriggerd. De functie
+=start-page= zal dan worden uitgevoerd. In die functie wordt de
+functie =model/reset-game!= aangeroepen. Daarna wordt de HTML
+geproduceerd door de functie =view/play-screen= teruggegeven.
+
+In het tweede geval zal er een =POST= gedaan worden vanaf het
+formulier geproduceerd door de functie =board-html=. De data die
+meegestuurd wordt is de name en de value van de knop in de vorm van
+een map. De functie =turn-page= wordt aangeroepen om dit af te
+handelen. Aangezien er in de form geen invoervelden zijn, maar alleen
+submit-buttons bestaat deze map altijd maar uit een key-valuepaar. De
+key is dan de naam van de submit-button en de value de html-value van
+de button. Wordt er eerst op knop b00 gedrukt, dat is de knop
+linksboven, dan zal de map button-pressed er zo uitzien:
+
+#+BEGIN_SRC clojure
+{:b00 -}
+#+END_SRC
+
+Wordt er op de knop rechts onder gedrukt, dan ziet de map er zo uit:
+
+#+BEGIN_SRC clojure
+{:b22 -}
+#+END_SRC
+
+Het streepje is dan de waarde die bij de button hoorde op het moment
+dat er gedrukt werd. Hier zou dus ook een =X= of =O= kunnen staan. In
+de functie =turn-page= zijn we alleen geïnteresseerd in de key uit de
+map: we hoeven tenslotte alleen maar te weten op welke knop er is
+gedrukt. De rest van de informatie zit vervat in het model. Wel moeten
+we de naam van de knop nog omzetten naar coördinaten. Een
+keyword kun je omzetten naar een String met de functie =name=:
+
+#+begin_src clojure
+(name :b22) ;;=> "b22"
+#+end_src
+
+Uit deze String worden de karakters op de tweede en derde plek omgezet
+naar cijfers, welke de coördinaten voorstellen. Vervolgens roepen we
+de functie =play!= van het model aan, met de deze coördinaten.
+
+Als er een winnaar is, dan wordt het winnaar-scherm getoond. Zo niet,
+dan wordt er gekeken of het bord vol is: in dat geval tonen we het
+gelijkspel-scherm. In alle andere gevallen het speelscherm.
+
+
+
+
+
+
+
+
+
+
+
+
+#+BIBLIOGRAPHY: my-bib-db plain
+# \bibliographystyle{plain}
+# \bibliography{my-bib-db}

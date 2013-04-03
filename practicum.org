@@ -1,0 +1,644 @@
+#+TITLE: Practicumbundel bij Inleiding Functioneel Programmeren met Clojure
+#+AUTHOR: Michiel Borkent
+#+DATE: Cursusjaar 2012-2013
+# HTML-taal:
+#+LANGUAGE: nl
+
+#+LaTeX_HEADER: \usepackage[dutch]{babel}
+# LaTeX_HEADER: \usepackage[]{hyperref}
+# LaTeX_HEADER: \hypersetup{colorlinks=true}
+
+# Maak er een boek van, door een + toe te voegen na # op de volgende regel
+# LaTeX_CLASS: book
+
+# CSS styling:
+#+STYLE: <link rel="stylesheet" type="text/css" href="css/main.css" />
+# Javascript menu (+ toevoegen om de enablen)
+# INFOJS_OPT: view:info 
+
+#+OPTIONS: H:3 num:0
+# hier begint de inhoud
+
+# Github Ribbon:
+#+begin_html
+<a href="https://github.com/borkdude/clojurecursus"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+#+end_html
+#+HTML: <p class="title">Auteurs: Michiel Borkent (2013)
+#+HTML: <p class="title">Daan Vermanen en Martijn Bouma (eerste versie 2012)</p>
+#+HTML: <p class="title">Cursusjaar: 2012-2013</p>
+
+# * Inleiding.
+# Geschreven met behulp van Org-Mode en Emacs. Beschikbaar in de
+# volgende formaten:
+
+# #+begin_html
+# <ul>
+#   <li>
+#     <a href="./practicum.org">Org</a> (source)
+#   </li>
+#   <li>
+#     <a href="./practicum.pdf">PDF</a>
+#   </li>
+#   <li>
+#     <a href="./practicum.html">HTML</a> 
+#   </li>
+# </ul>
+# #+end_html 
+
+# #+begin_latex
+# \begin{itemize}
+#   \item \href{http://www.michielborkent.nl/courses/ap/clojure/practicum.org}{Org}
+#   \item \href{http://www.michielborkent.nl/courses/ap/clojure/practicum.pdf}{PDF}
+#   \item \href{http://www.michielborkent.nl/courses/ap/clojure/practicum.html}{HTML}
+# \end{itemize}
+# #+end_latex
+
+# Indien nodig kan er ook een OpenOffice- of Word-versie geleverd
+# worden. Mocht je correcties of suggesties hebben voor dit document, stuur ze
+# dan naar per e-mail. Hou daarbij zoveel mogelijk
+# het Org-formaat aan.
+
+* Tips en hulpmiddelen
+- Hou je aan de Clojure
+  [[https://github.com/bbatsov/clojure-style-guide][style guide]]
+- Op [[http://www.tryclj.com]] kun je Clojure-expressies in de browser
+  uitproberen
+- Clojure cheat sheet: [[http://clojure.org/cheatsheet]]
+
+Bronnen die je kan gebruiken bij het practicum:
+-  [[http://clojure.org]]
+-  [[http://clojuredocs.org]]
+-  [[http://www.google.com]]
+-  [[http://www.stackoverflow.com]]
+-  [[http://webchat.freenode.org]], #clojure IRC-kanaal
+
+* Week 1
+1. Op http://www.tryclj.com is een sandboxed Clojure
+   REPL te vinden met een tutorial. Doorloop deze tutorial van begin
+   tot eind. Wat is de uitkomst van de laatste expressie die je hebt
+   moeten schrijven in deze tutorial?
+2. Installeer [[http://leiningen.org/][Leiningen]], Eclipse en de CounterClockWise Plugin via de
+   Eclipse Marketplace. Maak in Eclipse een nieuw Leiningen-project
+   aan, waarin je je practicumuitwerkingen kan bewaren en runnen.
+3. De expressie =(/ 3 4)=  geeft als uitkomst: =3/4=. Dit
+   is een =Rational=, een datatype in Clojure welke een breuk voorstelt.
+   Schrijf een expressie die =0.75= geeft als uitkomst van =3= gedeeld
+   door =4=.
+4. Zet onderstaande rekenkundige expressie uit Java om naar Clojure:
+   #+begin_src java
+     int x = 465 - 774 * 3 / 3 + 774;
+   #+end_src
+5. Schrijf een do-expressie waarin de expressie van de vorige
+   opgave wordt geprint als side-effect en het antwoord op de berekening
+   teruggegeven wordt als resultaat van de expressie.
+6. Schrijf een if-expressie die twee data vergelijkt. Je kunt in
+   Clojure twee Java Dates aanmaken als volgt:
+
+   #+begin_src clojure
+   (def d1 (java.util.Date.))
+   (def d2 (java.util.Date.))
+   #+end_src
+   
+   Hier wordt de constructor van =Date= aangeroepen zonder argumenten.
+   
+   Geef de String ="de data zijn gelijk"= terug indien de data gelijk zijn
+   en anders ~"de data zijn ongelijk"~.
+7. 
+   + Bestudeer de documentatie van =cond= en beschrijf in je eigen
+      woorden wat je ermee kan doen.
+   + Zet onderstaande Java-code om naar Clojure-code. Gebruik hiervoor
+     =cond=.
+
+     #+begin_src java
+       if (1 == 2) {
+           return "een is gelijk aan twee";
+       } else if (1 < 2) {
+           return "een is kleiner dan twee";
+       } else {
+           return "geen van beide";
+       }
+     #+end_src
+
+ 8. Wat moet er op de plek van de twee underscores komen te staan om
+    alle onderstaande expressies true te laten returnen. Gebruik in alle
+    drie de expressies dezelfde let-bindings.
+
+    #+BEGIN_SRC clojure
+        (= 9 (let __ (+ x y)))
+        (= 3 (let __ (+ y z)))
+        (= 2 (let __ z))
+    #+END_SRC
+
+9.  Deze opgave gaat over Java interop. Schrijf een functie die één
+    parameter genaamd "name" accepteert. Deze geeft de string "Hello,
+    <name>" terug. Door middel van Java-interop moet met de methode
+    replaceAll van de Java-klasse String <name> vervangen worden door
+    het argument dat is opgegeven. Je dient de volgende code aan te
+    vullen:
+
+    #+BEGIN_SRC clojure
+        (defn hello [name]
+          __ "Hello, <name>" __ )
+
+        (hello "world") ;;=> "hello world"
+    #+END_SRC
+
+10. Maak de 4Clojure-opgave [[http://www.4clojure.com/problem/36]]
+
+* Week 2  
+1.  Wat moet er op de underscores komen te staan in onderstaande
+    expressie om het getal 5 als resultaat op te leveren?
+
+    #+BEGIN_SRC clojure
+        (__ max [1 2 5 3 4]) ;;=> 5
+    #+END_SRC
+
+2.  
+    -  Bestudeer onderstaande anonieme functiedefinities. De anonieme
+       functies worden meteen aangeroepen. Beredeneer de uitkomst van
+       onderstaande expressies, zonder dat je ze in de REPL evalueert.
+
+       #+BEGIN_SRC clojure
+           ((fn [x] (* x 3)) 4)
+           (#(- % 7) 19)
+           ((partial / 36) 3)
+       #+END_SRC
+
+    -  Zet onderstaande functiedefinitie en aanroep van die functie om
+       in een anonieme functie die meteen word aangeroepen, zoals
+       hierboven.
+
+       #+BEGIN_SRC clojure
+           (defn sqr [x] (* x x))
+           (sqr 5) ;;=> 25
+       #+END_SRC
+
+    -  Herschrijf onderstaande expressie met de kortere notatie voor
+       anonieme functies (#).
+
+       #+BEGIN_SRC clojure
+           (filter (fn [x] (< x 5)) [1 6 5 2 3])
+       #+END_SRC
+
+3.  Definieer een functie met de parameters =[x y & others]=. Wanneer alleen de
+    parameters =x= en =y= aan de functie meegegeven worden, worden deze met
+    elkaar vermenigvuldigd. Wanneer ook =others= meegegeven wordt, worden
+    alle waarden bij elkaar opgeteld.
+
+4.  
+    -  Definieer een functie die een lijst accepteert en het laatste
+       element teruggeeft. Het is verboden om de functie =last= te
+       gebruiken.
+
+    -  Maak een functie die een variabel aantal argumenten accepteert.
+       Filter de argumenten van type =String= en geef die terug als
+       resultaat. De volgende expressies geven het type van een argument
+       terug:
+
+       #+BEGIN_SRC clojure
+           (type "hallo") ;;=> java.lang.String
+           (type 1) ;;=> java.lang.Integer
+       #+END_SRC
+
+    -  Herschrijf onderstaande Java-code in Clojure met gebruik van
+       =loop=.
+
+       #+BEGIN_EXAMPLE
+           for (int i = 0; i < 10; i += 2) {
+               System.out.println(i);
+           }
+       #+END_EXAMPLE
+
+5.  In de eerste onderstaande expressie wordt de hogere orde functie
+    =filter= gebruikt in combinatie met de predicaatfunctie =zero?=
+    (uit =clojure.core=). Schrijf zelf een predicaatfunctie
+    =not-zero?= zodat de tweede expressie de lijst =(1 2 3 4 5 6)= oplevert.
+
+    #+BEGIN_SRC clojure
+        (filter zero? [1 2 0 3 4 0 5 6]) ;;=> '(0 0)
+        (filter not-zero? [1 2 0 3 4 0 5 6]) ;;=> '(1 2 3 4 5 6) 
+    #+END_SRC
+
+6.  
+    -  Bekijk de documentatie van de functie =partial= en leg deze in
+       eigen woorden uit.
+
+    -  Vul onderstaande expressie aan.
+
+       #+BEGIN_SRC clojure
+           (= '(3 4 5) (map (partial __) [1 2 3]))
+       #+END_SRC
+
+    -  Vul onderstaande expressie aan.
+
+       #+BEGIN_SRC clojure
+           (= "first second third" (let [a _ b _] ((partial __ "first") a b)))
+       #+END_SRC
+
+    -  Zoek de documentatie op van ~comp~ (van compose) en leg deze in eigen
+       woorden uit.
+
+    -  Vul de =let=-bindings aan en zorg dat ze in alle drie de expressies
+       hetzelfde zijn.
+
+       #+BEGIN_SRC clojure
+           (= 8 (let __ ((comp * max) x y)))
+           (= -8/3 (let __ ((comp - /) x y)))
+           (= -5 (let __ ((comp + - -) x y)))
+       #+END_SRC
+
+7.  
+    -  Bestudeer de documentatie van =complement= en leg deze in eigen
+       woorden uit.
+    -  Gegeven de predicaatfunctie =ends-with?= welke controleert of een
+       =String= eindigt op een karakter of substring, schrijf een
+       predikaatfunctie =not-ends-with?= en maak hierbij gebruik van
+       =complement=. De functie =ends-with?= maakt gebruik van Java-interop.
+       Kennis hiervan is voor het oplossen van deze opgave niet nodig.
+
+       #+BEGIN_SRC clojure
+           (defn ends-with? [s c]
+             (.endsWith s (str c)))
+
+           (ends-with? "hallo" \o) ;;=> true
+           (ends-with? "hallo" "o") ;;=> true
+           (ends-with? "hallo" "f") ;;=> false
+       #+END_SRC
+
+8.  Gebruik onderstaande functie om een predicaatfunctie genaamd
+    =divisible-by-three?= te maken.
+
+    #+BEGIN_SRC clojure
+        (defn divisible [denom]
+          (fn [num]
+            (zero? (rem num denom))))
+    #+END_SRC
+
+    Bovenstaande functie kan op de volgende manier aangeroepen worden:
+
+    #+BEGIN_SRC clojure
+        ((divisible 3) 6) ;;=> true
+        ((divisible 3) 5) ;;=> false
+    #+END_SRC
+
+    De predicaatfunctie moet als volgt aan te roepen zijn:
+
+    #+BEGIN_SRC clojure
+        (divisible-by-three? 6) ;;=> true
+        (divisible-by-three? 5) ;;=> false
+    #+END_SRC
+
+9.  Schrijf een functie genaamd =max-except-first= die een lijst
+    accepteert als argument. Door middel van /destructuring/ wordt de
+    eerste waarde van de lijst apart genomen en wordt de rest in een
+    nieuwe lijst gezet. Daarvan moet de maximale waarde teruggeven
+    worden. Verboden om te gebruiken: =first= en =rest=. Vergeet niet om
+    =apply= te gebruiken. Zorg ervoor dat onderstaande expressie hetzelfde
+    antwoord geeft:
+
+    #+BEGIN_SRC clojure
+        (max-except-first [100 78 7 9 12]) ;;=> 78
+    #+END_SRC
+
+10. Lees het voorbeeld "Square roots by Newton's method" op
+    [[http://mitpress.mit.edu/sicp/full-text/sicp/book/node12.html]].
+    Dit voorbeeld is afkomstig uit het boek SICP (Structure and
+    Interpretation of Computer Programs) en geschreven in de taal
+    Scheme, een ander Lisp-dialect. Vertaal dit voorbeeld naar Clojure
+    en demonstreer dat je functie een benadering van de wortel van een
+    getal kan geven. De oefeningen op de pagina zijn optioneel.
+
+* Week 3
+
+1. De volgende opgaven gaan over lists.
+
+   1. Vul onderstaande expressies aan (de antwoorden hoeven in dit geval
+      niet hetzelfde te zijn):
+
+      #+BEGIN_SRC clojure
+          (= (list __) '(:aap :noot :mies))
+          (= '(1 2 3 4) (flatten '(1 2 (__))))
+          (= '(1 2 3 4) (conj '(3 4) __)) 
+      #+END_SRC
+
+   2. Schrijf een functie waarmee de inhoud van een lijst omgedraaid kan
+      worden. Het is verboden om =reverse= te gebruiken.
+
+   3. Maak de 4Clojure-opgave [[http://www.4clojure.com/problem/4]]
+
+   4. Maak de 4Clojure-opgave [[http://www.4clojure.com/problem/5]]
+
+2. De volgende opgaven gaan over vectoren.
+
+   1. Vul onderstaande expressies aan.
+
+      #+BEGIN_SRC clojure
+          (= '(1 2 3 4) (conj [1 2] __))
+          (= '(1 2 3 4) (into () __))
+      #+END_SRC
+
+   2. Maak 4Clojure-opgave [[http://www.4clojure.com/problem/6]]
+
+   3. Maak 4Clojure-opgave [[http://www.4clojure.com/problem/7]]
+
+3. De volgende opgaven gaan over maps.
+
+   1. Creëer de volgende map door middel van =zipmap=: ={:first
+      1, :second 2, :third 3}= (de volgorde in een map is niet van belang).
+
+   2. Creëer eenzelfde map door middel van =interleave= en de functie
+      =hash-map=.
+
+   3. Gegeven de volgende vector met maps:
+
+      #+BEGIN_SRC clojure
+          (def tentamencijfers [{:naam "Piet" :cijfer 7}  
+                                {:naam "Klaas" :cijfer 3}])
+      #+END_SRC
+
+      Gebruik assoc-in om de vector tentamencijfers terug te geven
+      waarbij het cijfers van Klaas veranderd is in een 10.
+
+   4. Voeg aan de expressie die je voor de vorige opgave hebt moeten
+      schrijven de functie get-in toe om alleen het cijfer 10 terug te
+      laten geven.
+
+   5. Maak 4Clojure-opgave [[http://www.4clojure.com/problem/10]]
+
+   6. Maak 4Clojure-opgave [[http://www.4clojure.com/problem/11]]
+
+   7. Maak 4Clojure-opgave [[http://www.4clojure.com/problem/134]]
+
+4. Opgaven over sets
+
+   1. Schrijf een expressie die de elementen :a en :d uit de set #{:a :b
+      :c :d} verwijdert.
+
+   2. Schrijf een expressie die van de vector [1 1 2 3] een set maakt.
+      Hoeveel elementen heeft de set en waarom?
+
+   3. Schrijf een expressie die de sets #{1 2 3 4} #{5 6 7 8} tot één
+      set samenvoegt.
+
+   4. Maak de 4Clojure-opgave [[http://www.4clojure.com/problem/8]]
+
+   5. Maak de 4Clojure-opgave [[http://www.4clojure.com/problem/9]]
+
+   6. Maak de 4Clojure-opgave [[http://www.4clojure.com/problem/81]]
+
+5. Sequences
+
+   1. Voeg het getal 5 toe aan de vector =[4 3 2 1]=. Zorg dat =5= vooraan de vector
+      wordt toegevoegd.
+
+   2. Maak van de vector =["een" "twee" "drie"]= de string ="een twee
+      drie"=.
+
+   3. Maak een functie =my-but-last= waarmee het een-na-laatste element
+      wordt teruggegeven van een sequence. Het is verboden de functie
+      =but-last= te gebruiken. Bijvoorbeeld 
+      =(my-but-last ["maandag" "dinsdag" "woensdag" "donderdag"
+      "vrijdag"])= levert ="donderdag"= op.
+
+   4. Maak een functie waarmee dubbele waarden uit een sequence worden
+      gefilterd en die een sequence met unieke waarden oplevert. Het
+      is verboden om =distinct= te gebruiken.
+
+6. Lazy sequences
+
+   1. Zoek de documentatie van de functie =repeat= op. Schrijf een functie genaamd
+      =repeat-fifteen= welke een lazy sequence oplevert waarin 15 keer
+      een waarde die als parameter kan worden meegegeven wordt herhaald.
+
+   2. Zoek uit hoe onderstaande XML uitgelezen kan worden in Clojure.
+      Schrijf een functie die de namen en cijfers uit de onderstaande
+      XML in een map
+      teruggeeft: ={"Piet" 7, "Klaas" 10}= (je kan Strings als keys
+      gebruiken). Gebruik bijvoorbeeld de functie =xml-seq= die van XML
+      een sequence kan maken. Hier is een goede uitleg ervan te vinden:
+      [[http://www.gettingclojure.com/cookbook:xml-html]]
+
+      #+begin_src clojure
+      (use 'clojure.xml)
+      (def xmlstring "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+                      <tentamenresultaten>
+                        <resultaat>
+                          <naam>Piet</naam>
+                          <cijfer>7</cijfer>
+                        </resultaat>
+                        <resultaat>
+                          <naam>Klaas</naam>
+                          <cijfer>10</cijfer>
+                        </resultaat>
+                      </tentamenresultaten>")
+      (def xmlinputstream (java.io.ByteArrayInputStream. (.getBytes xmlstring)))
+      (def parsed-xml (parse xmlinputstream))
+      #+end_src 
+
+   3. Gebruik de predicaatfunctie =divisible-by-three?= die je in week 2
+      hebt gemaakt in een for-expressie die een sequence oplevert van
+      alleen maar getallen die deelbaar zijn door 3. Gebruik als
+      invoer-sequence =(range 20)=.
+
+   4. Herschrijf de vorige opgave en maak gebruik van =filter=. Wat is het
+      verschil tussen =filter= en =for=?
+
+* Week 4
+
+1. Recursie.
+
+   1. *A.* Schrijf de volgende recursieve Java-methode om naar een
+      tail-recursive Clojure functie. Maak dus gebruik van =recur=.
+
+      #+BEGIN_EXAMPLE
+          private static int sumTo(int n) {
+            if (n == 0) return 0;
+            return n + sumTo(n - 1);
+          }
+      #+END_EXAMPLE
+
+      *B.* Maak een versie waarbij het gebruik van =recur= vervangen
+      wordt door een hogere orde functie.
+   
+   2. Schrijf een recursieve hogere orde functie =times-called= welke een
+      reken-functie =calc-fn= accepteert, een startwaarde =start-val= en een
+      getal =limit=. De hogere orde functie berekent hoe vaak de functie
+      aangeroepen kan worden, totdat de limiet overschreden wordt. De
+      functie =calc-fn= accepteert een getal en levert een getal op.
+      Voorbeelden van aanroepen van =times-called=:
+
+      #+BEGIN_SRC clojure
+          (times-called (fn [x] (+ x x)) 2 1000) ;;=> 8
+          (times-called (fn [x] (* x x)) 2 1000) ;;=> 3
+          (times-called (fn [x] (Math/pow x x)) 2 1000) ;;=> 2
+      #+END_SRC
+
+2. Atoms.
+
+   1. Maak een atom welke boeken kan opslaan in een vector. Boeken
+      bewaar je in een map:
+
+      #+BEGIN_SRC clojure
+          {:type :book, 
+           :title "The Joy of Clojure",
+           :authors "Fogus and Houser", 
+           :publisher "Manning"}
+      #+END_SRC
+
+      Schrijf daarbij functies genaamd =insert-book=, =get-book=,
+      =update-book= en =delete-book= om de boeken te kunnen beheren.
+      Demonstreer duidelijk de werking van je programma door een
+      scenario uit te programmeren waarin boeken worden ge-insert,
+      opgevraagd, ge-update en verwijderd. Houdt rekening met o.a. de
+      volgende zaken:
+
+      -  Een boek mag niet worden toegevoegd als er al een boek is met
+         dezelfde titel
+
+      -  Een boek mag alleen worden ge-update als er al een boek is met
+         dezelfde titel
+
+   2. Schrijf twee functies: =start= en =stop= welke de werking van een
+      simpele stopwatch voorstellen. De twee functies moeten als volgt
+      te gebruiken zijn:
+
+      #+BEGIN_SRC clojure
+          (start!) ;;=> "Stopwatch started"
+          (start!) ;;=> "Stopwatch already started"
+          (stop!) ;;=> "3.618 seconds passed since start"
+          (stop!) ;;=> "Start stopwatch first"
+          (start!) ;;=> "Stopwatch started"
+          (stop!) ;;=> "105.838 seconds passed since start"
+      #+END_SRC
+
+      Gebruik een atom om de tijd bij te houden die verstreken is.
+
+   3. Bestudeer de functie =memoize= op [[http://clojure.org/atoms]]. Wat
+      is het verschil met voorbeeld van Fibonacci in het dictaat waarbij
+      ook memoization is toegepast? Waarom is het niet nodig om =memoize=
+      als macro te schrijven? Is =memoize= wel of geen hogere orde
+      functie?
+
+3. Macro's.
+
+   1. Schrijf een macro genaamd =my-for=, een variatie op =for=, welke je als volgt kunt
+      gebruiken:
+
+      #+BEGIN_SRC clojure
+          (my-for i 10 15 
+            i (* i 2) (* i 3))
+          ;;=> ([10 20 30] [11 22 33] [12 24 36] [13 26 39] [14 28 42])
+      #+END_SRC
+
+      Het eerste argument van =my-for= is een naam van een
+      iteratievariabele. Het tweede argument is een beginwaarde en het
+      derde argument is de eindwaarde. De iteratievariabele doorloopt de
+      waarden vanaf de beginwaarde tot de eindwaarde. Daarna volgen er
+      expressies waarin aan de iteratievariabele gerefereerd kan worden.
+      De waarden van de expressies worden verzameld in een lijst van
+      vectoren, per iteratie een vector met de waarden van de
+      expressies.
+
+      Enkele voorbeelden:
+
+      #+BEGIN_SRC clojure
+          (my-for c 97 123 
+               (char c))
+          ;;=> ([\a] [\b] [\c] [\d] ... [\z])
+
+          (apply str
+               (apply concat
+                      (my-for c 97 123 
+                              (char c))))
+          ;;=> "abcdefghijklmnopqrstuvwxyz"
+      #+END_SRC
+
+   2. Breidt de macro =my-for= uit zodat het ook mogelijk wordt van hoog
+      naar laag te itereren:
+
+      #+BEGIN_SRC clojure
+          (apply str
+               (apply concat
+                      (my-for c 122 96 
+                              (char c))))
+          ;;=> "zyxwvutsrqponmlkjihgfedcba"
+      #+END_SRC
+      
+* Week 5 en 6: webapplicatie
+
+Ontwerp een klein spelletje als webapplicatie en maak hierbij gebruik
+van https://github.com/borkdude/tictactoe of gebruik een
+Luminus-template: http://www.luminusweb.net/.
+
+Ideeën voor spelletjes:
+
+-  Niveau 'easy':
+   -  Galgje
+   -  Quiz
+   -  Bingo
+
+-  Niveau 'medium':
+   -  Schuifpuzzel
+   -  Memory
+
+-  Niveau 'hard':
+   -  Battleship
+   -  Minesweeper
+   -  Pesten (kaartspel)
+
+of een eigen idee wat goedgekeurd wordt door de docent.
+
+*Gesuggereerde werkwijze*
+-  Ontwerp eerst het model op een interactieve wijze (REPL) en schrijf
+   wanneer functies een voorlopige vorm hebben aangenomen er tests
+   voor in een corresponderende test namespace, zoals bij het tictactoe-spel.
+   Draai de tests regelmatig met =lein test= om te kijken of je model nog
+   correct werkt. Gebruik zoveel mogelijk testbare functies (dus
+   referentieel transparant) die je in het test-gedeelte test. In de
+   tests neem je tevens een paar scenario's op die de hele flow van een
+   spel illustreren en testen.
+
+-  Ontwerp daarna de view op een interactieve manier. Deel de
+   html-generatie op in stukjes die makkelijk zijn uit te proberen
+   vanaf de REPL. Test daarna de gehele applicatie in de browser.
+
+-  Zet daarna controller op (Compojure routes en bijbehorende
+   besturingslogica.
+
+-  Start de browser via de =repl= namespace met de functie
+   =start-server=. Los eventuele problemen op. 
+
+*Op te leveren*
+
+-  Github-link naar project (zodat de code makkelijk door de docent is
+   in te zien)
+
+-  Deploy de applicatie eventueel naar Heroku (zie de README van
+   https://github.com/borkdude/tictactoe en https://www.heroku.com/)
+   zodat deze voor de docent makkelijk te testen is
+
+-  Documentje met uitleg over het spel, de spelregels, toelichting bij
+   code waar nodig, verantwoording van keuzes, wat mag de docent vooral
+   niet over het hoofd zien bij de beoordeling?
+
+*Beoordeling / eisen*
+
+-  De applicatie werkt naar verwachting, bevat geen bugs, geen
+   imperatieve programmeerstijl
+
+-  De kennis/vaardigheden die opgedaan zijn tijdens de les zijn
+   duidelijk zichtbaar in de opgeleverde code
+
+-  Het model van de applicatie bevat waar mogelijk testbare functies
+   (referentieel transparant)
+
+-  Testen voor het model in een aparte test-namespace, gebruikmakende
+   van clojure.test. Zinvolle testgevallen.
+
+-  De view is opgedeeld in functies die makkelijk te 'testen' zijn
+   vanaf de REPL
+
+-  Bonus: de applicatie ziet er mooi uit
+
+   
+

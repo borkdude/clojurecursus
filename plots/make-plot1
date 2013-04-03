@@ -1,0 +1,3 @@
+gnuplot plot1.gnu
+latex plot1.tex
+dvipng -o plot1.png plot1.dvi
