@@ -606,8 +606,8 @@ of een eigen idee wat goedgekeurd wordt door de docent.
    html-generatie op in stukjes die makkelijk zijn uit te proberen
    vanaf de REPL. Test daarna de gehele applicatie in de browser.
 
--  Zet daarna controller op (Compojure routes en bijbehorende
-   besturingslogica.
+-  Zet daarna de controller op (Compojure routes en bijbehorende
+   besturingslogica).
 
 -  Start de browser via de =repl= namespace met de functie
    =start-server=. Los eventuele problemen op. 
