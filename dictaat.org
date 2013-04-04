@@ -5624,16 +5624,9 @@ Als er een winnaar is, dan wordt het winnaar-scherm getoond. Zo niet,
 dan wordt er gekeken of het bord vol is: in dat geval tonen we het
 gelijkspel-scherm. In alle andere gevallen het speelscherm.
 
+* Bibliografie
 
-
-
-
-
-
-
-
-
-
+# TODO Bibliografie handmatig beheren
 
 #+BIBLIOGRAPHY: my-bib-db plain
 # \bibliographystyle{plain}

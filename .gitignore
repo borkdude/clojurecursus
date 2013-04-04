@@ -42,3 +42,23 @@ practicum.html
 deploy
 
 *.html
+
+auto/dictaat.el
+
+*.aux
+
+*.doc
+
+*.log
+
+*.odt
+
+*.out
+
+*.pdf
+
+*.pyg
+
+*.tex
+
+*.toc
