@@ -182,7 +182,7 @@ geheel onnatuurlijk aanvoelen.
 Om dit te illustreren, een klein voorbeeld uit het boek Programming
 Clojure\cite{halloway}. Clojure (spreek uit: cloozjer) is een
 functionele programmeertaal, in tegenstelling tot Java. In Java zouden
-we een methode kunnen schrijven welke checkt of een String uitsluitend
+we een methode kunnen schrijven die checkt of een String uitsluitend
 uit whitespace-karakters bestaat, als volgt:
 
 #+begin_src java
@@ -209,7 +209,7 @@ In Clojure zou je bovenstaande methode kunnen programmeren als volgt:
 #+end_src
 
 Waarom is de Clojure-versie zoveel korter? Omdat we hier gebruiken
-maken van een hogere orde-functie, =every?=, welke een (anonieme)
+maken van een hogere orde-functie, =every?=, die een (anonieme)
 functie en een sequence als argument verwacht. De functie =every?=
 past de anonieme functie toe op elke element uit de sequence. Als de
 anonieme functie voor alle elementen =true= oplevert, dan levert
@@ -323,7 +323,7 @@ van welk type die variabele is. In Clojure hoeft dat niet en zijn
 functies vaak geschikt voor meerdere soorten types, wanneer dat voor
 de hand ligt. Verder moeten in Java lijsten vaak één bepaald type
 element bevatten, bijvoorbeeld =ArrayList<String>=. Men noemt een
-collectie welke elementen van steeds hetzelfde type moet bevatten
+collectie die elementen van steeds hetzelfde type moet bevatten
 homogeen. In Clojure kan een lijst willekeurige type elementen
 bevatten, bijvoorbeeld
 
@@ -332,7 +332,7 @@ bevatten, bijvoorbeeld
 #+end_src
 
 Dit is een vector met vier elementen, waarvan twee
-integers en twee strings. Men noemt een collectie welke elementen van
+integers en twee strings. Men noemt een collectie die elementen van
 verschillende typen kan bevatten ook wel heterogeen.
 
 In Clojure is het de bedoeling dat je je
@@ -674,7 +674,7 @@ clojure.core/str
 nil
 #+end_src
 
-Nog een voorbeeld, maar dan met de functie =+= welke we ook al
+Nog een voorbeeld, maar dan met de functie =+= die we ook al
 gebruikt hebben:
 
 #+begin_src clojure
@@ -690,11 +690,12 @@ nil
 Allereerst geeft de documentatie aan dat =+= een functie is,
 gedefinieerd in de namespace =clojure.core=. In deze namespace
 bevinden zich alle basisfuncties die standaard geladen worden.
-Vervolgens wordt er aangegeven dat =+= één, twee
-of een variabel aantal argumenten accepteert. Dit wordt
+Vervolgens wordt er aangegeven dat =+= nul, één, twee,
+of twee en een variabel aantal argumenten accepteert. In het laatste geval
+wordt het variabele aantal argumenten samengevoegd in een lijst. Dit wordt
 achtereenvolgens aangegeven door ~[]~ voor nul argumenten, ~[x]~ voor één
-argument, ~[x y]~ voor twee argumenten en  ~[x y & more]~ voor twee of
-meer argumenten. Zoals verwacht geeft de documentatie aan dat =+= de
+argument, ~[x y]~ voor twee argumenten en  ~[x y & more]~ voor twee en
+eventueel meer argumenten. Zoals verwacht geeft de documentatie aan dat =+= de
 som van zijn argumenten teruggeeft. 
 
 Een onmisbare website bij het ontwikkelen in Clojure is
@@ -772,7 +773,7 @@ deze op functiepositie moeten zetten en een argument mee moeten geven:
 #+end_src
 
 In bovenstaande expressie wordt er een (anonieme, want zonder naam)
-functie gedefinieerd, welke meteen wordt aangeroepen met =1=. De
+functie gedefinieerd, die meteen wordt aangeroepen met =1=. De
 functie geeft het antwoord =2= terug. Natuurlijk willen we ook
 functies kunnen opslaan onder een naam. Hiervoor gebruiken we weer
 =def=:
@@ -1089,7 +1090,7 @@ opgeslagen.
 #+END_LATEX
 *Oefening 5.*
 #+end
-Definieer een do-expressie welke eerst ="hallo"= print en de waarde
+Definieer een do-expressie die eerst ="hallo"= print en de waarde
 =42= teruggeeft.
 --------------------------------
 Sommige constructies in Clojure hebben een zogenaamde /implicit do/.
@@ -1239,7 +1240,7 @@ user=> (do (def x 10)
 nil
 #+end_src
 
-Dit is misbruik maken van =Vars= welke uitsluitend bedoeld zijn om
+Dit is misbruik maken van =Vars= die uitsluitend bedoeld zijn om
 globale waarden op te slaan bij een naam, zoals functies en
 configuratie-parameters. In bovenstaand voorbeeld is =x= geen lokale
 waarde, maar een globale wijzigbare variabele. Op regel 5 begint een
@@ -1294,7 +1295,7 @@ ClassNotFoundException clojure.xml  java.net.URLClassLoader$1.run (URLClassLoade
 #+end_src
 
 In bovenstaand voorbeeld wordt er geprobeerd om de functie
-=clojure.xml/parse= toe te passen op een url welke verwijst naar een
+=clojure.xml/parse= toe te passen op een url die verwijst naar een
 XML-document. Het symbol =clojure.xml/parse= noemen we volledig
 gekwalificeerd (in het Engels /fully qualified/) omdat de namespace-prefix voor de
 functienaam staat (gescheiden door een =/=). De functie =parse= is dus een functie in de
@@ -1431,7 +1432,7 @@ Java-packages, met het verschil dat het laatste deel van de
 namespacenaam overeenkomt met de bestandsnaam, zonder de extensie
 =.clj=.
 
-Een namespace welke andere namespaces als dependency heeft, moet dat
+Een namespace die andere namespaces als dependency heeft, moet dat
 vermelden in de namespace-definitie. Dit gaat precies zoals in het
 gedeelte [[Namespaces gebruiken]], met een kleine aanpassing:
 
@@ -1520,13 +1521,13 @@ gebruik van =defn=:
 #+END_SRC
 
 Hier wordt een functie gedefinieerd met de naam =surround-word=.
-Optioneel kun je een documentatiestring meegegeven, welke vertelt hoe
+Optioneel kun je een documentatiestring meegegeven, die vertelt hoe
 je de functie kan aanroepen. Deze documentatie kun je dan later met
 =doc= weer opvragen. Parameters van een functie worden omgeven door
 vierkante haken, in het voorbeeld =affix= en =word=. Daarna volgt de
 body van de functie. Dat kunnen nul, één of meerdere expressies zijn
 (=defn= heeft een implicit =do=). In ons voorbeeld hebben we maar één
-expressie: een aanroep van de functie =str= welke, zoals eerder vermeld,
+expressie: een aanroep van de functie =str= die, zoals eerder vermeld,
 stringrepresentaties van argumenten aan elkaar plakt. Roepen we deze
 functie aan met een paar voorbeeldwaarden dan zien we het volgende:
 
@@ -1569,7 +1570,7 @@ nummeren:
 (#(+ %1 %2) 10 20) ;;=> 30
 #+END_SRC
 
-In bovenstaand voorbeeld wordt er een anonieme functie gemaakt welke
+In bovenstaand voorbeeld wordt er een anonieme functie gemaakt die
 zijn eerste en tweede argument optelt. Deze anonieme functie wordt
 meteen aangeroepen, omdat deze in functiepositie binnen een andere
 lijst staat, met de argumenten 10 en 20. Het antwoord is zoals
@@ -1667,7 +1668,7 @@ ArityException Wrong number of args (1) passed to: user$myfun ...
 #+END_LATEX
 *Oefening 9.*
 #+end
-Schrijf een functie welke minstens 3 verplichte argumenten (getallen)
+Schrijf een functie die minstens 3 verplichte argumenten (getallen)
 heeft en optioneel nog meer argumenten. Print de optionele argumenten
 en geef de som van de eerste drie argumenten terug als resultaat.
 
@@ -1872,7 +1873,7 @@ teruggegeven.
 #+END_LATEX
 *Oefening 11.*
 #+end
-Schrijf een recursieve functie =tafel= welke de tafel van =n= print.
+Schrijf een recursieve functie =tafel= die de tafel van =n= print.
 Voorbeeld aanroep:
 
 #+begin_src clojure
@@ -1944,7 +1945,7 @@ Bepaal waarom de volgende code niet werkt en herschrijf met apply.
 #+end_src
 
 ** Predicaatfuncties
-Met predicaatfunctie bedoelen we een functie van één argument welke
+Met predicaatfunctie bedoelen we een functie van één argument die
 =true= of =false= oplevert. In Clojure bestaan een heleboel
 voorgedefinieerde predicaatfuncties. Alle functies die in Clojure een
 boolean teruggeven, eindigen met een vraagteken; dus ook
@@ -1994,7 +1995,7 @@ nil
 
 Clojure heeft een functie genaamd =apropos= waarmee je aan de hand
 van een string of reguliere expresse kunt zoeken naar alle definities
-in de geladen namespaces. Zo vinden we voor =(apropos #"\?$")=, welke
+in de geladen namespaces. Zo vinden we voor =(apropos #"\?$")=, die
 zoekt naar alle definities die eindigen op een vraagteken:
 
 #+begin_src clojure
@@ -2124,7 +2125,7 @@ toegepast op =3=, het resultaat van de vorige optelling en =2=. Zo
 gaat het verder totdat er nog één getal over is: =15=.
 
 Om dit verder te illustreren zullen we een optelfunctie met side
-effect gebruikt, welke informatie over de tussenstappen print:
+effect gebruiken, die informatie over de tussenstappen print:
 
 #+BEGIN_SRC clojure
 (defn add-two [x y]
@@ -2177,8 +2178,8 @@ Welke functie moet er op de puntjes staan?
 Het is mogelijk om functies te maken uit andere functies. De eerste
 manier die we hier laten zien is partiële applicatie. Partiële
 applicatie wil zeggen dat je een functie slechts een deel van de
-argumenten geeft welke deze nodig heeft. Als resultaat wordt er dan
-een nieuwe functie opgeleverd welke nog de rest van de argumenten
+argumenten geeft die deze nodig heeft. Als resultaat wordt er dan
+een nieuwe functie opgeleverd die nog de rest van de argumenten
 verwacht.
 
 Een voorbeeld.
@@ -2204,7 +2205,7 @@ een =Var= kunnen toekennen.
 #+END_LATEX
 *Oefening 17.*
 #+end
-Definieer met =partial= een functie welke een getal maal twee
+Definieer met =partial= een functie die een getal maal twee
 oplevert:
 
 #+begin_src clojure
@@ -2263,12 +2264,12 @@ in functioneel programmeren terminologie /point free/ notatie.
 #+END_LATEX
 *Oefening 18.*
 #+end
-Definieer met =comp= een functie welke eerst een aantal getallen bij
+Definieer met =comp= een functie die eerst een aantal getallen bij
 elkaar optelt en van de som een string maakt.
 
 ** Complement
 De functie complement neemt een functie als argument en levert een
-nieuwe functie op welke dezelfde argumenten accepteert als de oude
+nieuwe functie op die dezelfde argumenten accepteert als de oude
 functie, maar een tegengestelde waarheidswaarde oplevert. 
 
 #+BEGIN_SRC clojure
@@ -2399,7 +2400,7 @@ closures zijn:
 #+END_LATEX
 *Verdieping 2.*
 #+end
-Tot zover hebben we alleen closures bekeken welke beschikking hadden
+Tot zover hebben we alleen closures bekeken die beschikking hadden
 over immutable data. We zullen nu een voorbeeld tonen waarin een
 closure beschikking heeft over mutable data in de vorm van een
 =atom=. 
@@ -2423,7 +2424,7 @@ nil
 #+END_SRC
 
 In het let-block van =count-times-called= wordt een local gebruikt
-genaamd =calls= welke het aantal keren zal bijhouden dat de functie is
+genaamd =calls= die het aantal keren zal bijhouden dat de functie is
 aangeroepen. Daarvoor gebruiken we een =atom=. Dit is één van de vier
 mutable reference types waarover Clojure beschikt. Als resultaat van
 de let-expressie wordt er een (anonieme) functie opgeleverd waarin de
@@ -2449,7 +2450,7 @@ encapsulatie.
 #+END_LATEX
 *Oefening 20.*
 #+end
-Maak een functie =make-closure= welke een closure oplevert over een
+Maak een functie =make-closure= die een closure oplevert over een
 string als argument van =make-closure=. De closure accepteert op zijn
 beurt weer een getal en levert 'getal' keer de string achter elkaar
 op, zoals in het volgende fragment. 
@@ -2727,7 +2728,7 @@ toe te voegen element, maar =cons= meerdere:
 (conj '(1 2 3) 0 -1 -2) ;;=> (-2 -1 0 1 2 3)
 #+end_src
 
-Omdat lijsten vooral van toepassing zijn bij data welke van begin tot
+Omdat lijsten vooral van toepassing zijn bij data die van begin tot
 eind, van kop tot staart, doorgelopen moet worden, spelen lijsten
 vooral een rol in de representatie van Clojure-programma's zelf.
 Clojure-programma's worden als lijst gerepresenteert, zodat je op
@@ -2753,7 +2754,7 @@ aanmaken. De eerste manier is door gebruikmaking van een /vector
 literal/: de elementen van de vector worden omgeven door twee vierkante
 haken. De tweede manier laat het gebruik van de functie =vector= zien die
 een aantal argumenten accepteert en ze in een nieuwe vector zet. Daarna
-zien we het gebruik van de functie ~=~ welke twee waarden kan vergelijken.
+zien we het gebruik van de functie ~=~ die twee waarden kan vergelijken.
 In Clojure gaat de vergelijking tussen twee collecties door de elementen
 te vergelijken: dus levert de vergelijking hier true op. We zien op de
 laatste regel dat de vergelijking tussen een vector of list met dezelfde
@@ -2910,7 +2911,7 @@ val(s). When applied to a vector, returns a new vector that
 contains val at index. Note - index must be <= (count vector).
 #+END_EXAMPLE
 
-Van assoc bestaat ook weer een variant assoc-in welke elementen in
+Van assoc bestaat ook weer een variant assoc-in die elementen in
 geneste structuren kan vervangen:
 
 #+BEGIN_SRC clojure
@@ -3241,7 +3242,7 @@ datastructuren in Clojure.
 
 Een sequence in Clojure is een abstractie over een concrete
 datastructuur. Je zou dit kunnen vergelijken met een interface in Java.
-Elk object welke de =ISeq= interface implementeert en daarmee de
+Elk object die de =ISeq= interface implementeert en daarmee de
 functies =first=, =rest= en =cons= ondersteunt, kan 'bekeken worden'
 als sequence. Veel functies in Clojure gaan uit van de sequence view
 op een collectie.
@@ -3258,7 +3259,7 @@ bovenstaand voorbeeld.
 
 Op een sequence kun je zoals gezegd drie functies aanroepen: =first=, =rest=
 en =cons=. De functie cons moet je niet verwarren met de polymorfe functie =conj=
-welke afhankelijk van het concrete type een element voor of achteraan
+die afhankelijk van het concrete type een element voor of achteraan
 toevoegt. De functie =cons= voegt altijd een element toe vooraan een
 sequence, of beter gezegd: levert een nieuwe sequence op met een element
 aan de voorkant erbij gezet.
@@ -3327,7 +3328,7 @@ hiermee.
 *** Lazy sequences
 Veel sequence-functies leveren zogenaamde lazy sequences op. Dat zijn
 sequences die hun elementen pas gaan berekenen als ze daadwerkelijk
-worden opgevraagd. Een voorbeeld daarvan is de functie =range= welke een
+worden opgevraagd. Een voorbeeld daarvan is de functie =range= die een
 lijst met getallen oplevert in de vorm van een LazySeq:
 
 #+BEGIN_SRC clojure
@@ -3416,7 +3417,7 @@ user=> my-seq
 (1 2 3 4 5)
 #+END_SRC
 
-Op regel 1 definiëren we =my-seq= welke gemaakt wordt met =map= welke
+Op regel 1 definiëren we =my-seq= die gemaakt wordt met =map= die
 een functie toepast over 5 elementen van een lijst. De functie print
 eerst de tekst "side effect" en geeft daarna zijn argument terug. 
 Op regel 4 vragen we het eerste element van =my-seq= op. Omdat =map=
@@ -3466,7 +3467,7 @@ we dat er geen side effect meer optreedt.
 #     effect (in totaal 32 x)
 # #+END_SRC
 
-# Bij het opvragen van een element welke valt in een chunk die nog niet is
+# Bij het opvragen van een element dat valt in een chunk die nog niet is
 # berekend zal de gehele chunk berekend worden. Daarom zien we hier weer
 # 32 side effects.
 
@@ -3853,7 +3854,7 @@ de tabel opgeslagen en het resultaat teruggegeven als return-waarde van
 de functie.
 
 In Java zou je memoization als volgt kunnen implementeren. Als "tabel"
-gebruiken we een simpele ArrayList welke de opeenvolgende elementen van
+gebruiken we een simpele ArrayList die de opeenvolgende elementen van
 de reeks van Fibonacci voorstellen.
 
 #+BEGIN_SRC java
@@ -3916,14 +3917,14 @@ cache.
 
 In bovenstaande gaan we verder met de berekening van =fib(3)=.
 Inmiddels is de uitkomst van =fib(2)= toegevoegd aan de cache. De uitkomst
-van =fib(3)= is afhankelijk van =fib(2)= en =fib(1)= welke beide al in de
+van =fib(3)= is afhankelijk van =fib(2)= en =fib(1)= die beide al in de
 cache aanwezig zijn. We tellen deze waarden op en voegen het resultaat
 in de cache toe. Het resultaat daarvan zien we onderstaande figuur.
 
 [[file:pictures/fibmem3.png]]
 
 De berekening van =fib(4)= kan nu verder gaan. Deze waarde is afhankelijk
-van =fib(3)= en =fib(2)= welke beide in de cache aanwezig zijn. De laatste
+van =fib(3)= en =fib(2)= die beide in de cache aanwezig zijn. De laatste
 stap die nu plaats vindt is het toevoegen van de uitkomst van =fib(4)= aan
 de cache en het teruggeven van de uitkomst als return-waarde van de
 methode. Het eindresultaat zien we in de volgende figuur.
@@ -4352,7 +4353,7 @@ Laten we eens nagaan wat er gebeurt wanneer het derde element van
 opgevraagd, dit zijn 0 en 1. Het volgende element is het eerste
 element van =(map + fib-seq (rest fib-seq))=, wat de som is van 0 en
 1, dus 1. Het vierde element is dan de som van het tweede element van
-=fib-seq= en het derde element van fib-seq (welke zojuist was
+=fib-seq= en het derde element van fib-seq (die zojuist was
 berekend): dit is 2. Je ziet dat dit de reeks van Fibonacci oplevert
 op een lazy manier.
 
@@ -4457,7 +4458,7 @@ Hetzelfde kun je als volgt bereiken.
 #+END_SRC
 
 In bovenstaande wordt dus alles ge-syntax-quoted, behalve de
-expressie =(-1 2)= welke evalueert naar =1=.
+expressie =(-1 2)= die evalueert naar =1=.
 
 Als variant op de tilde hebben we nog de unquote-splicing operator,
 die met =~@= genoteerd wordt. Het idee daarvan is dat je niet een
@@ -4477,13 +4478,13 @@ macro's, waarover het volgende gedeelte gaat.
 ** Macros
 
 In Clojure wordt code als data gerepresenteerd. Deze data kunnen we
-bewerken en aan de hand daarvan nieuwe data produceren, welke ook
+bewerken en aan de hand daarvan nieuwe data produceren, die ook
 code representeerd. Dit wordt gedaan aan de hand van macro's. We
 zullen nu eerst enkele voorbeelden behandelen van macro's in Clojure:
 
 *** cond
 Het eerste voorbeeld wat we hier behandelen is een toepassing van de
-=cond=-macro, welke we in hoofdstuk [[Clojure Basics]] al voorbij hebben
+=cond=-macro, die we in hoofdstuk [[Clojure Basics]] al voorbij hebben
 zien komen.
 
 #+BEGIN_SRC clojure
@@ -4684,7 +4685,7 @@ unieke naam wordt gegenereerd:
 #+END_SRC
 
 Waarom worden er unieke namen gegenereerd? Dit maken we duidelijk aan de
-hand van het volgende voorbeeld. Stel, we definiëren een macro welke een
+hand van het volgende voorbeeld. Stel, we definiëren een macro die een
 aantal keren een stukje code uitvoert:
 
 #+BEGIN_SRC clojure
@@ -4825,7 +4826,7 @@ Blogs over macro's:
 
 * Casus 2: webapplicatie
 
-In dit hoofdstuk behandelen we een een grotere applicatie welke
+In dit hoofdstuk behandelen we een een grotere applicatie die
 bestaat uit meerdere Clojure-namespaces. Het betreft het het spelletje
 TicTacToe gemaakt als webapplicatie, waarbij diverse Clojure libraries
 en tools gebruikt worden. De source-code van deze applicatie kan
@@ -4833,7 +4834,7 @@ verkregen worden op [[https://github.com/borkdude/tictactoe/]].
 
 De projectstructuur is afgeleid van een Luminus-project. [[http://www.luminusweb.net/][Luminus]] een
 microframework om webapplicaties te ontwikkelen. In feite is het niets
-anders dan een verzameling templates welke de meest populaire Clojure
+anders dan een verzameling templates die de meest populaire Clojure
 web-development libraries bundelen. Bovendien bevat de Luminus-website
 duidelijke tutorials. Als je zelf een nieuwe webapplicatie wil
 bouwen, dan vormt Luminus een goed startpunt. 
@@ -4889,7 +4890,7 @@ De file-structuur van onze applicatie is als volgt:
 #+end_example
 
 De projecteigenschappen en dependencies staan omschreven in
-=project.clj= welke het hart vormt van een Leiningen-project. De
+=project.clj= die het hart vormt van een Leiningen-project. De
 inhoud van de file =project.clj=:
 
 #+begin_src clojure
@@ -4959,7 +4960,7 @@ $ lein deps :tree
 
 We hebben hier niet de gehele dependency-tree afgebeeld.
 
-De applicatie maakt gebruik van [[https://github.com/ring-clojure/ring][Ring]]. Ring is een library welke een
+De applicatie maakt gebruik van [[https://github.com/ring-clojure/ring][Ring]]. Ring is een library die een
 Clojure-abstractie over HTTP vormt. Ring maakt het bijvoorbeeld mogelijk om HTTP
 requests en responses als Clojure-maps te behandelen binnen je
 programma. Om een Ring applicatie te starten maken we gebruik van de
@@ -5007,12 +5008,12 @@ bedienen.
 
 *** Infrastructuur
 De applicatie bevat een bestand =handler.clj=. Een handler is
-niets anders dan een functie welke een HTTP-request in de vorm van
+niets anders dan een functie die een HTTP-request in de vorm van
 een Clojure-map verkrijgt en een HTTP-response in de vorm van een
 Clojure-map als resultaat geeft. Deze functies kunnen worden
 gecomposeert, zodat een request een ketting van functies doorloopt
 die elk een eigen gedeelte aan de response-map kunnen toevoegen,
-verwijderen of wijzigen. De Var =war-handler= is een handler welke is
+verwijderen of wijzigen. De Var =war-handler= is een handler die is
 samengesteld uit een aantal standaard handlers uit de library
 =lib-noir=. Deze library gebruiken wij in de applicatie voor session
 management. 
@@ -5074,7 +5075,7 @@ vars en functies toelichten.
 
 - =init-state= Dit is de beginrepresentatie van het spel. Deze map
   houdt het bord en de speler bij. De bordrepresentatie is een vector
-  met daarin weer drie vectoren welke de rijen van TicTacToe
+  met daarin weer drie vectoren die de rijen van TicTacToe
   voorstellen. De player wordt gepresenteerd door een karakter: =X= of
   =O=. Het beginbord is een leeg bord en de beginspeler is =X=.
 
@@ -5145,7 +5146,7 @@ In dat geval is de nieuwe status gelijk aan de oude status.
 - =winner?= Deze functie heeft meerdere definities op basis van het
   aantal argumenten. Wanneer deze functie aangeroepen wordt zonder
   argumenten, wordt =winner?= opnieuw aangeroepen, met het huidige
-  bord welke opgehaald wordt uit de sessie. =winner?= kan ook met een
+  bord die opgehaald wordt uit de sessie. =winner?= kan ook met een
   ander bord aangeroepen worden; dit maakt het makkelijker om deze
   functie te testen. Merk op dat de functie zonder argumenten niet
   puur is! Indien =winner?= wordt aangeroepen met één argument,
@@ -5163,7 +5164,7 @@ In dat geval is de nieuwe status gelijk aan de oude status.
   De functie =winner-in-rows?= bekijkt of voor een bord en een speler
   tenminste één (de functie =some=) rij op het bord geldt: elk (de functie
   =every?=) karakter is gelijk aan het karakter van de speler. De functie
-  =some= is een hogere orde functie welke met behulp van een
+  =some= is een hogere orde functie die met behulp van een
   predicaatfunctie kijkt of tenminste één element uit een collectie
   voldoet aan het predicaat en geeft dat element terug, anders =nil=. De
   functie =every?= is ook een hogere orde functie en levert =true= op als de
@@ -5180,7 +5181,7 @@ In dat geval is de nieuwe status gelijk aan de oude status.
   voor de kolommen, kunnen we de functie =winner-in-rows?= hier gewoon
   hergebruiken. We hoeven daarvoor alleen maar de kolommen als rijen te
   gaan representeren. Daarvoor hebben we de de functie =transposed-board=
-  gemaakt, welke een gekantelde versie van het bord oplevert. Stel, het
+  gemaakt, die een gekantelde versie van het bord oplevert. Stel, het
   bord heeft op een gegeven moment de volgende representatie:
 
 #+BEGIN_SRC clojure
@@ -5249,7 +5250,7 @@ Zo zien we bij de test =transposed-board-test= het gebruik van
 
 Het is mogelijk om eventueel meerdere testcases aan de verzameling toe
 te voegen. De testcode is daar op voorbereid. Met =doseq= wordt er met
-elke map welke een input-bord en verwacht output-bord bevat een test
+elke map die een input-bord en verwacht output-bord bevat een test
 uitgevoerd. =Doseq= werkt net als =for=, maar bij =doseq= gaat het enkel om de
 side effects, niet om een uiteindelijke return-waarde.
 
@@ -5500,14 +5501,14 @@ Toelichting bij enkele fragmenten uit de view-code.
   #+END_SRC
 
   In de functie =row-html= wordt =map-indexed= aangeroepen met een functie
-  welke itereert over de kolomnummers van cellen en de cellen van een rij
+  die itereert over de kolomnummers van cellen en de cellen van een rij
   zelf. De functie levert vervolgens de html voor elke cel, door =cell-html=
   aan te roepen.
 
 - =board-html= itereert ook met behulp van =map-indexed=, maar dan over
   de rijen van het bord en roept voor elke rij en bijbehorend
   rijnummer de functie =row-html= aan. De inhoud wordt in een tabel
-  gezet en de tabel staat vervolgens weer in een form, welke bij een
+  gezet en de tabel staat vervolgens weer in een form, die bij een
   submit een post doet naar de url =/=. Een aanroep van =board-html= ziet
   er bijvoorbeeld als volgt uit:
 
