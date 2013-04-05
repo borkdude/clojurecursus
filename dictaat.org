@@ -696,7 +696,8 @@ wordt het variabele aantal argumenten samengevoegd in een lijst. Dit wordt
 achtereenvolgens aangegeven door ~[]~ voor nul argumenten, ~[x]~ voor één
 argument, ~[x y]~ voor twee argumenten en  ~[x y & more]~ voor twee en
 eventueel meer argumenten. Zoals verwacht geeft de documentatie aan dat =+= de
-som van zijn argumenten teruggeeft, behalve als er nul argumenten zijn. 
+som van zijn argumenten teruggeeft. Behalve als er nul argumenten
+zijn, =(+)=, dan wordt er =0= teruggegeven.
 
 Een onmisbare website bij het ontwikkelen in Clojure is
 [[http://clojuredocs.org]]. Deze website biedt niet alleen
