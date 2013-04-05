@@ -577,16 +577,6 @@ niet iets van Clojure zelf. Een voorbeeldje:
 (+ 1 2 3) ;;=> 6
 #+END_SRC
 
-Het voordeel van deze manier van noteren is dat je deze code, inclusief
-uitkomst kan kopiëren en plakken in een REPL. Alles wat na =;;= volgt is
-namelijk commentaar in Clojure. Met ~=>~ bedoelen we: "gaat naar", of:
-"heeft als resultaat". Dit had ook een ander symbool kunnen zijn en is
-niet iets van Clojure zelf. Een voorbeeldje:
-
-#+BEGIN_SRC clojure
-    (+ 1 2 3) ;;=> 6
-#+END_SRC
-
 Bovenstaande betekent dat de Clojure-expressie =(+ 1 2 3)= de waarde =6=
 oplevert.
 
