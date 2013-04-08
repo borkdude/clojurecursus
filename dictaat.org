@@ -1148,7 +1148,7 @@ illustreren aan de hand van een voorbeeld.
 ;;=> '(10 20 30)
 #+END_SRC
 
-Een let-expressie begint met het woord let, gevolgd door let-bindings
+Een let-expressie begint met het woord =let=, gevolgd door let-bindings
 omgeven door vierkante haken, gevolgd door een of meerdere expressies
 waarin de namen uit de let-bindings gebruikt kunnen worden. Op de
 plaats van de namen worden dan de bijbehorende waarden uit de
@@ -1162,7 +1162,7 @@ Bovenstaand voorbeeld komt dus neer op
 #+END_SRC
 
 De namen die aan waarden gegeven worden in de let-bindings worden in
-Clojure ook wel =locals= genoemd. =Locals= zijn synoniemen voor
+Clojure ook wel locals genoemd. Locals zijn synoniemen voor
 waarden. Het zijn dus geen variabelen. Ze zijn niet te wijzigen,
 oftewel immutable. Wel kunnen locals overschaduwd worden doordat
 verderop dezelfde naam nog eens gebruikt wordt:
@@ -1182,20 +1182,20 @@ zou bijna denken dat de waarde van =x= in deze let-expressie
 gewijzigd is, maar in werkelijkheid is het voorbeeld gelijk aan: 
 
 #+BEGIN_SRC clojure -n
-(let [x 10 
-      y 20 
-      z (+ x y)]
-  (let [x z]
-    (list x y z)))
+(let [x 10]
+  (let [y 20]
+    (let [z (+ x y)]
+      (let [x z]
+        (list x y z))))) 
 ;;=> (30 20 30)
 #+END_SRC
 
 De expressie op regel 4 is zelf weer een nieuwe let-expressie met een
 eigen scope, waarin de naam =x= gebruikt wordt om een waarde uit een
 hogere scope, =z=, toe te kennen. De =local= =x= uit de hogere scope
-wordt dus niet verandert, maar wordt overschaduwd door een nieuwe
-local met dezelfde naam. Je kunt het voorbeeld vergelijken met het
-volgende stukje Javascript:
+wordt dus niet veranderd, maar wordt overschaduwd door een nieuwe
+local met dezelfde naam. Local variable shadowing is ook in sommige
+andere talen mogelijk. Niet in Java, maar bijvoorbeeld wel in Javascript:
 
 #+begin_src javascript
 var x = 10;
