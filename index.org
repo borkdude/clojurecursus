@@ -33,5 +33,6 @@
 #+HTML: <p class="title">Auteur: Michiel Borkent</p>
 #+HTML: <p class="title">Cursusjaar: 2012-2013</p>
 
+- [[file:studiewijzer.org]]
 - [[file:dictaat.org]]
 - [[file:practicum.org]]
