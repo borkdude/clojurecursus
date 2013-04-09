@@ -1,0 +1,90 @@
+#+TITLE: Inleiding Functioneel Programmeren met Clojure: Studiewijzer
+#+AUTHOR: Michiel Borkent
+#+DATE: Cursusjaar 2012-2013
+# HTML-taal:
+#+LANGUAGE: nl
+
+#+LaTeX_HEADER: \usepackage[dutch]{babel}
+
+# CSS styling:
+#+STYLE: <link rel="stylesheet" type="text/css" href="css/main.css" />
+#+MATHJAX: align:"left" mathml:t path:"http://cdn.mathjax.org/mathjax/latest/MathJax.js"
+# Javascript menu (+ toevoegen om de enablen)
+# INFOJS_OPT: view:info 
+
+# Github Ribbon:
+#+begin_html
+<a href="https://github.com/borkdude/clojurecursus"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+#+end_html
+#+HTML: <p class="title">Auteur: Michiel Borkent</p>
+#+HTML: <p class="title">Cursusjaar: 2012-2013</p>
+
+Terug naar de [[file:index.org][index-pagina]]
+
+* Lesmateriaal
+- [[file:dictaat.org][Dictaat]] 
+- [[file:practicum.org][Practicum]]
+Beschikbaar via http://michielborkent.nl/clojurecursus.
+
+Correcties kunnen als pull request via Github gestuurd worden.
+
+* Aanbevolen literatuur
+Een of meer van onderstaande boeken:
+
+- [[ http://www.amazon.com/Clojure-Programming-Chas-Emerick/dp/1449394701/ref=sr_1_1?ie=UTF8&qid=1365329066&sr=8-1&keywords=clojure+programming][Clojure Programming]], Chas Emerick, Brian Carper, Christophe Grand 
+- [[http://www.amazon.de/Joy-Clojure-Thinking-Way/dp/1935182641/ref=sr_1_1?ie=UTF8&qid=1365514066&sr=8-1&keywords=the+joy+of+clojure][The Joy of Clojure]], Fogus & Houser
+- [[http://www.amazon.de/Programming-Clojure-Stuart-Halloway/dp/1934356867/ref=sr_1_1?s=books-intl-de&ie=UTF8&qid=1365514110&sr=1-1&keywords=programming+clojure][Programming Clojure]] (2nd edition), Stuart Halloway
+
+* Lesschema
+
+
+| Week | Voorbereiding                       | Practicum    |
+|------+-------------------------------------+--------------|
+|    1 | Dictaat: hoofdstuk 1 & 2            | Week 1       |
+|      | Meer lezen:                         |              |
+|      | - Clojure Programming H1            |              |
+|      | - The Joy of Clojure part 1 (H1-H3) |              |
+|      | - Programming Clojure H2            |              |
+|------+-------------------------------------+--------------|
+|    2 | Dictaat: hoofdstuk 3                | Week 2       |
+|      | Meer lezen:                         |              |
+|      | - Clojure Programming H2            |              |
+|      | - The Joy of Clojure H7             |              |
+|      | - Programming Clojure H5            |              |
+|------+-------------------------------------+--------------|
+|    3 | Dictaat: hoofdstuk 4                | Week 3       |
+|      | Meer lezen:                         |              |
+|      | - Clojure Programming H3            |              |
+|      | - Programming Clojure H4            |              |
+|      |                                     |              |
+|------+-------------------------------------+--------------|
+|    4 | Dictaat: hoofdstuk 5 en 6           | Week 4       |
+|      | Meer lezen:                         |              |
+|      | - Clojure Programming H5 (macros)   |              |
+|      | en H3 (memoization, lazyness)       |              |
+|      | - The Joy of Clojure                |              |
+|      | H7.3 (recursie)                     |              |
+|      | H6.3 (lazyness)                     |              |
+|      | H12.4 (memoization)                 |              |
+|      | H8 (macros)                         |              |
+|      | - Programming Clojure H5,7 (macros) |              |
+|------+-------------------------------------+--------------|
+|    5 | Dictaat: hoofdstuk 7                | Eindopdracht |
+|      | Meer lezen:                         |              |
+|      | - Clojure Programming H16,17        |              |
+|------+-------------------------------------+--------------|
+|    6 | Toets. Afronding eindopdracht.      | Eindopdracht |
+
+
+* Beoordeling
+Het eindcijfer bestaat uit de volgende onderdelen:
+- Voorbereiding: 20%
+- Practicum eindopdracht: 40%
+- Toets: 40%
+
+Een voorwaarde voor het verkrijgen van het eindcijfer is dat het practicum en de toets beide voldoende zijn.
+
+Het eindcijfer voor de module =TCIF-V3AP1-11= bestaat voor 50% uit het gedeelte over Clean Code en 50% uit het gedeelte over Clojure.
+
+
+
