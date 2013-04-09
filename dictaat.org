@@ -1051,18 +1051,31 @@ antwoord met verschilende waarden voor =x=, =y=, =p= en =q=.
 
 ** Do
 
-#+BEGIN_SRC clojure
-(do 
-  (println "hello")
-  (println "how are you?")
-  10)
-#+END_SRC
+Do-expressies zijn nodig wanneer er, voordat er een waarde van een
+expressie teruggegeven wordt, eerst nog een of meerdere side effects
+moeren uitgevoerd worden. Een side effect is bijvoorbeeld printen
+naar standaard output.
 
-Een do-expressie kan bestaan uit een aantal deelexpressies. Meestal
-heb je een do nodig als je side effects op wil laten treden, zoals in
-bovenstaand voorbeeld en daarna een waarde terug wil geven. Als we
-bovenstaande expressie in een REPL toekennen aan een =Var=, zien we
-het volgende:
+#+begin_src clojure
+user=> (if (odd? 3)
+  #_=>     (do (println "3 is indeed an odd number!")
+  #_=>         3))
+3 is indeed an odd number! ;; side effect
+3                          ;; return-waarde
+#+end_src
+
+Het is niet per se nodig dat de eerste expressies side effects laten
+optreden. Zo niet, dan gebeurt er niets en levert de do-expressie de
+waarde van de laatste expressie op:
+
+#+begin_src clojure
+(do 1 
+    2
+    3) ;;=> 3
+#+end_src
+
+In het volgende (nonsens)voorbeeld wordt er een do-expressie gemaakt
+met twee side effects en een return-waarde. 
 
 #+BEGIN_src clojure -n
 user=> (def n (do 
@@ -1079,11 +1092,11 @@ user=> n
 Op de eerste vier regels wordt de do-expressie toegekend aan de =Var=
 =n=. Op regel 5 en 6 zien we dat ="hello"= en ="how are you"= worden
 geprint. Daarna volgt de uitdrukking =#'user/n=. Dit betekent dat er
-een =Var n= definieert is in de namespace =user=. Op regel 8 vragen
-we de waarde van =n= op en dit is zoals verwacht =10=. Dit keer wordt
+een =Var n= gedefinieerd is in de namespace =user=. Op regel 8 vragen
+we de waarde van =n= op en dit is zoals verwacht =10=. Deze keer wordt
 de tekst uit de =do=-expressie niet geprint, omdat de expressie
 slechts eenmaal wordt ge-evalueerd en alleen het resultaat wordt
-opgeslagen.
+opgeslagen in de =Var n=.
 
 #+begin: exercise
 #+BEGIN_LATEX
