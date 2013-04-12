@@ -2134,8 +2134,8 @@ Een simpel voorbeeld:
 #+end_src
 
 In het voorbeeld wordt de meegegeven optelfunctie eerst toegepast op
-de getallen =1= en =2=. Dit levert 3 op. Daarna wordt de optelfunctie
-toegepast op =3=, het resultaat van de vorige optelling en =2=. Zo
+de getallen =1= en =2=. Dit levert =3= op. Daarna wordt de optelfunctie
+toegepast op =3=, het resultaat van de vorige optelling en =3=. Zo
 gaat het verder totdat er nog één getal over is: =15=.
 
 Om dit verder te illustreren zullen we een optelfunctie met side
