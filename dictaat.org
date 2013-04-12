@@ -1819,15 +1819,19 @@ Deze functie heeft twee definities. De eerste definitie wordt gebruikt
 bij aanroep met één argument. In die definitie wordt de functie
 print-nums zelf weer aangeroepen, maar dan met twee argumenten. Bij
 aanroep met twee argumenten wordt de tweede definitie gebruikt. Daarin
-wordt met een =if= gekeken of =c= gelijk is aan =n=. Zo ja, dan wordt =n=
-teruggegeven en zijn we klaar. Zo nee, dan volgt er een =do=. Daarin wordt
-het getal =c= geprint. Op de laatste regel van de =do= vindt de recursieslag
-plaats: de functie wordt nogmaals aangeroepen, maar nu met het getal =c=
-eentje opgehoogd. De functie =inc= van (increment) verwacht namelijk een
-getal en levert dat getal + 1 op. Het argument =n= blijft gelijk. Een
-recursieve aanroep in Clojure doe je met =recur=. Op deze manier voorkom
-je dat er een stackoverflow plaats kan vinden. Dit heeft te maken met
-het feit dat de JVM geen tail-recursie-optimalisatie kent.
+wordt met een =if= gekeken of =c= gelijk is aan =n=. Zo ja, dan wordt
+=n= teruggegeven en zijn we klaar. Zo nee, dan volgt er een =do=.
+Daarin wordt het getal =c= geprint. Op de laatste regel van de =do=
+vindt de recursieslag plaats: de functie wordt nogmaals aangeroepen,
+maar nu met het getal =c= eentje opgehoogd. De functie =inc= van
+(increment) verwacht namelijk een getal en levert dat getal + 1 op.
+Het argument =n= blijft gelijk. Een recursieve aanroep in Clojure doe
+je met =recur=. Op deze manier voorkom je dat er een stackoverflow
+plaats kan vinden. Dit heeft te maken met het feit dat de JVM geen
+tail-recursie-optimalisatie kent. In plaats van =recur= gewoon de
+functienaam =print-nums= schrijven is wel toegestaan. Dan vindt er
+ook recursie plaats, maar wordt er geen optimalisatie gedaan door de
+Clojure-compiler en loop je dus het risico op een stackoverflow.
 
 Hoe ziet nu de functie-aanroep er van begin tot eind uit?
 
