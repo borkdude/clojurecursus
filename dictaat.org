@@ -2008,7 +2008,7 @@ nil
 #+end_src
 
 Clojure heeft een functie genaamd =apropos= waarmee je aan de hand
-van een string of reguliere expresse kunt zoeken naar alle definities
+van een string of reguliere expressie kunt zoeken naar alle definities
 in de geladen namespaces. Zo vinden we voor =(apropos #"\?$")=, die
 zoekt naar alle definities die eindigen op een vraagteken:
 
