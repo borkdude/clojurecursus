@@ -2101,8 +2101,8 @@ De functie wordt eerst toegepast op de getallen 10 en 1, dan op 9 en
 2, etc. Oftewel, de nieuwe lijst komt er als volgt uit te zien:
 
 #+BEGIN_SRC clojure
-((- 10 1) (- 10 2) (- 10 3)) ;;=>
-(   9        7        5    )
+((- 10 1) (- 9 2) (- 8 3)) ;;=>
+(   9        7       5   )
 #+END_SRC
 
 Dit werkt ook voor andere aantallen sequences dan 2.
