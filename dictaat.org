@@ -1516,7 +1516,7 @@ Als afsluiting van dit hoofdstuk nog een oefening.
 #+END_LATEX
 *Oefening 8.*
 #+end 
-Zoek op [[http://clojure.org/special_forms]] op welke special forms er in
+Zoek op [[http://www.clojure.org/special_forms][http://www.clojure.org/special\_forms]] op welke special forms er in
 dit hoofdstuk niet zijn behandeld en wat je er globaal aan hebt.
 
 * Functies
