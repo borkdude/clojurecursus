@@ -2034,9 +2034,9 @@ per se een predicaatfunctie is.
 *Oefening 13.*
 #+end
 Zoek in bovenstaande lijst de juiste predicaatfunctie om de volgende
-code werkend te krijgen met bijbehorende output. Denk eraan dat in
-Clojure logische waarheid betekent: alles wat niet =nil= of =false=
-is, wordt als logisch waar gezien.
+code werkend te krijgen met bijbehorende output. Vul steeds dezelfde
+functie in. Denk eraan dat in Clojure logische waarheid betekent:
+alles wat niet =nil= of =false= is, wordt als logisch waar gezien.
 #+begin_src clojure
 (... nil) ;;=> false
 (... false) ;;=> false
