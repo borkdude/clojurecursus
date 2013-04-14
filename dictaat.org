@@ -2522,7 +2522,7 @@ Je kunt dit als volgt lezen. Begin met de expressie
 =(Math/sqrt 25)=. Vul deze waarde in als eerste argument van de
 volgende expressie. Dit wordt =(* (Math/sqrt 25) 2)=. Vul deze
 expressie weer in als argument van de daarop volgende expressie. Dit
-wordt dan: =(/ =(* (Math/sqrt 25) 2) 5)=. 
+wordt dan: =(/ ((* (Math/sqrt 25) 2) 5)=. 
 
 De volgende =->=-expressies zijn equivalent:
 
@@ -2553,10 +2553,10 @@ Clojure!), kun je hiervan de macroexpansie bekijken.
 user=> (use 'clojure.walk)
 nil
 user=> (macroexpand-all '(->> [1 2 3 4 5]
-  #_=>      (map inc)
-  #_=>      (map inc)))
+  #_=>   (map inc)
+  #_=>   (map inc)))
 (map inc (map inc [1 2 3 4 5]))
-#+end_src
+#+end_src 
 
 Een laatste threading macro die we behandelen is =->as=. Deze macro
 is sinds Clojure v1.5 toegevoegd. Deze macro is flexibeler dan de
@@ -2604,13 +2604,13 @@ samengestelde data zoals lijsten van =Strings=, een =HashMap=,
 boomstructuren, etc. Dit hoofdstuk schenkt het meeste aandacht aan de
 samengestelde datastructuren in Clojure. Een totaaloverzicht van de
 datastructuren die je in Clojure kan gebruiken kan je vinden op
-[[http://clojure.org/data_structures]].
+[[http://clojure.org/data_structures][http://clojure.org/data\_structures]].
 
 De standaard Java primitieve types en classes zoals =char=, =int=, =double= en
 =String= zijn allemaal beschikbaar in Clojure. Dat kun je zien in
 onderstaande tabel. Merk op dat de notatie voor characters in Clojure
 verschilt van de notatie in Java. Dit heeft te maken met het feit dat
-het enkele quotje in Clojure ergens anders voor is gereserveerd: het
+het enkele quoteje in Clojure ergens anders voor is gereserveerd: het
 is een shortcut voor de special form =quote=.
 
 | type    | Java-notatie | Clojure-notatie |
@@ -2651,9 +2651,9 @@ Over keywords zullen we uitvoeriger spreken in het gedeelte over
 De datastructuren die in Clojure worden gebruikt zijn persistent en
 immutable. Met persistent wordt hier niet bedoeld dat er gebruik wordt
 gemaakt van een database, maar dat voorgaande versies altijd
-ongewijzigd blijven. Een instantie van een persistente datastructuur
+ongewijzigd blijven. Een instantiatie van een persistente datastructuur
 gaat zelf nooit meer gaat veranderen. Clojure kan op basis van een
-oude datastructuur wel heel erg efficient een nieuwe versie maken,
+oude datastructuur wel heel erg efficiënt een nieuwe versie maken,
 door de structuur die ze gemeenschappelijk hebben te delen. Dat mag,
 omdat je er zeker van kan zijn dat de oude datastructuur nooit meer
 verandert. De datastructuren waarvoor dit opgaat zijn: =list=,
@@ -2739,7 +2739,7 @@ achteraan geplaatst worden:
 
 Verder is het verschil tussen =cons= en =conj= dat de volgorde en het
 aantal geaccepteerde argumenten anders is. =cons= accepteert maar één
-toe te voegen element, maar =cons= meerdere:
+toe te voegen element, maar =conj= meerdere:
 
 #+begin_src clojure
 (cons 0 '(1 2 3)) ;;=> (0 1 2 3)
@@ -2749,13 +2749,13 @@ toe te voegen element, maar =cons= meerdere:
 Omdat lijsten vooral van toepassing zijn bij data die van begin tot
 eind, van kop tot staart, doorgelopen moet worden, spelen lijsten
 vooral een rol in de representatie van Clojure-programma's zelf.
-Clojure-programma's worden als lijst gerepresenteert, zodat je op
+Clojure-programma's worden als lijst gerepresenteerd, zodat je op
 basis van oude code nieuwe code kan genereren. Dit kan met behulp van
 macro's. Dit onderwerp zullen we later behandelen.
 
 In onderstaand figuur zien we hoe een nieuwe lijst opgebouwd wordt
 aan de hand van de oude lijst. Het verschijnsel dat een deel van de
-structuur van de oude lijst hergebruikt wordt in de nieuwe lijst noemen
+structuur van de oude lijst herbruikt wordt in de nieuwe lijst noemen
 we /structural sharing/.
 
 #+Caption: Hergebruik van gemeenschappelijke data
@@ -2789,18 +2789,19 @@ elementen ook true oplevert.
 In onderstaand fragment staat beschreven hoe je elementen uit vectoren
 kan ophalen aan de hand van hun positie (vanaf 0 genummerd). De functie
 =get= levert geen exceptie op als er een ongeldige positie gebruikt wordt,
-maar =nil=. Ook kan er een default waarde worden meegegeven zodat er niet
+maar =nil=. Ook kan er een verstekwaarde worden meegegeven zodat er niet
 =nil= maar iets anders wordt opgeleverd.
 
 #+BEGIN_SRC clojure
-(def vector1 [1 2 3])
+(def vector1 [1 2 3 nil])
 (get vector1 0) ;;=> 1
 (get vector1 1) ;;=> 2
 (get vector1 2) ;;=> 3
 (get vector1 3) ;;=> nil
-(get vector1 3 :not-found) ;;=> :not-found
+(get vector1 4) ;;=> nil
+(get vector1 4 :not-found) ;;=> :not-found
 #+END_SRC
-
+ verstek
 In onderstaand fragment zien we dat je in plaats van =get= ook =nth= kan
 gebruiken om elementen op te halen uit een vector. Het verschil tussen
 =get= en =nth= is dat =nth= wel een exceptie oplevert bij een ongeldige
