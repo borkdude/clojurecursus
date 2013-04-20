@@ -2789,7 +2789,7 @@ elementen ook true oplevert.
 In onderstaand fragment staat beschreven hoe je elementen uit vectoren
 kan ophalen aan de hand van hun positie (vanaf 0 genummerd). De functie
 =get= levert geen exceptie op als er een ongeldige positie gebruikt wordt,
-maar =nil=. Ook kan er een verstekwaarde worden meegegeven zodat er niet
+maar =nil=. Ook kan er een standaardwaarde worden meegegeven zodat er niet
 =nil= maar iets anders wordt opgeleverd.
 
 #+BEGIN_SRC clojure
@@ -2801,7 +2801,7 @@ maar =nil=. Ook kan er een verstekwaarde worden meegegeven zodat er niet
 (get vector1 4) ;;=> nil
 (get vector1 4 :not-found) ;;=> :not-found
 #+END_SRC
- verstek
+
 In onderstaand fragment zien we dat je in plaats van =get= ook =nth= kan
 gebruiken om elementen op te halen uit een vector. Het verschil tussen
 =get= en =nth= is dat =nth= wel een exceptie oplevert bij een ongeldige
