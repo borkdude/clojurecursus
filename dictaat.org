@@ -3760,7 +3760,6 @@ Deze oplossing werkt prima voor kleine n. Bijvoorbeeld:
 
 #+BEGIN_src java
 public static void main(String[] args) {
-      
   System.out.println(Fibonacci.fib(10))
 }
 #+END_src
