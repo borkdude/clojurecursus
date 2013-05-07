@@ -246,7 +246,7 @@ Bronnen die je kan gebruiken bij het practicum:
        hetzelfde zijn.
 
        #+BEGIN_SRC clojure
-           (= 8 (let __ ((comp * max) x y)))
+           (= 8 (let __ ((comp max *) x y)))
            (= -8/3 (let __ ((comp - /) x y)))
            (= -5 (let __ ((comp + - -) x y)))
        #+END_SRC
