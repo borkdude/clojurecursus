@@ -1,8 +1,7 @@
 (add-hook 'org-export-first-hook 'org-update-all-dblocks)
 
 ;; usage:
-;;(org-dblock-write:define-counter '(:id "something" :text "Something
-;;nr. "))
+;;(org-dblock-write:define-counter '(:id "something" :text "Something nr. "))
 
 (defun org-dblock-write:define-counter (params)
   (let* ((id (plist-get params :id))
