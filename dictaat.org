@@ -1460,7 +1460,7 @@ Het require-statement is nu onderdeel geworden van de ns-declaratie en
 begint nu met een dubbele punt, =:=. Ook hoeven er nu geen quotjes
 gebruikt te worden, omdat alles wat binnen =ns= valt letterlijk wordt
 opgevat. Dit heeft te maken met het feit dat =ns= geen functie, maar
-een macro is en macro's krijgen hun argumenten ongëvalueerd binnen. 
+een macro is en macro's krijgen hun argumenten ongeëvalueerd binnen. 
 
 Alles wat onder de ns-declaratie wordt gedefinieerd zal deel uitmaken
 van de namespace:
