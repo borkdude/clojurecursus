@@ -158,7 +158,7 @@ assembly. Daarom noemen we Java ook een derde generatie-taal: het
 abstractieniveau is hoger dan assembly, wat we een tweede
 generatie-taal noemen (de eerste generatie zijn de nullen en enen van
 machineinstructies). Maar nog zullen we in Java de
-machine precies moeten vertellen /hoe/ deze bepaalde berekingen
+machine precies moeten vertellen /hoe/ deze bepaalde berekeningen
 moet gaan doen en we zien
 dat deze manier beïnvloed is door het Von Neumann-model. Wel zijn er
 in Java belangrijke zaken toegevoegd, zoals Garbage Collection en
@@ -451,7 +451,7 @@ transparant zijn.
 *** Referentiële transparantie 
 Een functie is referentieel transparant als geldt: een functie-aanroep
 mag in een programma altijd vervangen worden door het resultaat van
-die functie aanroep. Het resultaat moet voor elke functie-aanroep met
+die functie-aanroep. Het resultaat moet voor elke functie-aanroep met
 dezelfde argumenten steeds hetzelfde zijn. Een gevolg van die eis is
 dat functies:
 
@@ -547,10 +547,10 @@ installeren voor verschillende omgevingen zoals Eclipse, IntelliJ, Emacs
 of gewoon simpelweg vanaf de command prompt aanroepen. In al die
 omgevingen heb de beschikking over de zogenaamde REPL. REPL betekent:
 'Read Eval Print Loop'. Je kunt Clojure-expressies invoeren (read) die
-ge-compileerd en evalueerd worden. Het resultaat ervan wordt vervolgens
+gecompileerd en geëvalueerd worden. Het resultaat ervan wordt vervolgens
 geprint. Zie ook figuur [[repl]] ([[http://codingndesign.com/blog/?p=239][bron]]). Daarna wordt er geloopt, dat wil
 zeggen, van voren af aan weer begonnen met het lezen van de volgende
-expressie. Op deze manier kan je incrementeel en bottom up je software
+expressie. Op deze manier kan je incrementeel en bottom-up je software
 opbouwen.
 
 #+LABEL: repl
@@ -814,8 +814,8 @@ hierboven zou je als volgt moeten noteren:
 (def x (- (+ 1 2) (/ (* 3 2) 6)))
 #+END_SRC
 
-Omdat =-= een functie is worden de argumenten eerst ge-evalueerd, voordat
-de functie-aanroep wordt ge-evalueerd. Stap voor stap zal de evaluatie
+Omdat =-= een functie is worden de argumenten eerst geëvalueerd, voordat
+de functie-aanroep wordt geëvalueerd. Stap voor stap zal de evaluatie
 als volgt verlopen:
 
 #+BEGIN_SRC clojure
@@ -935,10 +935,10 @@ user=> (if (= 1 1) :waar)
 In Clojure verwacht =if= minimaal twee expressies. De eerste expressie
 stelt een conditie voor: iets wat logisch =true= of =false= oplevert.
 Indien de conditie logisch =true= oplevert, wordt de waarde van de
-tweede expressie opgelevert, anders de waarde van de derde expressie.
+tweede expressie opgeleverd, anders de waarde van de derde expressie.
 Als de conditie logisch =false= is en er geen derde expressie
 opgegeven wordt, geeft =if= als waarde =nil= terug. Belangrijk om te
-weten is dat in Clojure wordt alles wat niet =nil= of =false= is als
+weten is dat in Clojure alles wat niet =nil= of =false= is als
 logisch =true= wordt gezien:
 
 #+begin_src clojure
@@ -962,7 +962,8 @@ Enkele voorbeelden.
 (if (> 1 2) "foo" "bar") 
 ;;=> "bar"
 
-(if (< 1 2) "foo" "bar") ;;=> "foo" 
+(if (< 1 2) "foo" "bar") 
+;;=> "foo" 
 #+END_SRC
 
 We zien in bovenstaand voorbeeld dat =<= en =>= gewoon functies zijn
@@ -1053,7 +1054,7 @@ antwoord met verschilende waarden voor =x=, =y=, =p= en =q=.
 
 Do-expressies zijn nodig wanneer er, voordat er een waarde van een
 expressie teruggegeven wordt, eerst nog een of meerdere side effects
-moeren uitgevoerd worden. Een side effect is bijvoorbeeld printen
+uitgevoerd moeten worden. Een side effect is bijvoorbeeld printen
 naar standaard output.
 
 #+begin_src clojure
@@ -1158,7 +1159,7 @@ illustreren aan de hand van een voorbeeld.
       y 20 
       z (+ x y)]
   (list x y z))
-;;=> '(10 20 30)
+;;=> (10 20 30)
 #+END_SRC
 
 Een let-expressie begint met het woord =let=, gevolgd door let-bindings
@@ -1329,7 +1330,7 @@ user=> (clojure.xml/parse "http://www.w3schools.com/xml/note.xml")
 Let op het quotje. Dit is om aan te geven dat Clojure het symbol niet
 moet evalueren naar een andere waarde, maar dat het hier letterlijk om
 het symbol gaat. Alles waar in Clojure een quotje voor staat, wordt
-niet ge-evalueerd maar letterlijk genomen. Require kan je gebruiken
+niet geëvalueerd maar letterlijk genomen. Require kan je gebruiken
 voor alle clojure-files die op het classpath staan. Bij het uitvoeren
 van een Clojure-programma of REPL wordt er altijd een clojure jar-file
 gebruikt en de gehele inhoud van deze jar-file komt op het classpath
@@ -1459,7 +1460,7 @@ Het require-statement is nu onderdeel geworden van de ns-declaratie en
 begint nu met een dubbele punt, =:=. Ook hoeven er nu geen quotjes
 gebruikt te worden, omdat alles wat binnen =ns= valt letterlijk wordt
 opgevat. Dit heeft te maken met het feit dat =ns= geen functie, maar
-een macro is en macro's krijgen hun argumenten ongevalueerd binnen. 
+een macro is en macro's krijgen hun argumenten ongëvalueerd binnen. 
 
 Alles wat onder de ns-declaratie wordt gedefinieerd zal deel uitmaken
 van de namespace:
@@ -1689,7 +1690,7 @@ en geef de som van de eerste drie argumenten terug als resultaat.
 ** Destructuring
 
 Functies ondersteunen een bepaalde techniek genaamd /destructuring/ om
-gevens uit elkaar te plukken die als argument aangeboden worden.
+elementen uit elkaar te plukken die als argument aangeboden worden.
 Hieronder een voorbeeld van een functie die als argument een sequence van
 twee elementen verwacht en die twee elementen op het scherm afdrukt.
 
@@ -1773,7 +1774,7 @@ en
 #+end_src
 ?
 --------------------------------
-Destructuring is ook toepassen in een
+Destructuring is ook toepasbaar in een
 let-expressie:
 
 #+BEGIN_SRC clojure
@@ -1783,7 +1784,7 @@ user=> (let [[x y & rst] [1 2 3 4 5]]
 nil
 #+END_SRC
 
-Er zijn nog ge-avanceerdere manieren van destructuring mogelijk die we
+Er zijn nog geavanceerdere manieren van destructuring mogelijk die we
 hier niet zullen bespreken, maar te vinden zijn op
 [[http://clojure.org/special_forms]].
 
@@ -2094,7 +2095,7 @@ sequence van te maken. Een voorbeeld:
 #+END_SRC
 
 Wat we nog niet hebben gezien is dat =map= ook om kan gaan met meerdere
-sequence. De functie die je meegeeft aan =map= moet dan om kunnen gaan met
+sequences. De functie die je meegeeft aan =map= moet dan om kunnen gaan met
 zoveel argumenten als dat er sequences worden meegegeven:
 
 #+BEGIN_SRC clojure
@@ -2848,7 +2849,7 @@ In Clojure hoeven niet alle elementen van een collectie van hetzelfde type te zi
 (def various-types-vector ["a" \b 1 :d [1 2 3]])
 #+END_SRC
 
-Dit heeft te maken met het feit dat Clojure dynamisch getypeerd. Dit
+Dit heeft te maken met het feit dat Clojure dynamisch getypeerd is. Dit
 kan per functionele programeertaal verschillen. Bijvoorbeeld voor
 Haskell gaat dit niet op, want Haskell is statisch getypeerd.
 
@@ -3442,7 +3443,7 @@ eerst de tekst "side effect" en geeft daarna zijn argument terug.
 Op regel 4 vragen we het eerste element van =my-seq= op. Omdat =map=
 een LazySeq teruggeeft, wordt dit element nu pas geproduceerd. Dus nu
 pas zal de functie toegepast worden op het eerste element van de
-lijst. Daarom zien we dat op regel 5 de tektst "side effect" geprint
+lijst. Daarom zien we dat op regel 5 de tekst "side effect" geprint
 wordt en daarna wordt =1= getoond, omdat dit het resultaat is dat we
 opvroegen.
 Op regel 9 tot en met 13 gebeurt hetzelfde voor het tweede element. 
@@ -3902,7 +3903,7 @@ public class FibonacciMemoized {
 #+END_src
 
 Een =static= block wordt uitgevoerd zodra een class wordt geladen in Java,
-nadat de static attributen zijn geinitialiseerd. De =ArrayList= =fibCache=
+nadat de static attributen zijn geïnitialiseerd. De =ArrayList= =fibCache=
 wordt dus eerst geinitialiseerd en vervolgens worden er het getal =0=
 en =1= in de vorm van =BigIntegers= aan toegevoegd. Dit zijn de eerste twee
 getallen uit de Fibonacci-reeks. Voor documentatie van BigInteger zie:
@@ -3915,7 +3916,7 @@ een recursieve manier plaats. Merk op dat we hier geen tail-recursion
 gebruiken. Bij gebruik van memoization maakt het namelijk niet veel uit
 of je tail recursion gebruikt zoals we nu zullen zien. In Clojure
 zullen we echter wel zoveel mogelijk werken met tail-recursion
-(=recur= dwing dit af).
+(=recur= dwingt dit af).
 
 [[file:pictures/fibmem1.png]]
 
@@ -4076,7 +4077,7 @@ storage locations: Vars, Atoms, Refs en Agents. Atoms zijn bedoeld om
 onafhankelijke data op te kunnen slaan en synchroon te updaten. Het
 updaten van atoms gebeurt op een thread-safe manier, vrij van
 race-condities. Refs zijn een uitgebreider referentietype. Meerdere
-Refs kunnen binnen één enkele transactie worden ge-updated,
+Refs kunnen binnen één enkele transactie worden geüpdatet,
 vergelijkbaar met een commit bij een database. We zullen ons in dit
 dictaat beperken tot het gebruik van Atoms. Meer informatie over de
 andere mutable storage locations in Clojure is te vinden op
@@ -4181,7 +4182,7 @@ uit:
          res))))
 #+end_src
 
-Je bovenstaande code als volgt lezen. Als de functie =fib-memo= wordt
+Je kunt de bovenstaande code als volgt lezen. Als de functie =fib-memo= wordt
 aangeroepen, wordt er eerst gekeken of bij bijhorende =n= al een waarde in
 de map in =my-atom= zit. Zo ja, dan wordt die waarde teruggegeven (regel
 3). Zo niet, dan gaan we eerst het resultaat berekenen. Dat is de som
@@ -4360,9 +4361,9 @@ lastiger te begrijpen.
 (def fib-seq (lazy-cat [0 1] (map +' fib-seq (rest fib-seq))))
 #+END_SRC
 
-=Lazy-cat= zorgt ervoor dat twee collecties aan elkaar geplakt worden
+=lazy-cat= zorgt ervoor dat twee collecties aan elkaar geplakt worden
 en als lazy sequence beschikbaar worden gesteld. De collecties worden
-hierbij niet ge-evalueerd totdat de elementen hiervan nodig zijn. De
+hierbij niet geëvalueerd totdat de elementen hiervan nodig zijn. De
 eerste twee elementen van de sequence zijn 0 en 1. De rest van de
 sequence wordt gevormd door de expressie =(map +' fib-seq (rest
 fib-seq))=. Hier hebben we te maken met een recursieve definitie.
@@ -4391,7 +4392,7 @@ als data waarmee je binnen de taal kan werken.
 
 ** Evaluatie, quoting en unquoting
 
-Normaal gesproken wordt een Clojure-expressie meteen ge-evalueerd.
+Normaal gesproken wordt een Clojure-expressie meteen geëvalueerd.
 Dit zien we hieronder:
 #+BEGIN_SRC clojure
 (+ 1 2 3) ;;=> 6
@@ -4400,7 +4401,7 @@ Dit zien we hieronder:
 De expressie =(+ 1 2 3)= is in feite een lijst waarvan het eerste
 element een Symbol is en de overige elementen int-literals. We
 kunnen evaluatie van de expressie tegenhouden door de special form
-=quote= toe te passen of er een quotje voor te
+=quote= toe te passen of er een quoteje voor te
 zetten, wat een shortcut voor =quote= is:
 
 #+BEGIN_SRC clojure
@@ -4435,19 +4436,19 @@ Een Clojure-expressie kan genest zijn. Zo in onderstaand voorbeeld:
 '(+ (- 1 2) (+ 1 2)) ;;=> (+ (- 1 2) (+ 1 2))
 #+END_SRC
 
-Het quotje zorgt ervoor dat de gehele expressie onge-evalueerd blijft.
+Het quoteje zorgt ervoor dat de gehele expressie ongeëvalueerd blijft.
 
 Je kan een bovenstaande lijst ook opbouwen met =list=, maar je moet dan
-per deel-expressie weer een quotje gebruiken, omdat de argument van
-=list= ge-evalueerd worden:
+per deel-expressie weer een quoteje gebruiken, omdat de argument van
+=list= geëvalueerd worden:
 
 #+BEGIN_SRC clojure
 (list '+ '(- 1 2) '(+ 1 2)) ;;=> (+ (- 1 2) (+ 1 2))
 #+END_SRC
 
-Een variant van het simpele quotje is de syntax-quote, waarvoor het
+Een variant van het simpele quoteje is de syntax-quote, waarvoor het
 symbool =`= gebruikt wordt. Men noemt dit symbool ook wel de backtick.
-Met de backtick blijft een expressie onge-evalueerd, maar worden symbols
+Met de backtick blijft een expressie ongeëvalueerd, maar worden symbols
 wel volledig gekwalificeerd naar hun bijbehorende namespace:
 
 #+BEGIN_SRC clojure
@@ -4466,7 +4467,7 @@ kan unquoten, door er een tilde, =~= , voor te zetten:
 De =~= heet in Clojure ook wel =unquote= en heeft alleen betekenis
 binnen de syntax quote, =`=. In bovenstaand voorbeeld zien we dat de
 deelexpressie (- 1 2) wel gesubstitueerd wordt door de resulterende waarde =-1=, maar dat de rest
-ongevalueerd blijft.
+ongeëvalueerd blijft.
 
 Hetzelfde kun je als volgt bereiken.
 
@@ -4549,7 +4550,7 @@ tussen =macroexpand= en =macroexpand-all= is dat =macroexpand= geen
 sub-expressies expandeert.
 
 Macro's hebben als belangrijke eigenschap dat hun argumenten niet eerst
-ge-evalueerd worden, zoals bij functies wel het geval is. Daardoor kan
+geëvalueerd worden, zoals bij functies wel het geval is. Daardoor kan
 een macro zelf bepalen wat er met een argument moet gebeuren: evalueren
 of niet evalueren en ook het moment van evalueren.
 
@@ -4574,7 +4575,7 @@ geschreven:
 #+end_src
 
 Op regel 8 staat: als er clauses zijn, lever dan het resultaat op van
-de volgende expressie, anders nil (=when levert iets of =nil= op). Als
+de volgende expressie, anders nil (=when= levert iets of =nil= op). Als
 =cond= dus met niets aangeroepen wordt, is het resultaat =nil=. Op
 regel 9 wordt er een lijst opgebouwd met als eerste element het Symbol
 =if=, gevolgd door het eerste element van clauses. Stel dat we =cond=
@@ -4649,9 +4650,9 @@ string ="bar"= oplevert. ="foo"= wordt geprint als side effect van de
 expressie =(println "foo")=, maar de print-expressie levert zelf =nil= op.
 Het laatste argument is weer een expressie met een side-effect, maar dit
 side-effect wordt niet uitgevoerd. Dat komt omdat =or= alle argumenten na
-de eerst logisch ware waarde negeert: deze worden dus niet ge-evalueerd.
+de eerste logisch ware waarde negeert: deze worden dus niet geëvalueerd.
 Om =or= te kunnen implementeren is er dus controle nodig over welke
-argumenten wel en niet worden ge-evalueerd. Daarom is =or= een macro. De
+argumenten wel en niet worden geëvalueerd. Daarom is =or= een macro. De
 source van de macro ziet er als volgt uit:
 
 #+begin_src clojure -n
@@ -4780,11 +4781,11 @@ Een andere handige macro is time. Deze neemt de tijd op, voert een
 stukje code uit, neemt dan weer de tijd op en berekent en toont dan hoe
 lang het heeft geduurd om het stukje code uit te voeren. Een reden
 waarom je dit niet met een functie kan doen is omdat argumenten van
-functies worden ge-evalueerd voordat de functie wordt uitgevoerd. Als we
+functies worden geëvalueerd voordat de functie wordt uitgevoerd. Als we
 dus een stukje code zouden meegeven aan een functie, kan de functie
-alleen het ge-evalueerde resultaat zien van dat stukje code, en zo niet
+alleen het geëvalueerde resultaat zien van dat stukje code, en zo niet
 meer de tijd berekenen die nodig was voor evaluatie. Time levert
-overigens als resultaat de ge-evalueerde resultaat van de code op.
+overigens als resultaat de geËvalueerde resultaat van de code op.
 
 Een demonstratie van time:
 
@@ -4850,7 +4851,7 @@ TicTacToe gemaakt als webapplicatie, waarbij diverse Clojure libraries
 en tools gebruikt worden. De source-code van deze applicatie kan
 verkregen worden op [[https://github.com/borkdude/tictactoe/]].
 
-De projectstructuur is afgeleid van een Luminus-project. [[http://www.luminusweb.net/][Luminus]] een
+De projectstructuur is afgeleid van een Luminus-project. [[http://www.luminusweb.net/][Luminus]] is een
 microframework om webapplicaties te ontwikkelen. In feite is het niets
 anders dan een verzameling templates die de meest populaire Clojure
 web-development libraries bundelen. Bovendien bevat de Luminus-website
@@ -4947,7 +4948,7 @@ komen overeen met de bestandsstructuur. In het bestand
 #+end_src
 
 Stond dit bestand in een dieper geneste subfolder, bijvoorbeeld
-=src/tictactoe/applogic/controller.clj= dan moest de namespace-naam verandert worden
+=src/tictactoe/applogic/controller.clj= dan moest de namespace-naam veranderd worden
 naar =tictactoe.applogic.controller=.
 
 Om de dependencies te downloaden die bij het project horen voer je
@@ -5040,7 +5041,7 @@ management.
 Verder bevat =war-handler= een aantal routes,
 gedefinieerd door middel van de routing library =Compojure=. 
 
-In onze applicatie zijn er maar routes gedefinieerd voor het spel
+In onze applicatie zijn er maar 2 routes gedefinieerd voor het spel
 TicTacToe. Deze kun je vinden in het bestand =controller.clj=:
 
 #+begin_src clojure
@@ -5069,7 +5070,7 @@ In =handler.clj= staan nog twee routes gedefinieerd:
 De eerste route dient voor het beschikbaar stellen van statische
 files, zoals ="resources/public/css/tictactoe.css"=. Als de gebruiker
 surft naar =http://localhost:3000/css/tictactoe.css= zal het juiste
-bestand uit de resources-directory worden geserveerder. De tweede
+bestand uit de resources-directory worden getoond. De tweede
 route dient ervoor dat alles wat niet door andere routes wordt
 afgehandeld beantwoord wordt door de String ="Not found"=. Surfen
 naar =http://localhost:3000/foobar= zal dit effect bijvoorbeeld hebben.

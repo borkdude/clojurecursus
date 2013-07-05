@@ -169,7 +169,7 @@ Bronnen die je kan gebruiken bij het practicum:
        #+END_SRC
 
     -  Zet onderstaande functiedefinitie en aanroep van die functie om
-       in een anonieme functie die meteen word aangeroepen, zoals
+       in een anonieme functie die meteen wordt aangeroepen, zoals
        hierboven.
 
        #+BEGIN_SRC clojure
@@ -361,7 +361,7 @@ Bronnen die je kan gebruiken bij het practicum:
       #+END_SRC
 
       Gebruik assoc-in om de vector tentamencijfers terug te geven
-      waarbij het cijfers van Klaas veranderd is in een 10.
+      waarbij het cijfer van Klaas veranderd is in een 10.
 
    4. Voeg aan de expressie die je voor de vorige opgave hebt moeten
       schrijven de functie get-in toe om alleen het cijfer 10 terug te
@@ -479,7 +479,7 @@ Bronnen die je kan gebruiken bij het practicum:
 
 2. Atoms.
 
-   1. Maak een atom welke boeken kan opslaan in een vector. Boeken
+   1. Maak een atom die boeken kan opslaan in een vector. Boeken
       bewaar je in een map:
 
       #+BEGIN_SRC clojure
@@ -492,14 +492,14 @@ Bronnen die je kan gebruiken bij het practicum:
       Schrijf daarbij functies genaamd =insert-book=, =get-book=,
       =update-book= en =delete-book= om de boeken te kunnen beheren.
       Demonstreer duidelijk de werking van je programma door een
-      scenario uit te programmeren waarin boeken worden ge-insert,
-      opgevraagd, ge-update en verwijderd. Houdt rekening met o.a. de
+      scenario uit te programmeren waarin boeken worden geinsert,
+      opgevraagd, geüpdated en verwijderd. Houdt rekening met o.a. de
       volgende zaken:
 
       -  Een boek mag niet worden toegevoegd als er al een boek is met
          dezelfde titel
 
-      -  Een boek mag alleen worden ge-update als er al een boek is met
+      -  Een boek mag alleen worden geüpdated als er al een boek is met
          dezelfde titel
 
    2. Schrijf twee functies: =start= en =stop= welke de werking van een
