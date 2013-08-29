@@ -2091,7 +2091,7 @@ toe te laten passen op elk element van een sequence en hier een nieuwe
 sequence van te maken. Een voorbeeld:
 
 #+BEGIN_SRC clojure
-(map (fn [x] (- x 2) [1 2 3 4])) ;;=> (-1 0 1 2)
+(map (fn [x] (- x 2)) [1 2 3 4]) ;;=> (-1 0 1 2)
 #+END_SRC
 
 Wat we nog niet hebben gezien is dat =map= ook om kan gaan met meerdere
