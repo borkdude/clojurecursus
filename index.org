@@ -28,7 +28,7 @@
 
 # Github Ribbon:
 #+begin_html
-<a href="https://github.com/mborkent/clojurecursus"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/borkdude/clojurecursus"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
 #+end_html
 #+HTML: <p class="title">Auteur: Michiel Borkent</p>
 #+HTML: <p class="title">Cursusjaar: 2012-2013</p>
